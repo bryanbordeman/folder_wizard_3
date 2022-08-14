@@ -1,0 +1,363 @@
+{
+    "MRI": [
+      [
+        "GE",
+        "MRI-GEH"
+      ],
+      [
+        "Siemens",
+        "MRI-SEM"
+      ],
+      [
+        "Philips",
+        "MRI-PHL"
+      ],
+      [
+        "Hitachi",
+        "MRI-HIT"
+      ],
+      [
+        "Canon",
+        "MRI-CAN"
+      ],
+      [
+        "United Imaging",
+        "MRI-UNI"
+      ],
+      [
+        "FUJIFILM",
+        "MRI-FFM"
+      ],
+      [
+        "Hallmarq",
+        "MRI-HLM"
+      ],
+      [
+        "FONAR",
+        "MRI-FNR"
+      ],
+      [
+        "Changeout",
+        "MRI-CHG"
+      ],
+      [
+        "Kit Room",
+        "MRI-KIT"
+      ],
+      [
+        "Components",
+        "MRI-CMP"
+      ],
+      [
+        "Door Supply",
+        "MRI-RFD"
+      ],
+      [
+        "Cryo Vent",
+        "MRI-CRY"
+      ],
+      [
+        "Install",
+        "MRI-INS"
+      ],
+      [
+        "FerrAlert",
+        "MRI-KOP"
+      ],
+      [
+        "Other",
+        "MRI-OTH"
+      ]
+    ],
+    "Low Energy Radiation Shielding": [
+      [
+        "CT Suite",
+        "LER-CTS"
+      ],
+      [
+        "X-Ray Suite",
+        "LER-XRA"
+      ],
+      [
+        "PET Suite",
+        "LER-PET"
+      ],
+      [
+        "IR Suite",
+        "LER-IRS"
+      ],
+      [
+        "OR Suite",
+        "LER-ORS"
+      ],
+      [
+        "Cath Lab",
+        "LER-LAB"
+      ],
+      [
+        "Modular Partition",
+        "LER-MOD"
+      ],
+      [
+        "All-Shield",
+        "LER-ALL"
+      ],
+      [
+        "Artemis",
+        "LER-ART"
+      ],
+      [
+        "Unistrut",
+        "LER-UNI"
+      ],
+      [
+        "Components",
+        "LER-CMP"
+      ],
+      [
+        "Install",
+        "LER-INS"
+      ],
+      [
+        "Other",
+        "LER-OTH"
+      ]
+    ],
+    "High Energy Radiation Shielding": [
+      [
+        "Linac",
+        "HER-LIN"
+      ],
+      [
+        "Cyberknife",
+        "HER-CYB"
+      ],
+      [
+        "HDR",
+        "HER-HDR"
+      ],
+      [
+        "Cyclotron",
+        "HER-CYC"
+      ],
+      [
+        "Proton",
+        "HER-PRO"
+      ],
+      [
+        "Industrial X-Ray",
+        "HER-IND"
+      ],
+      [
+        "Supplemental",
+        "HER-SUP"
+      ],
+      [
+        "Swing Door",
+        "HER-SWG"
+      ],
+      [
+        "Sliding Door",
+        "HER-SLD"
+      ],
+      [
+        "Baffle",
+        "HER-BAF"
+      ],
+      [
+        "Artemis",
+        "HER-ART"
+      ],
+      [
+        "Install",
+        "HER-INS"
+      ],
+      [
+        "Other",
+        "HER-OTH"
+      ]
+    ],
+    "Industrial Shielding": [
+      [
+        "AC/ELF",
+        "IND-ELF"
+      ],
+      [
+        "High-Spec RF Shielding",
+        "IND-656"
+      ],
+      [
+        "Anechoic Chamber",
+        "IND-ANC"
+      ],
+      [
+        "Tapered Chamber",
+        "IND-TAP"
+      ],
+      [
+        "Partial Discharge",
+        "IND-PDI"
+      ],
+      [
+        "PIM",
+        "IND-PIM"
+      ],
+      [
+        "HEMP",
+        "IND-HMP"
+      ],
+      [
+        "Synchrotron",
+        "IND-SYC"
+      ],
+      [
+        "X-Ray Cabinet",
+        "IND-XRC"
+      ],
+      [
+        "RF Cabinet",
+        "IND-RFC"
+      ],
+      [
+        "Components",
+        "IND-CMP"
+      ],
+      [
+        "Kit Room",
+        "IND-KIT"
+      ],
+      [
+        "Install",
+        "IND-INS"
+      ],
+      [
+        "Other",
+        "IND-OTH"
+      ]
+    ],
+    "Security Shielding": [
+      [
+        "SCIF",
+        "SEC-SCI"
+      ],
+      [
+        "High-Spec RF Shielding",
+        "SEC-656"
+      ],
+      [
+        "Components",
+        "SEC-CMP"
+      ],
+      [
+        "Install",
+        "SEC-INS"
+      ],
+      [
+        "Other",
+        "SEC-OTH"
+      ]
+    ],
+    "Engineering": [
+      [
+        "RF Shield Design",
+        "SVE-RFD"
+      ],
+      [
+        "Magnetic Shield Design",
+        "SVE-MAG"
+      ],
+      [
+        "Linac Design",
+        "SVE-LIN"
+      ],
+      [
+        "Physics Design",
+        "SVE-RAD"
+      ],
+      [
+        "Other",
+        "SVE-OTH"
+      ]
+    ],
+    "Testing": [
+      [
+        "RF Testing",
+        "SVT-RFT"
+      ],
+      [
+        "High-Spec Testing",
+        "SVT-HST"
+      ],
+      [
+        "Vibration Testing",
+        "SVT-VIB"
+      ],
+      [
+        "Other",
+        "SVT-OTH"
+      ]
+    ],
+    "Door Service": [
+      [
+        "RF Door Service",
+        "SVC-RFS"
+      ],
+      [
+        "Radiation Door Service",
+        "SVC-PBS"
+      ],
+      [
+        "Other",
+        "SVC-OTH"
+      ]
+    ],
+    "GPS Specialty Doors": [
+      [
+        "Blast Door",
+        "GPS-BLT"
+      ],
+      [
+        "Studio Door",
+        "GPS-STD"
+      ],
+      [
+        "Ballistic Doors",
+        "GPS-BLC"
+      ],
+      [
+        "Elephant Doors",
+        "GPS-ELP"
+      ],
+      [
+        "Hangar Doors",
+        "GPS-HAG"
+      ],
+      [
+        "Large Radiation Door",
+        "GPS-RAD"
+      ],
+      [
+        "RF Door",
+        "GPS-RFD"
+      ],
+      [
+        "Security Door",
+        "GPS-SEC"
+      ],
+      [
+        "Install",
+        "GPS-INS"
+      ],
+      [
+        "Other",
+        "GPS-OTH"
+      ]
+    ],
+    "Other": [
+      [
+        "Other",
+        "OTH-OTH"
+      ]
+    ]
+  }
+  

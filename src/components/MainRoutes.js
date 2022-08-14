@@ -32,6 +32,7 @@ function MainRoutes(props) {
                         <Login 
                             login={login} 
                             errors={loginErrors}
+                            darkState={darkState}
                         /> 
                     }
                 />

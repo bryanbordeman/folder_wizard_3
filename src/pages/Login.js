@@ -5,13 +5,14 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import logo from '../assets/GPS_Logo.png'
+import logoDark from '../assets/GPS_Logo_dark.png'
 import { useNavigate } from 'react-router-dom';
 
 function Login(props) {
 
     const [username, setUsername ] = useState('');
     const [password, setPassword ] = useState('');
-    const { errors } = props
+    const { errors, darkState } = props
 
     let navigate = useNavigate();
 
@@ -44,7 +45,7 @@ function Login(props) {
             
         }}
         >
-        <img style={{width: '20rem'}} src={logo} alt="GPS Logo"/>
+        <img style={{width: '20rem'}} src={darkState? logoDark : logo} alt="GPS Logo"/>
         <Box component="form" onSubmit={login} noValidate sx={{ mt: 1 }}>
             <TextField
                 margin="normal"

@@ -22,13 +22,14 @@ export default function App() {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
     const [darkState, setDarkState] = useState(prefersDarkMode);     
     let palletType = darkState ? "dark" : "light";
+
     
     const theme = createTheme({
         palette: {
             background: 
                 {
                     default: darkState? '#0C192A' : "#f8f8ff",
-                    paper: darkState? '#0C192A' : "#f8f8ff"
+                    paper: darkState? '#0C192A' : '#ffff'
                 },
             mode: palletType,
             primary: {
@@ -141,7 +142,7 @@ export default function App() {
                     handleCloseSnackbar={handleCloseSnackbar}
                     severity={snackbarSeverity}
                     message={snackbarMessage}/>
-                <div style={{ position:'absolute', top:0, right:0}}>
+                <div style={{ position:'absolute', top:10, right:10}}>
                     <ModeSwitch
                         handleChangeMode={handleChangeMode}
                     />

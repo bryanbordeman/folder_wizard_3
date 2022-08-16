@@ -4,9 +4,11 @@ import { Navigate } from 'react-router-dom';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Home from '../pages/Home';
+import Opportunity from '../pages/Opportunity';
 
 function MainRoutes(props) {
     const { user, token, login, signup, loginErrors, darkState, handleOpenSnackbar } = props
+
     return (
         <div>
             <Routes>
@@ -20,8 +22,22 @@ function MainRoutes(props) {
                         <Home
                         user={user}
                         token={token}
+                        darkState={darkState}
                         />
                     }/>
+                <Route 
+                    exact 
+                    path='/opportunity' 
+                    element={
+                        !user.username  ? 
+                        <Navigate to="/login" />
+                        :
+                        <Opportunity
+                        user={user}
+                        token={token}
+                        handleOpenSnackbar={handleOpenSnackbar}
+                        />
+                }/>
                 <Route 
                     exact 
                     path='/login' 

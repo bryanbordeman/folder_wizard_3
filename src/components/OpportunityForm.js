@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { Stack } from '@mui/material';
+import { Stack, Box } from '@mui/material';
 import  Divider from '@mui/material/Divider';
 
 export default function OpportunityForm() {
@@ -17,7 +17,7 @@ export default function OpportunityForm() {
     };
 
     return ( 
-        <div>
+        <Box sx={{mr:3, ml:3}}>
             <Stack direction="column" spacing={2}>
                 <TextField
                     autoFocus={false}
@@ -44,9 +44,9 @@ export default function OpportunityForm() {
                 <Divider/>
                 <Stack direction='row' spacing={1}>
                     <Button variant='outlined'>Clear</Button>
-                    <Button variant='contained'>Submit</Button>
+                    <Button variant='contained' color='secondary' >Submit</Button>
                 </Stack>
             </Stack>
-        </div>
+        </Box>
     );
 };

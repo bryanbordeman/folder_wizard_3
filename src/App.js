@@ -6,6 +6,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import SnackbarAlert from './components/SnackbarAlert';
 import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import ModeSwitch from './components/ModeSwitch';
 
 export default function App() {
     const [ user, setUser ] = useState(JSON.parse(localStorage.getItem('user')) || {})
@@ -26,17 +27,18 @@ export default function App() {
         palette: {
             background: 
                 {
-                    default: darkState? 'black' : "#f8f8ff"
+                    default: darkState? '#0C192A' : "#f8f8ff",
+                    paper: darkState? '#0C192A' : "#f8f8ff"
                 },
             mode: palletType,
             primary: {
-                main: '#1C88B0',
+                main: '#1BA2F6',
             },
             secondary: {
-                main: '#D1DF45',
+                main: '#EA39B8',
             },
             darkBlue: {
-                main: '#11495F',
+                main: '#0C192A',
             },
             
             },
@@ -139,6 +141,11 @@ export default function App() {
                     handleCloseSnackbar={handleCloseSnackbar}
                     severity={snackbarSeverity}
                     message={snackbarMessage}/>
+                <div style={{ position:'absolute', top:0, right:0}}>
+                    <ModeSwitch
+                        handleChangeMode={handleChangeMode}
+                    />
+                </div>
             </BrowserRouter>
         </ThemeProvider>
     );

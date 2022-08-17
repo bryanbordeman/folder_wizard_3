@@ -5,8 +5,11 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
 import { Stack } from '@mui/material';
 import CategoryList from '../json/projectCategoryList.json'
+import ProjectCategoryServices from '../services/ProjectCategory.services';
+import ProjectTypeServices from '../services/ProjectType.services';
 
 export default function CategoryTypePickers(props) {
+    const { token } = props
     const { values, setValues, errors, handleInputValue } = props;
     const [ categories, setCategories ] = useState([]);
     const [ types, setTypes ] = useState([]);
@@ -15,7 +18,31 @@ export default function CategoryTypePickers(props) {
 
     useEffect(() => {
         setCategories(Object.keys(CategoryList))
+        retrieveCategories();
+        retrieveTypes();
     },[])
+
+    const retrieveCategories = () => {
+        ProjectCategoryServices.getCategories(token)
+        .then(response => {
+            console.log(response.data);
+            
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    }
+
+    const retrieveTypes= () => {
+        ProjectTypeServices.getTypes(token)
+        .then(response => {
+            console.log(response.data);
+            
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    }
 
     const hangleChangeCategory = (e) => {
         setCategory(e.target.value);

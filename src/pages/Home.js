@@ -6,12 +6,15 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import Logo from '../assets/folder_wizard_logo_3.png'
-import LogoLight from '../assets/folder_wizard_logo_light_3.png'
+import Logo from '../assets/folder_wizard_logo_3.png';
+import LogoLight from '../assets/folder_wizard_logo_light_3.png';
+import IconButton from '@mui/material/IconButton';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 function Home(props) {
-    const { darkState } = props
+    const { darkState, logout } = props
     return ( 
+        <div>
         <Stack 
             spacing={4} 
             sx={{position: 'absolute',
@@ -73,6 +76,17 @@ function Home(props) {
                 </Card>
             </Stack>
         </Stack>
+        <div style={{ position:'absolute', top:10, left:10}}>
+            <IconButton 
+                sx={{border: 1, borderColor: "#1BA2F6 !important" }}
+                color="primary" 
+                aria-label="back"
+                onClick={logout}
+            >
+                <LogoutIcon />
+            </IconButton>
+        </div>
+        </div>
     );
 }
 

@@ -7,7 +7,7 @@ import Home from '../pages/Home';
 import Opportunity from '../pages/Opportunity';
 
 function MainRoutes(props) {
-    const { user, token, login, signup, loginErrors, darkState, handleOpenSnackbar } = props
+    const { user, token, login, logout, signup, loginErrors, darkState, handleOpenSnackbar } = props
 
     return (
         <div>
@@ -22,6 +22,7 @@ function MainRoutes(props) {
                         <Home
                         user={user}
                         token={token}
+                        logout={logout}
                         darkState={darkState}
                         />
                     }/>
@@ -33,9 +34,9 @@ function MainRoutes(props) {
                         <Navigate to="/login" />
                         :
                         <Opportunity
-                        user={user}
-                        token={token}
-                        handleOpenSnackbar={handleOpenSnackbar}
+                            user={user}
+                            token={token}
+                            handleOpenSnackbar={handleOpenSnackbar}
                         />
                 }/>
                 <Route 

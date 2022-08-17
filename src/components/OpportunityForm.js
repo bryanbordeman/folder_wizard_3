@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Select from '@mui/material/Select';
 import { Stack, Box } from '@mui/material';
 import  Divider from '@mui/material/Divider';
+import ManagerPicker from './ManagerPicker';
+import CategoryTypePickers from './CategoryTypePickers';
 
-export default function OpportunityForm() {
+export default function OpportunityForm(props) {
+    const { token, user } = props
     const [ values, setValues ] = useState({});
     const [ errors, setErrors ] = useState({});
 
@@ -18,7 +26,7 @@ export default function OpportunityForm() {
 
     return ( 
         <Box sx={{mr:3, ml:3}}>
-            <Stack direction="column" spacing={2}>
+            <Stack spacing={2}>
                 <TextField
                     autoFocus={false}
                     margin="dense"
@@ -32,6 +40,22 @@ export default function OpportunityForm() {
                     variant="outlined"
                     helperText={errors.project_name === null ? '' : errors.project_name}
                     error={errors.project_name? true : false}
+                />
+                <CategoryTypePickers
+                    token={token}
+                    user={user}
+                    values={values}
+                    setValues={setValues}
+                    errors={errors}
+                    handleInputValue={handleInputValue}
+                />
+                <ManagerPicker
+                    token={token}
+                    user={user}
+                    values={values}
+                    setValues={setValues}
+                    errors={errors}
+                    handleInputValue={handleInputValue}
                 />
                 {/* <FormControlLabel
                     onChange={() => {setValues({...values, is_active: !values.is_active})}}

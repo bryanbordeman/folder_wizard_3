@@ -6,17 +6,22 @@ import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
 
-export default function Opportunity() {
+export default function Opportunity(props) {
+    const { token, user } = props
+    const { editing } = props
     return (  
         <div style={{marginTop: '5rem'}}>
             <Typography variant="h2" component="h2" sx={{mr:3, ml:3, mb:2}}>
                 <Box 
                     // sx={{ fontWeight: 'medium', m: 1 }}
                 >
-                    Create Opportunity
+                    {editing? 'Edit ' : 'Create '}Opportunity
                 </Box>
             </Typography>
-            <OpportunityForm/>
+            <OpportunityForm
+                token={token}
+                user={user}
+            />
             <div style={{ position:'absolute', top:10, left:10}}>
                 <IconButton 
                     sx={{border: 1, borderColor: "#1BA2F6 !important" }}

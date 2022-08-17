@@ -14,7 +14,6 @@
 # production
 /env
 /build
-**/UX Design
 
 # misc
 .DS_Store

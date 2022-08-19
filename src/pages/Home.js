@@ -41,19 +41,26 @@ function Home(props) {
                         </Typography>
                         {/* </Link> */}
                     </CardContent>
-                    <CardActions >
+                    <Stack
+                        sx={{mt:1, mb:2}}
+                        direction="column"
+                        justifyContent="center"
+                        alignItems="center"
+                        spacing={2}
+                    >
                         <Button 
                             variant='contained' 
                             color='secondary' 
-                            sx={{ width: '50%', left: '25%' }}
                             component={Link} 
                             to='/opportunity'
                         >Create Quote
-                    </Button>
-                    </CardActions>
-                    <CardActions sx={{mb:2}}>
-                        <Button variant='outlined' color='primary' sx={{ width: '50%', left: '25%' }}>Edit Quote</Button>
-                    </CardActions>
+                        </Button>
+                        <Button 
+                            variant='outlined' 
+                            color='primary' 
+                        >Edit Quote
+                        </Button>
+                    </Stack>
                 </Card>
                 <Card sx={{ width: '100%', textAlign: 'center', border: 1, borderRadius:2, borderColor: "#1BA2F6 !important" }} elevation={0}>
                     <CardContent>
@@ -67,12 +74,30 @@ function Home(props) {
                             Create or edit projects
                         </Typography>
                     </CardContent>
-                    <CardActions >
-                        <Button variant='contained' color='secondary' sx={{ width: '50%', left: '25%' }}>Create Project</Button>
-                    </CardActions>
-                    <CardActions sx={{mb:2}}>
-                        <Button variant='outlined' color='primary' sx={{ width: '50%', left: '25%' }}>Edit Project</Button>
-                    </CardActions>
+                    <Stack
+                        sx={{mt:1, mb:2}}
+                        direction="column"
+                        justifyContent="center"
+                        alignItems="center"
+                        spacing={2}
+                    >
+                        <Button 
+                            variant='contained' 
+                            color='secondary' 
+                            component={Link} 
+                            to='/project'
+                        >Create Project
+                        </Button>
+                        <Button 
+                            variant='outlined' 
+                            color='primary' 
+                        >Edit Project
+                        </Button>
+                    </Stack>
+
+
+
+
                 </Card>
             </Stack>
         </Stack>

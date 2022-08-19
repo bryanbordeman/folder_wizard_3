@@ -17,15 +17,17 @@ export default function CategoryTypePickers(props) {
     const [ category, setCategory ] = useState('');
 
     useEffect(() => {
-        setCategories(Object.keys(CategoryList))
         retrieveCategories();
-        retrieveTypes();
     },[])
+
+    useEffect(() => {
+        retrieveTypes();
+    },[category])
 
     const retrieveCategories = () => {
         ProjectCategoryServices.getCategories(token)
         .then(response => {
-            console.log(response.data);
+            setCategories(response.data);
             
         })
         .catch( e => {
@@ -36,8 +38,10 @@ export default function CategoryTypePickers(props) {
     const retrieveTypes= () => {
         ProjectTypeServices.getTypes(token)
         .then(response => {
-            console.log(response.data);
-            
+            if (category){
+                const allTypes = response.data
+                setTypes(allTypes.filter(type => type.project_category === category))
+            }
         })
         .catch( e => {
             console.log(e);
@@ -46,10 +50,14 @@ export default function CategoryTypePickers(props) {
 
     const hangleChangeCategory = (e) => {
         setCategory(e.target.value);
-        const key = e.target.value
-        setTypes(CategoryList[key])
-        setValues({...values, category: e.target.value})
+        setValues({...values, project_category: e.target.value})
     }
+
+    const hangleChangeType = (e) => {
+        setType(e.target.value);
+        setValues({...values, project_type: e.target.value})
+    }
+
 
     return ( 
         <Stack direction='row' spacing={2}>
@@ -63,16 +71,17 @@ export default function CategoryTypePickers(props) {
                     fullWidth
                     labelId="project-category"
                     id="project-category"
-                    value={category}
+                    defaultValue={''}
+                    value={category.id}
                     label="Project Category"
                     onChange={hangleChangeCategory}
                 >
                 {categories.map((category, key) => (
                     <MenuItem 
                         key={key} 
-                        value={category}
+                        value={category.id}
                     >   
-                        {category}
+                        {category.name}
                     </MenuItem>
                 )
                     )}
@@ -86,16 +95,17 @@ export default function CategoryTypePickers(props) {
                     fullWidth
                     labelId="project-type"
                     id="project-type"
+                    defaultValue={''}
                     value={values.type}
                     label={category? "Project Type" : "Select Category First"}
-                    onChange={handleInputValue}
+                    onChange={hangleChangeType}
                 >
                 {types.map((type, key) => (
                     <MenuItem 
                         key={key} 
-                        value={type[1]}
+                        value={type.id}
                     >   
-                        {type[0]}
+                        {type.name}
                     </MenuItem>
                 )
                     )}

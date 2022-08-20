@@ -1,4 +1,3 @@
-import { previousDay } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import UserService from '../services/User.services'
 import InputLabel from '@mui/material/InputLabel';
@@ -51,7 +50,7 @@ export default function ManagerPicker(props) {
                 fullWidth
                 labelId="manager"
                 id="manager"
-                // defaultValue={""}
+                defaultValue={""}
                 value={managerId}
                 label="Manager"
                 onChange={hangleChangeManager}

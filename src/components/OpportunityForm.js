@@ -5,6 +5,7 @@ import { Stack, Box } from '@mui/material';
 import  Divider from '@mui/material/Divider';
 import ManagerPicker from './ManagerPicker';
 import CategoryTypePickers from './CategoryTypePickers';
+import AddressPicker from './AddressPicker';
 import QuoteDataService from '../services/Quote.services';
 
 export default function OpportunityForm(props) {
@@ -99,14 +100,7 @@ export default function OpportunityForm(props) {
                     errors={errors}
                     handleInputValue={handleInputValue}
                 />
-                {/* <FormControlLabel
-                    onChange={() => {setValues({...values, is_active: !values.is_active})}}
-                    control={<Switch checked={values.is_active} color="primary" />}
-                    id="is_active"
-                    name="is_active"
-                    label="Is Active"
-                    value={values.is_active}
-                /> */}
+                <AddressPicker/>
                 <Divider/>
                 <Stack 
                     direction="row"

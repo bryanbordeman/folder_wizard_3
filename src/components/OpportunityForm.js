@@ -6,6 +6,7 @@ import  Divider from '@mui/material/Divider';
 import ManagerPicker from './ManagerPicker';
 import CategoryTypePickers from './CategoryTypePickers';
 import AddressPicker from './AddressPicker';
+import CustomerPicker from './CustomerPicker';
 import QuoteDataService from '../services/Quote.services';
 
 export default function OpportunityForm(props) {
@@ -101,8 +102,10 @@ export default function OpportunityForm(props) {
                     handleInputValue={handleInputValue}
                 />
                 <AddressPicker/>
+                <CustomerPicker/>
                 <Divider/>
                 <Stack 
+                    sx={{pb:4}}
                     direction="row"
                     justifyContent="flex-end"
                     alignItems="center"

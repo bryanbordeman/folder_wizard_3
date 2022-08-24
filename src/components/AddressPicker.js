@@ -7,6 +7,7 @@ import InputLabel from '@mui/material/InputLabel';
 export default function GoogleMapAutocomplete() {
     const [address, setAddress] = useState();
     const [addressObj, setAddressObj] = useState();
+    const [placeId, setPlaceId] = useState();
     // console.log(addressObj);
     const getAddressObject = (address_components) => {
         // console.log(address_components);
@@ -15,9 +16,8 @@ export default function GoogleMapAutocomplete() {
             postal_code: ["postal_code"],
             street: ["street_address", "route"],
             province: ["administrative_area_level_1"],
-            city: ["locality"],
-            political:['political'],
-            country: ["country"]
+            city: ["neighborhood", "locality", 'political', "postal_town"],
+            country: ["country"],
         };
 
         let address = {
@@ -38,9 +38,6 @@ export default function GoogleMapAutocomplete() {
                 address[shouldBe] = component.long_name;
             }
             }
-            // if(address[shouldBe] === undefined){
-            //     console.log(component.short_name)
-            // }
         }
         });
 
@@ -61,6 +58,8 @@ export default function GoogleMapAutocomplete() {
             address &&
             address.value &&
             (await geocodeByPlaceId(address.value.place_id));
+        
+        setPlaceId(geocodeObj[0].place_id)
         const addressObject =
             geocodeObj && getAddressObject(geocodeObj[0].address_components);
         // console.log("addressObject", addressObject);

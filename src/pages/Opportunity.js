@@ -32,7 +32,7 @@ export default function Opportunity(props) {
                 >
                     <ArrowBackIcon />
                 </IconButton>
-                </div>
+            </div>
         </div>
     );
 }

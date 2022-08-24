@@ -4,11 +4,13 @@ const { app, BrowserWindow, session } = require('electron');
 const isDev = require('electron-is-dev');
 const os = require('os')
 
+
 function createWindow() {
     // Create the browser window.
+
     const win = new BrowserWindow({
-        width: 850,
-        height: 750,
+        width: 800,
+        height: 600,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,

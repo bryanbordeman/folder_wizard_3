@@ -7,7 +7,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
 
 export default function Opportunity(props) {
-    const { token, user } = props
+    const { token, user, handleOpenSnackbar } = props
     const { editing } = props
     return (  
         <div style={{marginTop: '5rem'}}>
@@ -21,6 +21,7 @@ export default function Opportunity(props) {
             <OpportunityForm
                 token={token}
                 user={user}
+                handleOpenSnackbar={handleOpenSnackbar}
             />
             <div style={{ position:'absolute', top:10, left:10}}>
                 <IconButton 

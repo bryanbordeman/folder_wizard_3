@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import CompanyServices from '../services/Company.services';
+import { v4 as uuidv4 } from 'uuid';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -10,43 +12,102 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import FolderIcon from '@mui/icons-material/Folder';
+
 import DeleteIcon from '@mui/icons-material/Delete';
-import BusinessIcon from '@mui/icons-material/Business';
+// import BusinessIcon from '@mui/icons-material/Business';
 import { Divider } from '@mui/material';
 
+function stringToColor(string) {
+    let hash = 0;
+    let i;
 
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
 
-export default function CustomerPicker() {
+    let color = '#';
+
+    for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+    }
+    /* eslint-enable no-bitwise */
+
+    return color;
+}
+function stringAvatar(name) {
+    return {
+        sx: {
+        bgcolor: stringToColor(name),
+        color: 'white',
+        },
+        children: `${name.split(' ')[0][0].toUpperCase()}`,
+    };
+}
+
+export default function CustomerPicker(props) {
+    const { token, handleOpenSnackbar } = props
     const [ customer, setCustomer ] = useState('');
     const [ customers, setCustomers ] = useState([]);
+    const [ companies, setCompanies ] = useState([]);
+    const [ newCustomer, setNewCustomer ] = useState('');
+
+    useEffect(()=> {
+        retrieveCompanies();
+    },[newCustomer])
+    
+    const retrieveCompanies= () => {
+        CompanyServices.getAllShort(token)
+        .then(response => {
+            setCompanies(response.data);
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    }
+
+    const createCompany = (data) => {
+        CompanyServices.createCompany(data, token)
+        .then(response => {
+            // handleOpenSnackbar('success', 'Your announcement has been posted')
+            retrieveCompanies()
+        })
+        .catch(e => {
+            console.log(e);
+            // handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
 
     const addCustomer = () => {
+        if (customer)
         setCustomers(oldArray => [...oldArray, customer]);
         setCustomer('');
     };
 
-    const removeCustomer = (name) => {
-        setCustomers(customers.filter(item => item !== name))
+    const removeCustomer = (id) => {
+        setCustomers(customers.filter(item => item !== id))
     };
 
-    function generate(element) {
-        return customers.map((value) =>
-            React.cloneElement(element, {
-            key: value,
-            }),
-        );
+    const handleNewCustomer = (e) => {
+        setNewCustomer(e.target.value);
     }
 
+    const createNewCustomer = () => {
+        const data = {
+            'name': newCustomer
+        };
+        createCompany(data)
+        //! not a great solution need something better
+        const newCompanyId = companies[companies.length - 1].id + 1
+        setTimeout(function(){
+            setCustomers(oldArray => [...oldArray, newCompanyId]);
+        }, 1000); 
+    }
 
     return (
         <Stack>
@@ -56,17 +117,20 @@ export default function CustomerPicker() {
                     freeSolo
                     id="customer"
                     disableClearable
-                    value={customer}
+                    
+                    // value={customer}
                     onChange={(event, newValue) => {
-                        setCustomer(newValue)}
+                        setCustomer(newValue.id)}
                     }
-                    options={companies.map((option) => option.name)}
+                    // options={companies.map((option) => option)}
+                    options={companies}
+                    getOptionLabel={(option) => option.name}
                     renderInput={(params) => (
                     <TextField
                         {...params}
                         label="Customer(s)"
-                        value={customer}
-                        onChange={(e) => {setCustomer(e.target.value)}}
+                        // value={customer}
+                        onChange={handleNewCustomer}
                         InputProps={{
                         ...params.InputProps,
                         type: 'search',
@@ -79,14 +143,14 @@ export default function CustomerPicker() {
                 sx={{maxHeight: '2.75rem', border: 1, borderColor: "#1BA2F6 !important" }}
                 color="primary" 
                 aria-label="back"
-                onClick={addCustomer}
+                onClick={newCustomer ? createNewCustomer : addCustomer}
             >
                 <AddIcon />
             </IconButton>
         </Stack>
         <Box>
             <List sx={{mt:3}} dense={false}>
-                {customers.map((customerValue, key) => (
+                {customers.map((customerId, key) => (
                 <div>
                     {key > 0? <Divider/> : ''}
                 <ListItem
@@ -95,18 +159,16 @@ export default function CustomerPicker() {
                     <IconButton 
                         edge="end" 
                         aria-label="delete"
-                        onClick={() => removeCustomer(customerValue)}>
+                        onClick={() => removeCustomer(customerId)}>
                         <DeleteIcon />
                     </IconButton>
                 }
                 >
                 <ListItemAvatar>
-                    <Avatar>
-                        <BusinessIcon />
-                    </Avatar>
+                    <Avatar {...stringAvatar(companies.find(item => item.id === customerId).name)}/>
                 </ListItemAvatar>
                 <ListItemText
-                    primary={customerValue}
+                    primary={companies.find(item => item.id === customerId).name}
                     // secondary={'Secondary text'}
                 />
                 </ListItem>
@@ -118,50 +180,22 @@ export default function CustomerPicker() {
     );
     }
 
-    const companies =
-    [
-        {
-            "id": 1,
-            "name": "National Shielding",
-            "fax": null,
-            "website": "https://national-shielding.com",
-            "address": [],
-            "phone": []
-        },
-        {
-            "id": 2,
-            "name": "Global Partners in Shielding",
-            "fax": null,
-            "website": "",
-            "address": [
-                1
-            ],
-            "phone": [
-                1
-            ]
-        },
-        {
-            "id": 3,
-            "name": "B.R. Fries & Associates LLC",
-            "fax": null,
-            "website": "",
-            "address": [
-                3
-            ],
-            "phone": [
-                1
-            ]
-        },
-        {
-            "id": 4,
-            "name": "Global Shielding LLC",
-            "fax": "",
-            "website": "http://www.global-shielding.com",
-            "address": [
-                6
-            ],
-            "phone": [
-                2
-            ]
-        }
-    ]
+    // const companies =
+    // [
+    //     {
+    //         "id": 1,
+    //         "name": "National Shielding"
+    //     },
+    //     {
+    //         "id": 2,
+    //         "name": "Global Partners in Shielding"
+    //     },
+    //     {
+    //         "id": 3,
+    //         "name": "B.R. Fries & Associates LLC"
+    //     },
+    //     {
+    //         "id": 4,
+    //         "name": "Global Shielding LLC"
+    //     }
+    // ]

@@ -10,7 +10,7 @@ import CustomerPicker from './CustomerPicker';
 import QuoteDataService from '../services/Quote.services';
 
 export default function OpportunityForm(props) {
-    const { token, user } = props
+    const { token, user, handleOpenSnackbar } = props
     const [ values, setValues ] = useState('');
     const [ errors, setErrors ] = useState('');
 
@@ -102,7 +102,10 @@ export default function OpportunityForm(props) {
                     handleInputValue={handleInputValue}
                 />
                 <AddressPicker/>
-                <CustomerPicker/>
+                <CustomerPicker
+                    token={token} 
+                    handleOpenSnackbar={handleOpenSnackbar}
+                />
                 <Divider/>
                 <Stack 
                     sx={{pb:4}}

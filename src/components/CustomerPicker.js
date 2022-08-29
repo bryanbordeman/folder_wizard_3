@@ -1,23 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import CompanyServices from '../services/Company.services';
-import { v4 as uuidv4 } from 'uuid';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Autocomplete from '@mui/material/Autocomplete';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
-
-
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
-
-
 import DeleteIcon from '@mui/icons-material/Delete';
-// import BusinessIcon from '@mui/icons-material/Business';
 import { Divider } from '@mui/material';
 
 function stringToColor(string) {
@@ -55,15 +49,24 @@ export default function CustomerPicker(props) {
     const [ customers, setCustomers ] = useState([]);
     const [ companies, setCompanies ] = useState([]);
     const [ newCustomer, setNewCustomer ] = useState('');
+    // const [ isCreated, setIsCreated ] = useState(false);
 
     useEffect(()=> {
         retrieveCompanies();
-    },[newCustomer])
+    },[])
+
+    useEffect(()=> {
+        if(newCustomer){
+        const data = (companies.find(element => element.name === newCustomer))
+        setCustomers(oldArray => [...oldArray, data.id]);
+        }
+    },[companies])
     
     const retrieveCompanies= () => {
         CompanyServices.getAllShort(token)
         .then(response => {
             setCompanies(response.data);
+            
         })
         .catch( e => {
             console.log(e);
@@ -74,7 +77,8 @@ export default function CustomerPicker(props) {
         CompanyServices.createCompany(data, token)
         .then(response => {
             // handleOpenSnackbar('success', 'Your announcement has been posted')
-            retrieveCompanies()
+            retrieveCompanies();
+            // setIsCreated(true);
         })
         .catch(e => {
             console.log(e);
@@ -101,12 +105,7 @@ export default function CustomerPicker(props) {
         const data = {
             'name': newCustomer
         };
-        createCompany(data)
-        //! not a great solution need something better
-        const newCompanyId = companies[companies.length - 1].id + 1
-        setTimeout(function(){
-            setCustomers(oldArray => [...oldArray, newCompanyId]);
-        }, 1000); 
+        createCompany(data);
     }
 
     return (
@@ -143,7 +142,7 @@ export default function CustomerPicker(props) {
                 sx={{maxHeight: '2.75rem', border: 1, borderColor: "#1BA2F6 !important" }}
                 color="primary" 
                 aria-label="back"
-                onClick={newCustomer ? createNewCustomer : addCustomer}
+                onClick={newCustomer && !customer? createNewCustomer : addCustomer}
             >
                 <AddIcon />
             </IconButton>

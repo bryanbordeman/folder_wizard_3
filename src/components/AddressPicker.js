@@ -1,13 +1,14 @@
-// import "./styles.css";
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import GooglePlacesAutocomplete, { geocodeByPlaceId } from "react-google-places-autocomplete";
 import InputLabel from '@mui/material/InputLabel';
+import Chip from '@mui/material/Chip';
+import Box from '@mui/material/Box';
 
 export default function GoogleMapAutocomplete() {
-    const [address, setAddress] = useState();
-    const [addressObj, setAddressObj] = useState();
-    const [placeId, setPlaceId] = useState();
+    const [address, setAddress] = useState('');
+    const [addressObj, setAddressObj] = useState({});
+    const [placeId, setPlaceId] = useState('');
     // console.log(addressObj);
     const getAddressObject = (address_components) => {
         // console.log(address_components);
@@ -59,7 +60,7 @@ export default function GoogleMapAutocomplete() {
             address.value &&
             (await geocodeByPlaceId(address.value.place_id));
         
-        setPlaceId(geocodeObj[0].place_id)
+        if(geocodeObj) {setPlaceId(geocodeObj[0].place_id)}
         const addressObject =
             geocodeObj && getAddressObject(geocodeObj[0].address_components);
         // console.log("addressObject", addressObject);
@@ -86,13 +87,14 @@ export default function GoogleMapAutocomplete() {
                 styles: {
                     input: (provided) => ({
                         ...provided,
-                        boxShadow: 0,
+                        // boxShadow: 0,
                         marginTop: '12px',
                         marginBottom: '12px',
-                        "&:hover": {
-                            border: "1px solid purple"
-                        }
+                        // "&:hover": {
+                        //     border: "1px solid purple"
+                        // }
                     }),
+                    
                     option: (provided) => ({
                         ...provided,
                         color: 'black',
@@ -107,9 +109,13 @@ export default function GoogleMapAutocomplete() {
                 }
             }}
         />
-        <pre style={{ textAlign: "left", padding: 20 }}>
+        {/* <pre style={{ textAlign: "left", padding: 20 }}>
             {addressObj? JSON.stringify(addressObj, 0, 2) : ''}
-        </pre>
+        </pre> */}
+        {address? 
+        <Box sx={{mt:2}}>
+            <Chip label={`${address.label}`} variant="outlined" />
+        </Box> : ''}
         </div>
     );
 }

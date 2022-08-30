@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import CompanyServices from '../services/Company.services';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Divider } from '@mui/material';
+
 
 function stringToColor(string) {
     let hash = 0;
@@ -59,6 +60,7 @@ export default function CustomerPicker(props) {
         if(newCustomer){
         const data = (companies.find(element => element.name === newCustomer))
         setCustomers(oldArray => [...oldArray, data.id]);
+        setNewCustomer('');
         }
     },[companies])
     
@@ -116,8 +118,6 @@ export default function CustomerPicker(props) {
                     freeSolo
                     id="customer"
                     disableClearable
-                    
-                    // value={customer}
                     onChange={(event, newValue) => {
                         setCustomer(newValue.id)}
                     }
@@ -139,7 +139,7 @@ export default function CustomerPicker(props) {
                 />
             </div>
             <IconButton 
-                sx={{maxHeight: '2.75rem', border: 1, borderColor: "#1BA2F6 !important" }}
+                sx={{top: '7px', maxHeight: '2.75rem', border: 1, borderColor: "#1BA2F6 !important" }}
                 color="primary" 
                 aria-label="back"
                 onClick={newCustomer && !customer? createNewCustomer : addCustomer}
@@ -150,10 +150,9 @@ export default function CustomerPicker(props) {
         <Box>
             <List sx={{mt:3}} dense={false}>
                 {customers.map((customerId, key) => (
-                <div>
+                <Box key={customerId}>
                     {key > 0? <Divider/> : ''}
                 <ListItem
-                    key={key}
                     secondaryAction={
                     <IconButton 
                         edge="end" 
@@ -171,7 +170,7 @@ export default function CustomerPicker(props) {
                     // secondary={'Secondary text'}
                 />
                 </ListItem>
-                </div>
+                </Box>
             ))}
             </List>
         </Box>

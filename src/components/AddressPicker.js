@@ -1,11 +1,12 @@
 import * as React from 'react';
+import '../css/styles.css'
 import { useState, useEffect } from "react";
 import GooglePlacesAutocomplete, { geocodeByPlaceId } from "react-google-places-autocomplete";
 import InputLabel from '@mui/material/InputLabel';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 
-export default function GoogleMapAutocomplete() {
+export default function AddressPicker() {
     const [address, setAddress] = useState('');
     const [addressObj, setAddressObj] = useState({});
     const [placeId, setPlaceId] = useState('');
@@ -90,14 +91,18 @@ export default function GoogleMapAutocomplete() {
                         // boxShadow: 0,
                         marginTop: '12px',
                         marginBottom: '12px',
-                        // "&:hover": {
-                        //     border: "1px solid purple"
-                        // }
+                        "&:hover": {
+                            border: "1px solid purple"
+                        }
                     }),
-                    
+                    SearchBox: (provided) => ({
+                        ...provided,
+                        backgroundColor: 'red'
+                    }),
                     option: (provided) => ({
                         ...provided,
                         color: 'black',
+                        // backgroundColor: 'transparent'
                     }),
                     singleValue: (provided) => ({
                         ...provided,

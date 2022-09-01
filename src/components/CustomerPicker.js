@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import CompanyServices from '../services/Company.services';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,6 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Divider } from '@mui/material';
+import CustomerDialog from './CustomerDialog';
 
 
 function stringToColor(string) {
@@ -50,7 +52,7 @@ export default function CustomerPicker(props) {
     const [ customers, setCustomers ] = useState([]);
     const [ companies, setCompanies ] = useState([]);
     const [ newCustomer, setNewCustomer ] = useState('');
-    // const [ isCreated, setIsCreated ] = useState(false);
+    const [open, setOpen] = React.useState(false);
 
     useEffect(()=> {
         retrieveCompanies();
@@ -88,7 +90,6 @@ export default function CustomerPicker(props) {
         });
     };
 
-
     const addCustomer = () => {
         if (customer)
         setCustomers(oldArray => [...oldArray, customer]);
@@ -101,14 +102,18 @@ export default function CustomerPicker(props) {
 
     const handleNewCustomer = (e) => {
         setNewCustomer(e.target.value);
-    }
+    };
 
     const createNewCustomer = () => {
         const data = {
             'name': newCustomer
         };
         createCompany(data);
-    }
+    };
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
 
     return (
         <Stack>
@@ -162,14 +167,21 @@ export default function CustomerPicker(props) {
                     </IconButton>
                 }
                 >
-                <ListItemAvatar>
-                    <Avatar {...stringAvatar(companies.find(item => item.id === customerId).name)}/>
-                </ListItemAvatar>
+                <Button onClick={handleClickOpen}>
+                    <ListItemAvatar>
+                        <Avatar {...stringAvatar(companies.find(item => item.id === customerId).name)}/>
+                    </ListItemAvatar>
+                </Button>
                 <ListItemText
                     primary={companies.find(item => item.id === customerId).name}
                     // secondary={'Secondary text'}
                 />
                 </ListItem>
+                <CustomerDialog
+                    open={open}
+                    setOpen={setOpen}
+                    // customerId={customerId}
+                />
                 </Box>
             ))}
             </List>

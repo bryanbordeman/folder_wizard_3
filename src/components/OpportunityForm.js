@@ -101,7 +101,10 @@ export default function OpportunityForm(props) {
                     errors={errors}
                     handleInputValue={handleInputValue}
                 />
-                <AddressPicker/>
+                <AddressPicker
+                    token={token} 
+                    handleOpenSnackbar={handleOpenSnackbar}
+                />
                 <CustomerPicker
                     token={token} 
                     handleOpenSnackbar={handleOpenSnackbar}

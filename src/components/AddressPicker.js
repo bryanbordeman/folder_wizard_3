@@ -6,7 +6,8 @@ import InputLabel from '@mui/material/InputLabel';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 
-export default function AddressPicker() {
+export default function AddressPicker(props) {
+    const { token, handleOpenSnackbar } = props
     const [address, setAddress] = useState('');
     const [addressObj, setAddressObj] = useState({});
     const [placeId, setPlaceId] = useState('');

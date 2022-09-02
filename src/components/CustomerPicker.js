@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import CompanyServices from '../services/Company.services';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
@@ -11,6 +10,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
 import Avatar from '@mui/material/Avatar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Divider } from '@mui/material';
@@ -49,10 +49,11 @@ function stringAvatar(name) {
 export default function CustomerPicker(props) {
     const { token, handleOpenSnackbar } = props
     const [ customer, setCustomer ] = useState('');
+    const [ editCustomer, setEditCustomer ] = useState('');
     const [ customers, setCustomers ] = useState([]);
     const [ companies, setCompanies ] = useState([]);
     const [ newCustomer, setNewCustomer ] = useState('');
-    const [open, setOpen] = React.useState(false);
+    const [ open, setOpen ] = React.useState(false);
 
     useEffect(()=> {
         retrieveCompanies();
@@ -80,13 +81,12 @@ export default function CustomerPicker(props) {
     const createCompany = (data) => {
         CompanyServices.createCompany(data, token)
         .then(response => {
-            // handleOpenSnackbar('success', 'Your announcement has been posted')
+            handleOpenSnackbar('success', 'New Company was created')
             retrieveCompanies();
-            // setIsCreated(true);
         })
         .catch(e => {
             console.log(e);
-            // handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         });
     };
 
@@ -111,8 +111,10 @@ export default function CustomerPicker(props) {
         createCompany(data);
     };
 
-    const handleClickOpen = () => {
+    const handleClickOpen = (customerId) => {
         setOpen(true);
+        const customerData = (companies.find(element => element.id === customerId))
+        setEditCustomer(customerData);
     };
 
     return (
@@ -167,24 +169,33 @@ export default function CustomerPicker(props) {
                     </IconButton>
                 }
                 >
-                <Button onClick={handleClickOpen}>
-                    <ListItemAvatar>
-                        <Avatar {...stringAvatar(companies.find(item => item.id === customerId).name)}/>
-                    </ListItemAvatar>
-                </Button>
+                <ListItemButton
+                    onClick={() => {
+                        handleClickOpen(customerId);
+                    }}
+                >
+                
+                <ListItemAvatar>
+                    <Avatar {...stringAvatar(companies.find(item => item.id === customerId).name)}/>
+                </ListItemAvatar>
+            
                 <ListItemText
                     primary={companies.find(item => item.id === customerId).name}
                     // secondary={'Secondary text'}
                 />
+                </ListItemButton>
                 </ListItem>
-                <CustomerDialog
-                    open={open}
-                    setOpen={setOpen}
-                    // customerId={customerId}
-                />
+                
                 </Box>
             ))}
             </List>
+            <CustomerDialog
+                token={token}
+                handleOpenSnackbar={handleOpenSnackbar}
+                open={open}
+                setOpen={setOpen}
+                customerData={editCustomer}
+            />
         </Box>
         </Stack>
     );

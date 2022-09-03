@@ -74,6 +74,7 @@ export default function AddressPicker(props) {
     return (
         <div>
         <InputLabel 
+            shrink
             id="manager"
         >
             Address

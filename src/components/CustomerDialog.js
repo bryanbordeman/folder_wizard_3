@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import Transition from './DialogTransistion'
 
 export default function CustomerDialog(props) {
-    const { customerData , open, setOpen, token, handleOpenSnackbar } = props;
+    const { customerData , open, setOpen, token, handleOpenSnackbar, retrieveCompanies } = props;
     const [ customer, setCustomer ] = useState({});
 
     useEffect(() => {
@@ -22,17 +22,24 @@ export default function CustomerDialog(props) {
     };
 
     const handleUpdate= () => {
-        console.log(customerData.id, customer)
-        // setOpen(false);
+        const data = {
+            "name": customer,
+        }
+        if(customer.name !== customerData.name)
+        {updateCompany(customerData.id, data)
+        setOpen(false);
+        }
     };
 
     const handleUpdateCustomer = (e) => {
-        setCustomer(e.target.value);
+        const result = e.target.value
+        setCustomer(result);
     };
 
     const updateCompany = (id, data) => {
-        CompanyServices.updateCompany(id, data, token)
+        CompanyServices.updateCompanyShort(id, data, token)
         .then(response => {
+            retrieveCompanies();
             handleOpenSnackbar('info', 'Company was updated')
         })
         .catch(e => {
@@ -51,21 +58,24 @@ export default function CustomerDialog(props) {
             >
                 <DialogTitle>Edit Customer</DialogTitle>
                 <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Name"
-                    value={customer.name}
-                    type="text"
-                    fullWidth
-                    onChange={(e) => {handleUpdateCustomer(e)}}
-                    // variant="standard"
-                />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Name"
+                        defaultValue={customerData.name}
+                        type="text"
+                        fullWidth
+                        onChange={handleUpdateCustomer}
+                        onInput = {(e) =>{
+                            e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
+                        }}
+                        // variant="standard"
+                    />
                 </DialogContent>
                 <DialogActions>
-                <Button variant='outlined' onClick={handleClose}>Cancel</Button>
-                <Button variant='contained' onClick={handleUpdate}>Update</Button>
+                    <Button variant='outlined' onClick={handleClose}>Cancel</Button>
+                    <Button variant='contained' onClick={handleUpdate}>Update</Button>
                 </DialogActions>
             </Dialog>
         </Box>

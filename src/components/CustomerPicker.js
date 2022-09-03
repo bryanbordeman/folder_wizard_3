@@ -132,16 +132,16 @@ export default function CustomerPicker(props) {
                     options={companies}
                     getOptionLabel={(option) => option.name}
                     renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Customer(s)"
-                        // value={customer}
-                        onChange={handleNewCustomer}
-                        InputProps={{
-                        ...params.InputProps,
-                        type: 'search',
-                        }}
-                    />
+                        <TextField
+                            {...params}
+                            label="Customer(s)"
+                            // value={customer}
+                            onChange={handleNewCustomer}
+                            InputProps={{
+                            ...params.InputProps,
+                            type: 'search',
+                            }}
+                        />
                     )}
                 />
             </div>
@@ -195,6 +195,7 @@ export default function CustomerPicker(props) {
                 open={open}
                 setOpen={setOpen}
                 customerData={editCustomer}
+                retrieveCompanies={retrieveCompanies}
             />
         </Box>
         </Stack>

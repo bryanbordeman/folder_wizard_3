@@ -18,6 +18,10 @@ class CompanyDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.put(`${SERVER}/api/company/${id}`, data);
     };
+    updateCompanyShort(id, data, token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.put(`${SERVER}/api/company/short/${id}`, data);
+    };
     deleteCompany(id, token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.delete(`${SERVER}/api/company/${id}`);

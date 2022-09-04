@@ -1,2 +1,1 @@
 - fix ManagerPicker. Warning
-- need to fix company update. partial update?? maybe

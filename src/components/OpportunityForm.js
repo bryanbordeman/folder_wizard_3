@@ -104,10 +104,14 @@ export default function OpportunityForm(props) {
                 <AddressPicker
                     token={token} 
                     handleOpenSnackbar={handleOpenSnackbar}
+                    values={values}
+                    setValues={setValues}
                 />
                 <CustomerPicker
                     token={token} 
                     handleOpenSnackbar={handleOpenSnackbar}
+                    values={values}
+                    setValues={setValues}
                 />
                 <Divider/>
                 <Stack 

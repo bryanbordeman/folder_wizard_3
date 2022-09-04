@@ -1,4 +1,5 @@
 import * as React from 'react';
+import AddressServices from '../services/Address.services';
 import '../css/styles.css'
 import { useState, useEffect } from "react";
 import GooglePlacesAutocomplete, { geocodeByPlaceId } from "react-google-places-autocomplete";
@@ -66,10 +67,32 @@ export default function AddressPicker(props) {
         const addressObject =
             geocodeObj && getAddressObject(geocodeObj[0].address_components);
         // console.log("addressObject", addressObject);
+        
         setAddressObj(addressObject);
         };
         func();
     }, [address]);
+
+    // useEffect(() => {
+    //     const data = addressObj;
+    //     if(placeId){
+    //     const add = {place_id: placeId};
+    //     Object.entries(add).forEach(([key,value]) => { data[key] = value });
+    //     }
+        
+    //     // createAddress(addressObj);
+    // },[addressObj]);
+
+    const createAddress = (data) => {
+        AddressServices.createAddress(data, token)
+        .then(response => {
+            handleOpenSnackbar('success', 'New Address was created')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
 
     return (
         <div>
@@ -125,4 +148,4 @@ export default function AddressPicker(props) {
         </Box> : ''}
         </div>
     );
-}
+};

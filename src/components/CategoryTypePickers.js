@@ -51,12 +51,12 @@ export default function CategoryTypePickers(props) {
     const hangleChangeCategory = (e) => {
         setCategory(e.target.value);
         setValues({...values, project_category: e.target.value})
-    }
+    };
 
     const hangleChangeType = (e) => {
         setType(e.target.value);
         setValues({...values, project_type: e.target.value})
-    }
+    };
 
 
     return ( 

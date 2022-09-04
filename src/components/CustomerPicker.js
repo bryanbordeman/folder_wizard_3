@@ -47,7 +47,7 @@ function stringAvatar(name) {
 }
 
 export default function CustomerPicker(props) {
-    const { token, handleOpenSnackbar } = props
+    const { token, handleOpenSnackbar, values, setValues } = props
     const [ customer, setCustomer ] = useState('');
     const [ editCustomer, setEditCustomer ] = useState('');
     const [ customers, setCustomers ] = useState([]);
@@ -66,6 +66,10 @@ export default function CustomerPicker(props) {
         setNewCustomer('');
         }
     },[companies])
+
+    useEffect(() => {
+        setValues({...values, customers: [customers]})
+    }, [customers])
     
     const retrieveCompanies= () => {
         CompanyServices.getAllShort(token)
@@ -76,7 +80,7 @@ export default function CustomerPicker(props) {
         .catch( e => {
             console.log(e);
         })
-    }
+    };
 
     const createCompany = (data) => {
         CompanyServices.createCompany(data, token)

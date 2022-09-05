@@ -11,9 +11,8 @@ import QuoteDataService from '../services/Quote.services';
 
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props
-    const [ values, setValues ] = useState('');
-    const [ errors, setErrors ] = useState('');
-
+    const [ clear, setClear ] = useState(false);
+    
     const initialValues = {
         is_active: true,
         number: '',
@@ -24,10 +23,12 @@ export default function OpportunityForm(props) {
         address:'',
         customers:[],
         contacts:[],
-        prevailing_rate:'',
-        travel_job:'',
+        prevailing_rate:true,
+        travel_job:true,
         notes:''
     }
+
+    const [ values, setValues ] = useState(initialValues);
 
     const initialErrors = {
         name:'',
@@ -39,9 +40,9 @@ export default function OpportunityForm(props) {
         contacts:'',
     }
 
+    const [ errors, setErrors ] = useState(initialErrors);
+
     useEffect(() => {
-        setValues(initialValues);
-        setErrors(initialErrors);
         retrieveNextQuoteNumber();
     },[])
 
@@ -60,6 +61,20 @@ export default function OpportunityForm(props) {
         })
     }
 
+    const createQuote = () => {
+        QuoteDataService.createQuote(values, token)
+        .then(response => {
+            handleOpenSnackbar('success', 'New Address was created')
+        })
+        .then(() => {
+            handleClearInputs()
+        })
+        .catch( e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        })
+    }
+
     const handleInputValue = (e) => {
         const { name, value } = e.target;
         setValues({
@@ -67,6 +82,12 @@ export default function OpportunityForm(props) {
         [name]: value
         });
     };
+
+    const handleClearInputs = () => {
+        setClear(true);
+        setValues(initialValues);
+        retrieveNextQuoteNumber();
+    }
 
     return ( 
         <Box sx={{mr:3, ml:3}}>
@@ -78,7 +99,7 @@ export default function OpportunityForm(props) {
                     name='name'
                     label="Project Name"
                     onChange={handleInputValue}
-                    // value={values.name}
+                    value={values.name}
                     type="text"
                     fullWidth
                     variant="outlined"
@@ -92,6 +113,8 @@ export default function OpportunityForm(props) {
                     setValues={setValues}
                     errors={errors}
                     handleInputValue={handleInputValue}
+                    clear={clear}
+                    setClear={setClear}
                 />
                 <ManagerPicker
                     token={token}
@@ -100,18 +123,24 @@ export default function OpportunityForm(props) {
                     setValues={setValues}
                     errors={errors}
                     handleInputValue={handleInputValue}
+                    clear={clear}
+                    setClear={setClear}
                 />
                 <AddressPicker
                     token={token} 
                     handleOpenSnackbar={handleOpenSnackbar}
                     values={values}
                     setValues={setValues}
+                    clear={clear}
+                    setClear={setClear}
                 />
                 <CustomerPicker
                     token={token} 
                     handleOpenSnackbar={handleOpenSnackbar}
                     values={values}
                     setValues={setValues}
+                    clear={clear}
+                    setClear={setClear}
                 />
                 <Divider/>
                 <Stack 
@@ -121,8 +150,17 @@ export default function OpportunityForm(props) {
                     alignItems="center"
                     spacing={2}
                 >
-                    <Button variant='outlined' size='large'>Clear</Button>
-                    <Button variant='contained' size='large' color='secondary' >Submit</Button>
+                    <Button 
+                        onClick={handleClearInputs}
+                        variant='outlined' 
+                        size='large'
+                    >Clear</Button>
+                    <Button 
+                        onClick={createQuote}
+                        variant='contained' 
+                        size='large' 
+                        color='secondary' 
+                    >Submit</Button>
                 </Stack>
             </Stack>
         </Box>

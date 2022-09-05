@@ -47,7 +47,7 @@ function stringAvatar(name) {
 }
 
 export default function CustomerPicker(props) {
-    const { token, handleOpenSnackbar, values, setValues } = props
+    const { token, handleOpenSnackbar, values, setValues, clear, setClear} = props
     const [ customer, setCustomer ] = useState('');
     const [ editCustomer, setEditCustomer ] = useState('');
     const [ customers, setCustomers ] = useState([]);
@@ -60,6 +60,13 @@ export default function CustomerPicker(props) {
     },[])
 
     useEffect(()=> {
+        if(clear){
+            setCustomers([]);
+            setClear(false);
+        };
+    },[clear])
+
+    useEffect(()=> {
         if(newCustomer){
         const data = (companies.find(element => element.name === newCustomer))
         setCustomers(oldArray => [...oldArray, data.id]);
@@ -68,7 +75,7 @@ export default function CustomerPicker(props) {
     },[companies])
 
     useEffect(() => {
-        setValues({...values, customers: [customers]})
+        setValues({...values, customers: customers})
     }, [customers])
     
     const retrieveCompanies= () => {

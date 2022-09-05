@@ -8,13 +8,23 @@ import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 
 export default function AddressPicker(props) {
-    const { token, values, setValues, handleOpenSnackbar } = props
+    const { token, values, setValues, handleOpenSnackbar, clear, setClear } = props
     const [ address, setAddress ] = useState('');
     const [ addressId, setAddressId ] = useState('');
     const [ addressObj, setAddressObj ] = useState('');
     const [ placeId, setPlaceId ] = useState('');
     const [ existing, setExisting ] = useState('');
     // console.log(addressObj);
+
+    useEffect(()=> {
+        if(clear){
+            setAddressObj('');
+            setAddressId('');
+            setPlaceId('');
+            setAddress('');
+            setClear(false);
+        };
+    },[clear])
 
     useEffect(() => {
         setValues({...values, address: addressId})
@@ -118,6 +128,7 @@ export default function AddressPicker(props) {
         })
         .catch(e => {
             console.log(e);
+            // setAddress('')
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         });
     };
@@ -167,9 +178,6 @@ export default function AddressPicker(props) {
                 }
             }}
         />
-        {/* <pre style={{ textAlign: "left", padding: 20 }}>
-            {addressObj? JSON.stringify(addressObj, 0, 2) : ''}
-        </pre> */}
         {address? 
         <Box sx={{mt:2}}>
             <Chip label={`${address.label}`} variant="outlined" />

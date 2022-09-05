@@ -10,11 +10,19 @@ import ProjectTypeServices from '../services/ProjectType.services';
 
 export default function CategoryTypePickers(props) {
     const { token } = props
-    const { values, setValues, errors, handleInputValue } = props;
+    const { values, setValues, errors, clear, setClear } = props;
     const [ categories, setCategories ] = useState([]);
     const [ types, setTypes ] = useState([]);
-    const [ type, setType ] = useState('')
+    const [ type, setType ] = useState('');
     const [ category, setCategory ] = useState('');
+
+    useEffect(()=> {
+        if(clear){
+            setType('');
+            setCategory('');
+            setClear(false);
+        };
+    },[clear])
 
     useEffect(() => {
         retrieveCategories();

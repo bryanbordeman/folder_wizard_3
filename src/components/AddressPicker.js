@@ -8,11 +8,18 @@ import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 
 export default function AddressPicker(props) {
-    const { token, handleOpenSnackbar } = props
-    const [address, setAddress] = useState('');
-    const [addressObj, setAddressObj] = useState({});
-    const [placeId, setPlaceId] = useState('');
+    const { token, values, setValues, handleOpenSnackbar } = props
+    const [ address, setAddress ] = useState('');
+    const [ addressId, setAddressId ] = useState('');
+    const [ addressObj, setAddressObj ] = useState('');
+    const [ placeId, setPlaceId ] = useState('');
+    const [ existing, setExisting ] = useState('');
     // console.log(addressObj);
+
+    useEffect(() => {
+        setValues({...values, address: addressId})
+    }, [addressId])
+
     const getAddressObject = (address_components) => {
         // console.log(address_components);
         const ShouldBeComponent = {
@@ -73,20 +80,41 @@ export default function AddressPicker(props) {
         func();
     }, [address]);
 
-    // useEffect(() => {
-    //     const data = addressObj;
-    //     if(placeId){
-    //     const add = {place_id: placeId};
-    //     Object.entries(add).forEach(([key,value]) => { data[key] = value });
-    //     }
-        
-    //     // createAddress(addressObj);
-    // },[addressObj]);
+    useEffect(() => {
+        if (addressObj)
+        isExisting(placeId);
+    }, [addressObj])
+
+    useEffect(() =>{
+        if(existing !== '' && existing === false)
+            isExisting(placeId);
+    },[existing])
+
+    const isExisting = (place_id) => {
+        AddressServices.lookup(place_id, token)
+        .then(response => {
+            if(response.data.length > 0){
+                setExisting(true);
+                setAddressId(response.data[0].id)
+            }else{
+                setExisting(false);
+                const data = addressObj;
+                const add = {place_id: placeId};
+                Object.entries(add).forEach(([key,value]) => { data[key] = value });
+                createAddress(data);
+            }
+            // handleOpenSnackbar('success', 'New Address was created')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
 
     const createAddress = (data) => {
         AddressServices.createAddress(data, token)
         .then(response => {
-            handleOpenSnackbar('success', 'New Address was created')
+            // handleOpenSnackbar('success', 'New Address was created')
         })
         .catch(e => {
             console.log(e);

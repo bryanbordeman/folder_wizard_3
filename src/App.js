@@ -34,6 +34,7 @@ export default function App() {
             mode: palletType,
             primary: {
                 main: '#1BA2F6',
+                contrastText: "#fff"
             },
             secondary: {
                 main: '#EA39B8',

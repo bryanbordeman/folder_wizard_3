@@ -1,2 +1,2 @@
 - fix ManagerPicker. Warning
-- address value needs to update when address option is closed.
+- work on clear function

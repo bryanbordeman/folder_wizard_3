@@ -3,7 +3,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
-import { Stack } from '@mui/material';
+import { FormControl, Stack } from '@mui/material';
 import CategoryList from '../json/projectCategoryList.json'
 import ProjectCategoryServices from '../services/ProjectCategory.services';
 import ProjectTypeServices from '../services/ProjectType.services';
@@ -69,7 +69,10 @@ export default function CategoryTypePickers(props) {
 
     return ( 
         <Stack direction='row' spacing={2}>
-            <div style={{width: '100%'}}>
+            <FormControl 
+                style={{width: '100%'}}
+                error={errors.project_category? true : false}
+            >
                 <InputLabel 
                     id="project-category"
                 >
@@ -94,9 +97,12 @@ export default function CategoryTypePickers(props) {
                 )
                     )}
                 </Select>
-                    {errors.category && <FormHelperText error={errors.category? true : false}>This is required!</FormHelperText>}
-            </div>
-            <div style={{width: '100%'}}>
+                    {errors.project_category && <FormHelperText error={errors.project_category? true : false}>This is required!</FormHelperText>}
+            </FormControl>
+            <FormControl 
+                style={{width: '100%'}}
+                error={errors.project_type? true : false}
+            >
             <InputLabel id="project-type">{category? "Project Type" : "Select Category First"}</InputLabel>
                 <Select
                     disabled={category? false: true}
@@ -118,8 +124,8 @@ export default function CategoryTypePickers(props) {
                 )
                     )}
                 </Select>
-                    {errors.type && <FormHelperText error={errors.type? true : false}>This is required!</FormHelperText>}
-            </div>
+                    {errors.project_type && <FormHelperText error={errors.project_type? true : false}>This is required!</FormHelperText>}
+            </FormControl>
         </Stack>
     );
 };

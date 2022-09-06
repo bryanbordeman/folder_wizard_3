@@ -8,10 +8,15 @@ import CategoryTypePickers from './CategoryTypePickers';
 import AddressPicker from './AddressPicker';
 import CustomerPicker from './CustomerPicker';
 import QuoteDataService from '../services/Quote.services';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import ConfirmationDialogQuote from './ConfirmationDialogQuote';
 
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props
     const [ clear, setClear ] = useState(false);
+    const [ isValid, setIsValid ] = React.useState(true);
+    const [ openConfirmation, setOpenConfirmation ] = React.useState(false)
     
     const initialValues = {
         is_active: true,
@@ -23,8 +28,8 @@ export default function OpportunityForm(props) {
         address:'',
         customers:[],
         contacts:[],
-        prevailing_rate:true,
-        travel_job:true,
+        prevailing_rate: false,
+        travel_job: false,
         notes:''
     }
 
@@ -64,7 +69,7 @@ export default function OpportunityForm(props) {
     const createQuote = () => {
         QuoteDataService.createQuote(values, token)
         .then(response => {
-            handleOpenSnackbar('success', 'New Address was created')
+            setOpenConfirmation(true);
         })
         .then(() => {
             handleClearInputs()
@@ -73,7 +78,57 @@ export default function OpportunityForm(props) {
             console.log(e);
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         })
-    }
+    };
+
+    const handleSubmit = () => {
+        setOpenConfirmation(true);
+        // createQuote();
+    };
+
+    const handleValidation = () => {
+        let formIsValid = true;
+
+        if(values.name === ''){
+            setErrors({...errors, name: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, name: null});
+            }, 3000);
+        }
+
+        else if(values.project_category === ''){
+            setErrors({...errors, project_category: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, project_category: null});
+            }, 3000);
+        }
+        else if(values.project_type === ''){
+            setErrors({...errors, project_type: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, project_type: null});
+            }, 3000);
+        }
+        else if(values.customers.length < 1){
+            setErrors({...errors, customers: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, customers: null});
+            }, 3000);
+        }
+
+        setIsValid(formIsValid)
+        setTimeout(() => {
+            setIsValid(true);
+        }, 3000);
+    return formIsValid ? handleSubmit() : null
+
+    };
 
     const handleInputValue = (e) => {
         const { name, value } = e.target;
@@ -99,6 +154,10 @@ export default function OpportunityForm(props) {
                     name='name'
                     label="Project Name"
                     onChange={handleInputValue}
+                    onInput = {(e) =>{
+                        e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
+                    }}
+                    inputProps={{ maxLength: 27 }}
                     value={values.name}
                     type="text"
                     fullWidth
@@ -106,6 +165,24 @@ export default function OpportunityForm(props) {
                     helperText={errors.name === null ? '' : errors.name}
                     error={errors.name? true : false}
                 />
+                <Stack direction="row" spacing={2}>
+                    <FormControlLabel
+                        onChange={() => {setValues({...values, travel_job: !values.travel_job})}}
+                        control={<Switch checked={values.travel_job} color="primary" />}
+                        id="travel_job"
+                        name="travel_job"
+                        label="Travel Job"
+                        value={values.travel_job}
+                    />
+                    <FormControlLabel
+                        onChange={() => {setValues({...values, prevailing_rate: !values.prevailing_rate})}}
+                        control={<Switch checked={values.prevailing_rate} color="primary" />}
+                        id="prevailing_rate"
+                        name="prevailing_rate"
+                        label="Prevailing Rate"
+                        value={values.prevailing_rate}
+                    />
+                </Stack>
                 <CategoryTypePickers
                     token={token}
                     user={user}
@@ -138,6 +215,7 @@ export default function OpportunityForm(props) {
                     token={token} 
                     handleOpenSnackbar={handleOpenSnackbar}
                     values={values}
+                    errors={errors}
                     setValues={setValues}
                     clear={clear}
                     setClear={setClear}
@@ -156,13 +234,18 @@ export default function OpportunityForm(props) {
                         size='large'
                     >Clear</Button>
                     <Button 
-                        onClick={createQuote}
+                        onClick={handleValidation}
                         variant='contained' 
                         size='large' 
                         color='secondary' 
                     >Submit</Button>
                 </Stack>
             </Stack>
+            <ConfirmationDialogQuote
+                open={openConfirmation}
+                setOpen={setOpenConfirmation}
+                values={values}
+            />
         </Box>
     );
 };

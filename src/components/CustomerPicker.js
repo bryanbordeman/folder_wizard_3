@@ -15,6 +15,7 @@ import Avatar from '@mui/material/Avatar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Divider } from '@mui/material';
 import CustomerDialog from './CustomerDialog';
+import { FormControl } from '@mui/material';
 
 
 function stringToColor(string) {
@@ -47,7 +48,7 @@ function stringAvatar(name) {
 }
 
 export default function CustomerPicker(props) {
-    const { token, handleOpenSnackbar, values, setValues, clear, setClear} = props
+    const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear} = props
     const [ customer, setCustomer ] = useState('');
     const [ editCustomer, setEditCustomer ] = useState('');
     const [ customers, setCustomers ] = useState([]);
@@ -131,7 +132,9 @@ export default function CustomerPicker(props) {
     return (
         <Stack>
         <Stack direction='row' spacing={1}>
-            <div style={{width: '100%'}}>
+            <FormControl 
+                style={{width: '100%'}}
+            >
                 <Autocomplete
                     freeSolo
                     id="customer"
@@ -148,14 +151,19 @@ export default function CustomerPicker(props) {
                             label="Customer(s)"
                             // value={customer}
                             onChange={handleNewCustomer}
+                            onInput = {(e) =>{
+                                e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
+                            }}
                             InputProps={{
                             ...params.InputProps,
                             type: 'search',
                             }}
+                            helperText={errors.customers === null ? '' : errors.customers}
+                            error={errors.customers? true : false}
                         />
                     )}
                 />
-            </div>
+            </FormControl>
             <IconButton 
                 sx={{top: '7px', maxHeight: '2.75rem', border: 1, borderColor: "#1BA2F6 !important" }}
                 color="primary" 

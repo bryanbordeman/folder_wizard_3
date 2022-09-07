@@ -81,8 +81,8 @@ export default function OpportunityForm(props) {
     };
 
     const handleSubmit = () => {
-        setOpenConfirmation(true);
-        // createQuote();
+        // setOpenConfirmation(true);
+        createQuote();
     };
 
     const handleValidation = () => {

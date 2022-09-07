@@ -83,7 +83,7 @@ export default function CategoryTypePickers(props) {
                     labelId="project-category"
                     id="project-category"
                     defaultValue={''}
-                    value={category.id}
+                    value={category}
                     label="Project Category"
                     onChange={hangleChangeCategory}
                 >
@@ -110,7 +110,7 @@ export default function CategoryTypePickers(props) {
                     labelId="project-type"
                     id="project-type"
                     defaultValue={''}
-                    value={values.type}
+                    value={type}
                     label={category? "Project Type" : "Select Category First"}
                     onChange={hangleChangeType}
                 >

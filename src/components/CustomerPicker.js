@@ -63,6 +63,8 @@ export default function CustomerPicker(props) {
     useEffect(()=> {
         if(clear){
             setCustomers([]);
+            // setNewCustomer('');
+            // setCustomer('');
             setClear(false);
         };
     },[clear])

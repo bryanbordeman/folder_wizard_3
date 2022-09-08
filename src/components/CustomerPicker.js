@@ -17,11 +17,9 @@ import { Divider } from '@mui/material';
 import CustomerDialog from './CustomerDialog';
 import { FormControl } from '@mui/material';
 
-
 function stringToColor(string) {
     let hash = 0;
     let i;
-
     /* eslint-disable no-bitwise */
     for (i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
@@ -36,7 +34,8 @@ function stringToColor(string) {
     /* eslint-enable no-bitwise */
 
     return color;
-}
+};
+
 function stringAvatar(name) {
     return {
         sx: {
@@ -45,7 +44,7 @@ function stringAvatar(name) {
         },
         children: `${name.split(' ')[0][0].toUpperCase()}`,
     };
-}
+};
 
 export default function CustomerPicker(props) {
     const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear} = props
@@ -58,28 +57,29 @@ export default function CustomerPicker(props) {
 
     useEffect(()=> {
         retrieveCompanies();
-    },[])
+    },[]);
 
     useEffect(()=> {
         if(clear){
             setCustomers([]);
-            // setNewCustomer('');
-            // setCustomer('');
+            setCustomer('');
+            setNewCustomer('');
             setClear(false);
         };
-    },[clear])
+    },[clear]);
 
     useEffect(()=> {
         if(newCustomer){
-        const data = (companies.find(element => element.name === newCustomer))
-        setCustomers(oldArray => [...oldArray, data.id]);
-        setNewCustomer('');
+            const data = (companies.find(element => element.name === newCustomer))
+            setCustomers(oldArray => [...oldArray, data.id]);
+            setNewCustomer('');
+            setCustomer('');
         }
-    },[companies])
+    },[companies]);
 
     useEffect(() => {
         setValues({...values, customers: customers})
-    }, [customers])
+    }, [customers]);
     
     const retrieveCompanies= () => {
         CompanyServices.getAllShort(token)
@@ -105,13 +105,15 @@ export default function CustomerPicker(props) {
     };
 
     const addCustomer = () => {
-        if (customer)
-        setCustomers(oldArray => [...oldArray, customer]);
-        setCustomer('');
+        if (customer){
+            let customerObj = companies.find(item => item.name === customer);
+            setCustomers(oldArray => [...oldArray, customerObj.id]);
+            setCustomer('');
+        };
     };
 
     const removeCustomer = (id) => {
-        setCustomers(customers.filter(item => item !== id))
+        setCustomers(customers.filter(item => item !== id));
     };
 
     const handleNewCustomer = (e) => {
@@ -127,7 +129,7 @@ export default function CustomerPicker(props) {
 
     const handleClickOpen = (customerId) => {
         setOpen(true);
-        const customerData = (companies.find(element => element.id === customerId))
+        const customerData = (companies.find(element => element.id === customerId));
         setEditCustomer(customerData);
     };
 
@@ -141,17 +143,16 @@ export default function CustomerPicker(props) {
                     freeSolo
                     id="customer"
                     disableClearable
-                    onChange={(event, newValue) => {
-                        setCustomer(newValue.id)}
+                    onInputChange={(event, newValue) => {
+                        setCustomer(newValue)}
                     }
-                    // options={companies.map((option) => option)}
+                    inputValue={customer}
                     options={companies}
                     getOptionLabel={(option) => option.name}
                     renderInput={(params) => (
                         <TextField
                             {...params}
                             label="Customer(s)"
-                            // value={customer}
                             onChange={handleNewCustomer}
                             onInput = {(e) =>{
                                 e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
@@ -170,7 +171,7 @@ export default function CustomerPicker(props) {
                 sx={{top: '7px', maxHeight: '2.75rem', border: 1, borderColor: "#1BA2F6 !important" }}
                 color="primary" 
                 aria-label="back"
-                onClick={newCustomer && !customer? createNewCustomer : addCustomer}
+                onClick={customer && !newCustomer? addCustomer : createNewCustomer}
             >
                 <AddIcon />
             </IconButton>
@@ -202,7 +203,6 @@ export default function CustomerPicker(props) {
             
                 <ListItemText
                     primary={companies.find(item => item.id === customerId).name}
-                    // secondary={'Secondary text'}
                 />
                 </ListItemButton>
                 </ListItem>
@@ -221,24 +221,4 @@ export default function CustomerPicker(props) {
         </Box>
         </Stack>
     );
-    }
-
-    // const companies =
-    // [
-    //     {
-    //         "id": 1,
-    //         "name": "National Shielding"
-    //     },
-    //     {
-    //         "id": 2,
-    //         "name": "Global Partners in Shielding"
-    //     },
-    //     {
-    //         "id": 3,
-    //         "name": "B.R. Fries & Associates LLC"
-    //     },
-    //     {
-    //         "id": 4,
-    //         "name": "Global Shielding LLC"
-    //     }
-    // ]
+};

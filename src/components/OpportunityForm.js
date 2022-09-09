@@ -11,12 +11,14 @@ import QuoteDataService from '../services/Quote.services';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import ConfirmationDialogQuote from './ConfirmationDialogQuote';
+import VerificationDialogQuote from './VerificationDialogQuote'
 
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props
     const [ clear, setClear ] = useState(false);
     const [ isValid, setIsValid ] = React.useState(true);
-    const [ openConfirmation, setOpenConfirmation ] = React.useState(false)
+    const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
+    const [ openVerification, setOpenVerification ] = React.useState(false);
     
     const initialValues = {
         is_active: true,
@@ -67,22 +69,24 @@ export default function OpportunityForm(props) {
     }
 
     const createQuote = () => {
-        QuoteDataService.createQuote(values, token)
-        .then(response => {
-            setOpenConfirmation(true);
-        })
-        .then(() => {
-            handleClearInputs()
-        })
-        .catch( e => {
-            console.log(e);
-            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
-        })
+        setOpenVerification(false);
+        setOpenConfirmation(true);
+        // QuoteDataService.createQuote(values, token)
+        // .then(response => {
+        //     setOpenConfirmation(true);
+        // })
+        // .then(() => {
+        //     handleClearInputs()
+        // })
+        // .catch( e => {
+        //     console.log(e);
+        //     handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        // })
     };
 
     const handleSubmit = () => {
-        // setOpenConfirmation(true);
-        createQuote();
+        setOpenVerification(true);
+        // createQuote();
     };
 
     const handleValidation = () => {
@@ -244,6 +248,12 @@ export default function OpportunityForm(props) {
             <ConfirmationDialogQuote
                 open={openConfirmation}
                 setOpen={setOpenConfirmation}
+                values={values}
+            />
+            <VerificationDialogQuote
+                open={openVerification}
+                setOpen={setOpenVerification}
+                createQuote={createQuote}
                 values={values}
             />
         </Box>

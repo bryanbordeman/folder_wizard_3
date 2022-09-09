@@ -6,6 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
+// import successIndicator from '../assets/success_indicator.gif';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -14,7 +15,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     export default function ConfirmationDialogQuote(props) {
     const { open, setOpen, values } = props
 
-
     const handleClose = () => {
         setOpen(false);
     };
@@ -22,6 +22,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return (
         <div>
         <Dialog
+            fullScreen
             open={open}
             TransitionComponent={Transition}
             keepMounted
@@ -30,13 +31,15 @@ const Transition = React.forwardRef(function Transition(props, ref) {
         >
             <DialogTitle>{values.number} was created</DialogTitle>
             <DialogContent>
-            <DialogContentText id="alert-dialog-slide-description">
-                Add Create Quote Task?
-            </DialogContentText>
+                <DialogContentText id="alert-dialog-slide-description">
+                    Add Create Quote Task?
+                </DialogContentText>
+                {/* <img src={successIndicator} alt="Indicator" /> */}
             </DialogContent>
             <DialogActions>
-            <Button onClick={handleClose}>Disagree</Button>
-            <Button onClick={handleClose}>Agree</Button>
+                <Button variant="contained" onClick={handleClose}>Open Quote</Button>
+                <Button variant="outlined" onClick={handleClose}>Create Another Quote</Button>
+                <Button variant="outlined" color='error' onClick={handleClose}>Close Program</Button>
             </DialogActions>
         </Dialog>
         </div>

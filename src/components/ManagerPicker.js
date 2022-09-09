@@ -18,13 +18,13 @@ export default function ManagerPicker(props) {
             setValues({...values, manager: user.id})
             setClear(false);
         };
-    },[clear])
+    },[clear]);
 
     useEffect(() => {
         setManagerId(user.id);
         setValues({...values, manager: user.id})
         retrieveManagers();
-    },[])
+    },[]);
 
     const retrieveManagers = () => {
         UserService.getUsers(token)
@@ -58,7 +58,7 @@ export default function ManagerPicker(props) {
                 fullWidth
                 labelId="manager"
                 id="manager"
-                defaultValue={""}
+                // defaultValue={user.id}
                 value={managerId}
                 label="Manager"
                 onChange={hangleChangeManager}

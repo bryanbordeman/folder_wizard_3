@@ -5,15 +5,17 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-// import successIndicator from '../assets/success_indicator.gif';
+import Transition from './DialogTransistion'
+import { Stack, Box } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import  Divider from '@mui/material/Divider';
+import AddTaskSharpIcon from '@mui/icons-material/AddTaskSharp';
+import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-    });
-
-    export default function ConfirmationDialogQuote(props) {
+export default function ConfirmationDialogQuote(props) {
     const { open, setOpen, values } = props
+    const [ isCreated, setIsCreated ] = React.useState('');
+
 
     const handleClose = () => {
         setOpen(false);
@@ -29,17 +31,64 @@ const Transition = React.forwardRef(function Transition(props, ref) {
             onClose={handleClose}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>{values.number} was created</DialogTitle>
+            <DialogTitle variant='h3'>Confirmation</DialogTitle>
+            <Divider
+                sx={{mr:3, ml:3, mb:1}}/>
             <DialogContent>
-                <DialogContentText id="alert-dialog-slide-description">
-                    Add Create Quote Task?
-                </DialogContentText>
-                {/* <img src={successIndicator} alt="Indicator" /> */}
+                <Stack>
+                    {isCreated.database ?
+                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                        <AddTaskSharpIcon fontSize='large' color='success'/>
+                            <Typography variant="h5" gutterBottom>
+                                Database record created
+                            </Typography>
+                    </Stack>
+                    :
+                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                        <ErrorOutlineSharpIcon fontSize='large' color='error'/> 
+                            <Typography variant="h5" gutterBottom>
+                                Database record was not created
+                            </Typography>
+                    </Stack>
+                    }
+                    {isCreated.task ?
+                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                        <AddTaskSharpIcon fontSize='large' color='success'/>
+                            <Typography variant="h5" gutterBottom>
+                                Task created
+                            </Typography>
+                    </Stack>
+                    :
+                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                        <ErrorOutlineSharpIcon fontSize='large' color='error'/> 
+                            <Typography variant="h5" gutterBottom>
+                                Task was not created
+                            </Typography>
+                    </Stack>
+                    }
+                    {isCreated.folder ?
+                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                        <AddTaskSharpIcon fontSize='large' color='success'/>
+                            <Typography variant="h5" gutterBottom>
+                                Folder created
+                            </Typography>
+                    </Stack>
+                    :
+                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                        <ErrorOutlineSharpIcon fontSize='large' color='error'/> 
+                            <Typography variant="h5" gutterBottom>
+                                Folder was not created
+                            </Typography>
+                    </Stack>
+                    }
+                </Stack>
             </DialogContent>
+            <Divider
+                sx={{mr:3, ml:3, mb:1}}/>
             <DialogActions>
-                <Button variant="contained" onClick={handleClose}>Open Quote</Button>
-                <Button variant="outlined" onClick={handleClose}>Create Another Quote</Button>
                 <Button variant="outlined" color='error' onClick={handleClose}>Close Program</Button>
+                <Button variant="outlined" onClick={handleClose}>Create Another Quote</Button>
+                <Button variant="contained" onClick={handleClose}>Open Quote</Button>
             </DialogActions>
         </Dialog>
         </div>

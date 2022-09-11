@@ -33,7 +33,7 @@ export default function VerificationDialogQuote(props) {
             onClose={handleClose}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>Are you sure you want to create Opportunity {values.number}?</DialogTitle>
+            <DialogTitle>Create Opportunity {values.number}?</DialogTitle>
             <DialogContent>
                 <FormControlLabel
                     onChange={() => {setIsCreateTask(!isCreateTask)}}

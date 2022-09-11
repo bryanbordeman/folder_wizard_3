@@ -16,7 +16,6 @@ export default function ConfirmationDialogQuote(props) {
     const { open, setOpen, values } = props
     const [ isCreated, setIsCreated ] = React.useState('');
 
-
     const handleClose = () => {
         setOpen(false);
     };

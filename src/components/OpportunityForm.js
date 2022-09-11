@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { Stack, Box } from '@mui/material';
@@ -24,6 +27,7 @@ export default function OpportunityForm(props) {
         is_active: true,
         number: '',
         name:'',
+        due: new Date(),
         project_category:'',
         project_type:'',
         manager: user.id,
@@ -39,6 +43,7 @@ export default function OpportunityForm(props) {
 
     const initialErrors = {
         name:'',
+        due: '',
         project_category:'',
         project_type:'',
         manager: '',
@@ -98,6 +103,15 @@ export default function OpportunityForm(props) {
             setTimeout(() => {
                 formIsValid = true;
                 setErrors({...errors, name: null});
+            }, 3000);
+        }
+
+        else if(values.due === null){
+            setErrors({...errors, due: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, due: null});
             }, 3000);
         }
 
@@ -170,7 +184,20 @@ export default function OpportunityForm(props) {
                     error={errors.name? true : false}
                 />
                 <Stack direction="row" spacing={2}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                            label="Due Date"
+                            id="due"
+                            name="due"
+                            value={values.due}
+                            onChange={(date) => {setValues({...values, due: date})}}
+                            renderInput={(params) => <TextField {...params} helperText={errors.due === null ? '' : errors.due}
+                            error={errors.due? true : false} />}
+                            fullWidth
+                        />
+                    </LocalizationProvider>
                     <FormControlLabel
+                        sx={{width: '33%'}}
                         onChange={() => {setValues({...values, travel_job: !values.travel_job})}}
                         control={<Switch checked={values.travel_job} color="primary" />}
                         id="travel_job"
@@ -179,6 +206,7 @@ export default function OpportunityForm(props) {
                         value={values.travel_job}
                     />
                     <FormControlLabel
+                        sx={{width: '33%'}}
                         onChange={() => {setValues({...values, prevailing_rate: !values.prevailing_rate})}}
                         control={<Switch checked={values.prevailing_rate} color="primary" />}
                         id="prevailing_rate"

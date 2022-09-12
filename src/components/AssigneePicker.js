@@ -12,7 +12,6 @@ export default function AssigneePicker(props) {
 
     React.useEffect(() => {
         retrieveEmployees();
-        setValue(user);
     },[open])
 
  
@@ -20,12 +19,14 @@ export default function AssigneePicker(props) {
         UserService.getUsers(token)
         .then(response => {
             const obj = response.data;
-            const managersList = [];
-            obj.map(manager => (
-                manager.groups.filter(group => (group.name === 'SALES')).length > 0 ? 
-                managersList.push(manager) : ''
+            const assigneesList = [];
+            obj.map(assignee => (
+                assignee.groups.filter(group => (group.name === 'SALES')).length > 0 ? 
+                assigneesList.push(assignee) : ''
             ))
-            setAssignees(managersList);
+            setAssignees(assigneesList);
+            setValue(user);
+            handleChangeAssignee(user.id)
         })
         .catch( e => {
             console.log(e);
@@ -34,14 +35,14 @@ export default function AssigneePicker(props) {
 
     const handleInputValue = (newValue) => {
         setValue(newValue);
-        handleChangeAssignee(newValue);
+        handleChangeAssignee(newValue.id);
     };
 
     return (
         <Autocomplete
             disabled={isCreateTask? false: true}
             clearOnEscape
-            disablePortal
+            // disablePortal
             fullWidth
             autoSelect = {false}
             blurOnSelect = 'touch'
@@ -58,15 +59,16 @@ export default function AssigneePicker(props) {
             isOptionEqualToValue={(option, newValue) => {
                 return option.id === newValue.id;
             }}
-            renderInput={(params) => <TextField 
-                                    helperText={errors && errors.assignee? errors.assignee : ''}
-                                    error={errors && errors.assignee? true : false}
-                                    {...params} 
-                                    // value={employee}
-                                    id="assignee"
-                                    name='assignee'
-                                    label="Search Assignees" 
-                                    />}
+            renderInput={(params) => 
+                <TextField 
+                    helperText={errors && errors.assignee? errors.assignee : ''}
+                    error={errors && errors.assignee? true : false}
+                    {...params} 
+                    id="assignee"
+                    name='assignee'
+                    label="Search Assignees" 
+                />
+                }
         />
     );
 };

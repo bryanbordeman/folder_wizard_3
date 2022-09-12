@@ -15,15 +15,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CloseIcon from '@mui/icons-material/Close';
 
-
-
-
-
-
-
 export default function VerificationDialogQuote(props) {
     const { user, token } = props
-    const { open, setOpen, values, createQuote } = props
+    const { open, setOpen, values, createQuote } = props;
     const [ isCreateTask, setIsCreateTask ] = React.useState(true);
     const [ isValid, setIsValid ] = React.useState(true);
 
@@ -45,12 +39,12 @@ export default function VerificationDialogQuote(props) {
         updated: new Date()
     };
 
-    const [ task, setTask ] = React.useState('')
-    const [ errors, setErrors ] = React.useState('')
+    const [ task, setTask ] = React.useState('');
+    const [ errors, setErrors ] = React.useState('');
 
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
         setTask(initialFormValues)
-    },[open])
+    },[open]);
 
     const handleClose = () => {
         setOpen(false);
@@ -62,7 +56,7 @@ export default function VerificationDialogQuote(props) {
 
     const handleValidation = () => {
 
-    }
+    };
 
     const handleInputValue = (e) => {
         const { name, value } = e.target;
@@ -75,10 +69,10 @@ export default function VerificationDialogQuote(props) {
     const handleChangeAssignee = (newValue) => {
         if(newValue){
             setTask({
-            ...values,
-            assignee: newValue.id
+            ...task,
+            assignee: newValue
             });
-        }
+        };
     };
 
     return (
@@ -186,4 +180,4 @@ export default function VerificationDialogQuote(props) {
         </Dialog>
     </div>
     );
-}
+};

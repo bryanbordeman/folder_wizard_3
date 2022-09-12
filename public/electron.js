@@ -1,6 +1,6 @@
 // ./public/electron.js
 const path = require('path');
-const { app, BrowserWindow, session } = require('electron');
+const { app, BrowserWindow, session, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
 const os = require('os')
 
@@ -18,7 +18,7 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js')
         },
         icon: path.join(__dirname, './icons/icon_win.png')
-    })
+    });
 
     // and load the index.html of the app.
     // win.loadFile("index.html");

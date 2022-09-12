@@ -279,6 +279,8 @@ export default function OpportunityForm(props) {
                 values={values}
             />
             <VerificationDialogQuote
+                user={user}
+                token={token}
                 open={openVerification}
                 setOpen={setOpenVerification}
                 createQuote={createQuote}

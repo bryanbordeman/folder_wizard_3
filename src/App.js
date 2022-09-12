@@ -8,6 +8,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ModeSwitch from './components/ModeSwitch';
 
+// const { ipcRenderer } = window.require('electron');
+
 export default function App() {
     const [ user, setUser ] = useState(JSON.parse(localStorage.getItem('user')) || {})
     const [ token, setToken ] = useState(localStorage.getItem('token') || null)

@@ -40,7 +40,7 @@ export default function ManagerPicker(props) {
         .catch( e => {
             console.log(e);
         })
-    }
+    };
 
     const hangleChangeManager = (e) => {
         setManagerId(e.target.value);

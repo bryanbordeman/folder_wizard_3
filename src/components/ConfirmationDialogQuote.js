@@ -12,6 +12,8 @@ import  Divider from '@mui/material/Divider';
 import AddTaskSharpIcon from '@mui/icons-material/AddTaskSharp';
 import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
 
+
+
 export default function ConfirmationDialogQuote(props) {
     const { open, setOpen, values } = props
     const [ isCreated, setIsCreated ] = React.useState('');
@@ -85,7 +87,7 @@ export default function ConfirmationDialogQuote(props) {
             <Divider
                 sx={{mr:3, ml:3, mb:1}}/>
             <DialogActions>
-                <Button variant="outlined" color='error' onClick={handleClose}>Close Program</Button>
+                <Button variant="outlined" color='error' onClick={() => {window.close()}}>Close Program</Button>
                 <Button variant="outlined" onClick={handleClose}>Create Another Quote</Button>
                 <Button variant="contained" onClick={handleClose}>Open Quote</Button>
             </DialogActions>

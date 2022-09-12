@@ -4,17 +4,53 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import Transition from './DialogTransistion'
 import  Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import ManagerPicker from './ManagerPicker';
+import AssigneePicker from './AssigneePicker';
+import { Stack, TextField,IconButton} from '@mui/material';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import CloseIcon from '@mui/icons-material/Close';
+
+
+
+
+
+
 
 export default function VerificationDialogQuote(props) {
+    const { user, token } = props
     const { open, setOpen, values, createQuote } = props
-    const [ task, setTask ] = React.useState('');
     const [ isCreateTask, setIsCreateTask ] = React.useState(true);
+    const [ isValid, setIsValid ] = React.useState(true);
+
+    const initialFormValues = {
+        created_by: user.id,
+        assignee: user.id,
+        tasklist: 3,
+        title:'Proposal / Estimate',
+        notes:'Task generated from Folder Wizard',
+        due: values.due,
+        subtasks:[],
+        project:'',
+        quote:'',
+        created: new Date(),
+        is_complete: false,
+        is_deleted: false,
+        is_read: false,
+        completed: new Date(),
+        updated: new Date()
+    };
+
+    const [ task, setTask ] = React.useState('')
+    const [ errors, setErrors ] = React.useState('')
+
+    React.useEffect(() => {
+        setTask(initialFormValues)
+    },[open])
 
     const handleClose = () => {
         setOpen(false);
@@ -24,39 +60,130 @@ export default function VerificationDialogQuote(props) {
         createQuote();
     };
 
+    const handleValidation = () => {
+
+    }
+
+    const handleInputValue = (e) => {
+        const { name, value } = e.target;
+        setTask({
+        ...task,
+        [name]: value
+        });
+    };
+
+    const handleChangeAssignee = (newValue) => {
+        if(newValue){
+            setTask({
+            ...values,
+            assignee: newValue.id
+            });
+        }
+    };
+
     return (
         <div>
-        <Dialog
-            open={open}
-            TransitionComponent={Transition}
-            keepMounted
-            onClose={handleClose}
-            aria-describedby="alert-dialog-slide-description"
-        >
-            <DialogTitle>Create Opportunity {values.number}?</DialogTitle>
+            <Dialog
+                TransitionComponent={Transition}
+                fullWidth
+                fullScreen
+                open={open}
+                onClose={handleClose}
+            >
+                <DialogTitle>
+                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <div>
+                            Create Opportunity {values.number}?
+                        </div>
+                        <div>
+                        <IconButton 
+                            edge="end" 
+                            aria-label="close"
+                            onClick={handleClose}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                        </div> 
+                    </div>
+                </DialogTitle>
+                <Divider/>
             <DialogContent>
-                <FormControlLabel
-                    onChange={() => {setIsCreateTask(!isCreateTask)}}
-                    control={<Switch checked={isCreateTask} color="primary" />}
-                    id="create_task"
-                    name="create_task"
-                    label="Create Task?"
-                    value={isCreateTask}
-                />
-                
-                <DialogContentText id="alert-dialog-slide-description">
-                    Add Create Quote Task?
-                </DialogContentText>
-                {/* <img src={successIndicator} alt="Indicator" /> */}
+                <Stack direction="column" spacing={2}>
+                    <FormControlLabel
+                        onChange={() => {setIsCreateTask(!isCreateTask)}}
+                        control={<Switch checked={isCreateTask} color="primary" />}
+                        id="create_task"
+                        name="create_task"
+                        label="Create Task?"
+                        value={isCreateTask}
+                    />
+                    <AssigneePicker
+                        isCreateTask={isCreateTask}
+                        errors={errors}
+                        user={user}
+                        token={token}
+                        open={open}
+                        handleChangeAssignee={handleChangeAssignee}
+                    />
+                    
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                            disabled={isCreateTask? false: true}
+                            label="Due Date"
+                            id="due"
+                            name="due"
+                            value={task.due}
+                            onChange={(date) => {setTask({...task, due: date})}}
+                            renderInput={(params) => <TextField {...params} helperText={errors.due === null ? '' : errors.due}
+                            error={errors.due? true : false} />}
+                            fullWidth
+                        />
+                    </LocalizationProvider>
+                    <TextField
+                        disabled={isCreateTask? false: true}
+                        autoFocus={false}
+                        margin="dense"
+                        id="title"
+                        name='title'
+                        label="Title"
+                        onChange={handleInputValue}
+                        value={task.title}
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        helperText={errors.title === null ? '' : errors.title}
+                        error={errors.title? true : false}
+                    />
+                    <TextField
+                        disabled={isCreateTask? false: true}
+                        autoFocus={false}
+                        id="notes"
+                        name="notes"
+                        label="Task"
+                        onChange={handleInputValue}
+                        value={task.notes}
+                        multiline
+                        rows={4}
+                        helperText={errors.notes === null ? '' : errors.notes}
+                        error={errors.notes? true : false}
+                    />
+                </Stack>
             </DialogContent>
-            
-            <Divider
-                sx={{mr:3, ml:3, mb:1}}/>
             <DialogActions>
-                <Button variant="outlined" color='error' onClick={handleClose}>Cancel</Button>
-                <Button variant="contained" color='success' onClick={handleCreateQuote}>Create</Button>
+            <Button 
+                variant='outlined' 
+                onClick={handleClose}
+            >Cancel</Button>
+            <Button 
+                variant='contained' 
+                onClick={handleValidation}
+                // onClick={handleValidation}
+                color={`${isValid? 'primary' : 'error'}`}
+            >
+                Create
+            </Button>
             </DialogActions>
         </Dialog>
-        </div>
+    </div>
     );
 }

@@ -14,11 +14,13 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CloseIcon from '@mui/icons-material/Close';
+import ConfirmationDialogQuote from './ConfirmationDialogQuote';
 
 export default function VerificationDialogQuote(props) {
     const { user, token } = props
-    const { open, setOpen, values, createQuote } = props;
+    const { open, setOpen, values, createQuote, getQuotes } = props;
     const [ isCreateTask, setIsCreateTask ] = React.useState(true);
+    const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
     const [ isValid, setIsValid ] = React.useState(true);
 
     const initialFormValues = {
@@ -39,7 +41,7 @@ export default function VerificationDialogQuote(props) {
         updated: new Date()
     };
 
-    const [ task, setTask ] = React.useState('');
+    const { task, setTask } = props;
     const [ errors, setErrors ] = React.useState('');
 
     React.useLayoutEffect(() => {
@@ -55,7 +57,9 @@ export default function VerificationDialogQuote(props) {
     };
 
     const handleValidation = () => {
-
+        handleCreateQuote();
+        setOpenConfirmation(true);
+        setOpen(false);
     };
 
     const handleInputValue = (e) => {
@@ -178,6 +182,15 @@ export default function VerificationDialogQuote(props) {
             </Button>
             </DialogActions>
         </Dialog>
+        <ConfirmationDialogQuote
+            open={openConfirmation}
+            isCreateTask={isCreateTask}
+            createQuote={createQuote}
+            task={task}
+            setOpen={setOpenConfirmation}
+            values={values}
+            getQuotes={getQuotes}
+        />
     </div>
     );
 };

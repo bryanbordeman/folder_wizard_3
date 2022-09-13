@@ -11,17 +11,18 @@ import CategoryTypePickers from './CategoryTypePickers';
 import AddressPicker from './AddressPicker';
 import CustomerPicker from './CustomerPicker';
 import QuoteDataService from '../services/Quote.services';
+import TaskDataService from '../services/Task.services'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import ConfirmationDialogQuote from './ConfirmationDialogQuote';
 import VerificationDialogQuote from './VerificationDialogQuote'
 
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props
     const [ clear, setClear ] = useState(false);
     const [ isValid, setIsValid ] = React.useState(true);
-    const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
     const [ openVerification, setOpenVerification ] = React.useState(false);
+    const [ newQuote, setNewQuote ] = React.useState('');
+    const [ task, setTask ] = React.useState('');
     
     const initialValues = {
         is_active: true,
@@ -74,19 +75,46 @@ export default function OpportunityForm(props) {
     }
 
     const createQuote = () => {
-        setOpenVerification(false);
-        setOpenConfirmation(true);
-        // QuoteDataService.createQuote(values, token)
-        // .then(response => {
-        //     setOpenConfirmation(true);
+        QuoteDataService.createQuote(values, token)
+        .then(response => {
+        })
+        .then(() => {
+            getQuotes();
+        })
+        .then(() => {
+            handleClearInputs()
+        })
+        .catch( e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        })
+    };
+
+    const getQuotes = () => {
+        QuoteDataService.getAll(token)
+        .then(response => {
+            setNewQuote(response.data[0].id);
+            setTask({...task, quote : newQuote});
+        })
+        // .then(() =>{
+        //     if(newQuote)
+        //         createTask(task);
         // })
-        // .then(() => {
-        //     handleClearInputs()
-        // })
-        // .catch( e => {
-        //     console.log(e);
-        //     handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
-        // })
+        .catch( e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        })
+    };
+
+    const createTask = (task) => {
+        TaskDataService.createTask(task, token)
+            .then(response => {
+                handleOpenSnackbar('success', 'Your Task has been created')
+            })
+            .catch(e => {
+                console.log(e);
+                handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+            });
     };
 
     const handleSubmit = () => {
@@ -273,11 +301,7 @@ export default function OpportunityForm(props) {
                     >Submit</Button>
                 </Stack>
             </Stack>
-            <ConfirmationDialogQuote
-                open={openConfirmation}
-                setOpen={setOpenConfirmation}
-                values={values}
-            />
+            
             <VerificationDialogQuote
                 user={user}
                 token={token}
@@ -285,6 +309,9 @@ export default function OpportunityForm(props) {
                 setOpen={setOpenVerification}
                 createQuote={createQuote}
                 values={values}
+                getQuotes={getQuotes}
+                task={task}
+                setTask={setTask}
             />
         </Box>
     );

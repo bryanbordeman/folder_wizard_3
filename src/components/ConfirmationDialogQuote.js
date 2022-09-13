@@ -15,8 +15,13 @@ import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
 
 
 export default function ConfirmationDialogQuote(props) {
-    const { open, setOpen, values } = props
+
+    const { open, setOpen, values, task, createQuote, isCreateTask, getQuotes } = props
     const [ isCreated, setIsCreated ] = React.useState('');
+
+    React.useEffect(() => {
+        getQuotes();
+    },[open])
 
     const handleClose = () => {
         setOpen(false);

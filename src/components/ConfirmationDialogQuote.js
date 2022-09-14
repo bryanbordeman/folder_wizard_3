@@ -20,7 +20,7 @@ export default function ConfirmationDialogQuote(props) {
     const [ isCreated, setIsCreated ] = React.useState('');
 
     React.useEffect(() => {
-        getQuotes();
+        // getQuotes();
     },[open])
 
     const handleClose = () => {

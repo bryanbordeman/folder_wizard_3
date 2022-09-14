@@ -17,9 +17,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import ConfirmationDialogQuote from './ConfirmationDialogQuote';
 
 export default function VerificationDialogQuote(props) {
-    const { user, token } = props
+    const { user, token } = props;
     const { open, setOpen, values, createQuote, getQuotes } = props;
-    const [ isCreateTask, setIsCreateTask ] = React.useState(true);
+    const { isCreateTask, setIsCreateTask } = props;
     const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
     const [ isValid, setIsValid ] = React.useState(true);
 
@@ -42,7 +42,12 @@ export default function VerificationDialogQuote(props) {
     };
 
     const { task, setTask } = props;
-    const [ errors, setErrors ] = React.useState('');
+
+    const initialErrors = {
+        title:'',
+        notes: '',
+    };
+    const [ errors, setErrors ] = React.useState(initialErrors);
 
     React.useLayoutEffect(() => {
         setTask(initialFormValues)
@@ -57,10 +62,39 @@ export default function VerificationDialogQuote(props) {
     };
 
     const handleValidation = () => {
+        let formIsValid = true;
+
+        if(isCreateTask){
+            if(task.title === ''){
+                setErrors({...errors, title: 'Required field'});
+                formIsValid = false;
+                setTimeout(() => {
+                    formIsValid = true;
+                    setErrors({...errors, title: null});
+                }, 3000);
+            }
+            else if(task.notes === ''){
+                setErrors({...errors, notes: 'Required field'});
+                formIsValid = false;
+                setTimeout(() => {
+                    formIsValid = true;
+                    setErrors({...errors, notes: null});
+                }, 3000);
+            }
+
+            setIsValid(formIsValid)
+            setTimeout(() => {
+                setIsValid(true);
+            }, 3000);
+        };
+        return formIsValid ? handleSubmit() : null
+    };
+
+    const handleSubmit = () => {
         handleCreateQuote();
         setOpenConfirmation(true);
         setOpen(false);
-    };
+    }
 
     const handleInputValue = (e) => {
         const { name, value } = e.target;
@@ -176,7 +210,7 @@ export default function VerificationDialogQuote(props) {
                 variant='contained' 
                 onClick={handleValidation}
                 // onClick={handleValidation}
-                color={`${isValid? 'primary' : 'error'}`}
+                color={`${isValid? 'secondary' : 'error'}`}
             >
                 Create
             </Button>

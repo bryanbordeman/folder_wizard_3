@@ -17,11 +17,11 @@ import Switch from '@mui/material/Switch';
 import VerificationDialogQuote from './VerificationDialogQuote'
 
 export default function OpportunityForm(props) {
-    const { token, user, handleOpenSnackbar } = props
+    const { token, user, handleOpenSnackbar } = props;
     const [ clear, setClear ] = useState(false);
     const [ isValid, setIsValid ] = React.useState(true);
     const [ openVerification, setOpenVerification ] = React.useState(false);
-    const [ newQuote, setNewQuote ] = React.useState('');
+    const [ isCreateTask, setIsCreateTask ] = React.useState(true);
     const [ task, setTask ] = React.useState('');
     
     const initialValues = {
@@ -38,7 +38,7 @@ export default function OpportunityForm(props) {
         prevailing_rate: false,
         travel_job: false,
         notes:''
-    }
+    };
 
     const [ values, setValues ] = useState(initialValues);
 
@@ -51,14 +51,20 @@ export default function OpportunityForm(props) {
         address:'',
         customers:'',
         contacts:'',
-    }
+    };
 
     const [ errors, setErrors ] = useState(initialErrors);
 
     useEffect(() => {
         retrieveNextQuoteNumber();
-    },[])
+    },[]);
 
+    useEffect(() => {
+        // if quote pk is updated and create task is true
+        if (task.quote > 0 && isCreateTask) {
+            createTask();
+        }
+    }, [task.quote]);
 
     const retrieveNextQuoteNumber = () => {
         QuoteDataService.getNextQuoteNumber(token)
@@ -72,13 +78,11 @@ export default function OpportunityForm(props) {
         .catch( e => {
             console.log(e);
         })
-    }
+    };
 
     const createQuote = () => {
         QuoteDataService.createQuote(values, token)
         .then(response => {
-        })
-        .then(() => {
             getQuotes();
         })
         .then(() => {
@@ -93,20 +97,15 @@ export default function OpportunityForm(props) {
     const getQuotes = () => {
         QuoteDataService.getAll(token)
         .then(response => {
-            setNewQuote(response.data[0].id);
-            setTask({...task, quote : newQuote});
+            setTask({...task, quote : response.data[0].id});
         })
-        // .then(() =>{
-        //     if(newQuote)
-        //         createTask(task);
-        // })
         .catch( e => {
             console.log(e);
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         })
     };
 
-    const createTask = (task) => {
+    const createTask = () => {
         TaskDataService.createTask(task, token)
             .then(response => {
                 handleOpenSnackbar('success', 'Your Task has been created')
@@ -119,7 +118,6 @@ export default function OpportunityForm(props) {
 
     const handleSubmit = () => {
         setOpenVerification(true);
-        // createQuote();
     };
 
     const handleValidation = () => {
@@ -167,13 +165,11 @@ export default function OpportunityForm(props) {
                 setErrors({...errors, customers: null});
             }, 3000);
         }
-
         setIsValid(formIsValid)
         setTimeout(() => {
             setIsValid(true);
         }, 3000);
-    return formIsValid ? handleSubmit() : null
-
+        return formIsValid ? handleSubmit() : null
     };
 
     const handleInputValue = (e) => {
@@ -188,7 +184,7 @@ export default function OpportunityForm(props) {
         setClear(true);
         setValues(initialValues);
         retrieveNextQuoteNumber();
-    }
+    };
 
     return ( 
         <Box sx={{mr:3, ml:3}}>
@@ -297,7 +293,7 @@ export default function OpportunityForm(props) {
                         onClick={handleValidation}
                         variant='contained' 
                         size='large' 
-                        color='secondary' 
+                        color={`${isValid? 'secondary' : 'error'}`}
                     >Submit</Button>
                 </Stack>
             </Stack>
@@ -312,6 +308,8 @@ export default function OpportunityForm(props) {
                 getQuotes={getQuotes}
                 task={task}
                 setTask={setTask}
+                isCreateTask={isCreateTask}
+                setIsCreateTask={setIsCreateTask} 
             />
         </Box>
     );

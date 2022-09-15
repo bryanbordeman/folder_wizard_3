@@ -18,6 +18,7 @@ import ConfirmationDialogQuote from './ConfirmationDialogQuote';
 
 export default function VerificationDialogQuote(props) {
     const { user, token } = props;
+    const { confirmation, setConfirmation } = props;
     const { open, setOpen, values, createQuote, getQuotes } = props;
     const { isCreateTask, setIsCreateTask } = props;
     const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
@@ -224,6 +225,8 @@ export default function VerificationDialogQuote(props) {
             setOpen={setOpenConfirmation}
             values={values}
             getQuotes={getQuotes}
+            confirmation={confirmation}
+            setConfirmation={setConfirmation}
         />
     </div>
     );

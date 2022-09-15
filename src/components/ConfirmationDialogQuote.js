@@ -12,19 +12,24 @@ import  Divider from '@mui/material/Divider';
 import AddTaskSharpIcon from '@mui/icons-material/AddTaskSharp';
 import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
 
-
-
 export default function ConfirmationDialogQuote(props) {
 
     const { open, setOpen, values, task, createQuote, isCreateTask, getQuotes } = props
-    const [ isCreated, setIsCreated ] = React.useState('');
+    const { confirmation, setConfirmation } = props;
+    
 
     React.useEffect(() => {
         // getQuotes();
     },[open])
 
     const handleClose = () => {
+        const initialConfirmation = {
+            database: false, 
+            task: false,
+            folder: false,
+        }
         setOpen(false);
+        setConfirmation(initialConfirmation)
     };
 
     return (
@@ -42,7 +47,7 @@ export default function ConfirmationDialogQuote(props) {
                 sx={{mr:3, ml:3, mb:1}}/>
             <DialogContent>
                 <Stack>
-                    {isCreated.database ?
+                    {confirmation.database ?
                     <Stack direction="row" spacing={2} sx={{mb:3}}>
                         <AddTaskSharpIcon fontSize='large' color='success'/>
                             <Typography variant="h5" gutterBottom>
@@ -57,22 +62,22 @@ export default function ConfirmationDialogQuote(props) {
                             </Typography>
                     </Stack>
                     }
-                    {isCreated.task ?
-                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                    {confirmation.task ?
+                    isCreateTask && <Stack direction="row" spacing={2} sx={{mb:3}}>
                         <AddTaskSharpIcon fontSize='large' color='success'/>
                             <Typography variant="h5" gutterBottom>
                                 Task created
                             </Typography>
                     </Stack>
                     :
-                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                    isCreateTask && <Stack direction="row" spacing={2} sx={{mb:3}}>
                         <ErrorOutlineSharpIcon fontSize='large' color='error'/> 
                             <Typography variant="h5" gutterBottom>
                                 Task was not created
                             </Typography>
                     </Stack>
                     }
-                    {isCreated.folder ?
+                    {confirmation.folder ?
                     <Stack direction="row" spacing={2} sx={{mb:3}}>
                         <AddTaskSharpIcon fontSize='large' color='success'/>
                             <Typography variant="h5" gutterBottom>

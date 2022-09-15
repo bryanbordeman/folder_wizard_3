@@ -23,6 +23,14 @@ export default function OpportunityForm(props) {
     const [ openVerification, setOpenVerification ] = React.useState(false);
     const [ isCreateTask, setIsCreateTask ] = React.useState(true);
     const [ task, setTask ] = React.useState('');
+
+    const initialConfirmation = {
+        database: false, 
+        task: false,
+        folder: false,
+    }
+
+    const [ confirmation, setConfirmation ] = React.useState(initialConfirmation);
     
     const initialValues = {
         is_active: true,
@@ -40,7 +48,7 @@ export default function OpportunityForm(props) {
         notes:''
     };
 
-    const [ values, setValues ] = useState(initialValues);
+    const [ values, setValues ] = React.useState(initialValues);
 
     const initialErrors = {
         name:'',
@@ -53,7 +61,7 @@ export default function OpportunityForm(props) {
         contacts:'',
     };
 
-    const [ errors, setErrors ] = useState(initialErrors);
+    const [ errors, setErrors ] = React.useState(initialErrors);
 
     useEffect(() => {
         retrieveNextQuoteNumber();
@@ -83,6 +91,7 @@ export default function OpportunityForm(props) {
     const createQuote = () => {
         QuoteDataService.createQuote(values, token)
         .then(response => {
+            setConfirmation({...confirmation, database: true})
             getQuotes();
         })
         .then(() => {
@@ -108,7 +117,7 @@ export default function OpportunityForm(props) {
     const createTask = () => {
         TaskDataService.createTask(task, token)
             .then(response => {
-                handleOpenSnackbar('success', 'Your Task has been created')
+                setConfirmation({...confirmation, task: true})
             })
             .catch(e => {
                 console.log(e);
@@ -309,7 +318,10 @@ export default function OpportunityForm(props) {
                 task={task}
                 setTask={setTask}
                 isCreateTask={isCreateTask}
-                setIsCreateTask={setIsCreateTask} 
+                setIsCreateTask={setIsCreateTask}
+                confirmation={confirmation}
+                setConfirmation={setConfirmation}
+                
             />
         </Box>
     );

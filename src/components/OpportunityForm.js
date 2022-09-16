@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -15,20 +15,26 @@ import TaskDataService from '../services/Task.services'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import VerificationDialogQuote from './VerificationDialogQuote'
+import LoadingBackdrop from './LoadingBackdrop';
 
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props;
     const [ clear, setClear ] = useState(false);
     const [ isValid, setIsValid ] = React.useState(true);
     const [ openVerification, setOpenVerification ] = React.useState(false);
+    const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
     const [ isCreateTask, setIsCreateTask ] = React.useState(true);
     const [ task, setTask ] = React.useState('');
+    const [ backdrop, setBackdrop ] = React.useState(false);
+    const [ isSubmitted, setIsSubmitted ] = React.useState(false)
+
+    const didMount = React.useRef(false);
 
     const initialConfirmation = {
-        database: false, 
-        task: false,
-        folder: false,
-    }
+        database: null, 
+        task: null,
+        folder: null,
+    };
 
     const [ confirmation, setConfirmation ] = React.useState(initialConfirmation);
     
@@ -68,6 +74,22 @@ export default function OpportunityForm(props) {
     },[]);
 
     useEffect(() => {
+        const isNullish = Object.values(confirmation).map(value => {
+            if (value === null) {
+                return true;
+                }
+            
+                return false;
+            });
+        if (didMount.current) {
+            if(isSubmitted)
+                { setBackdrop(isNullish)}
+        } else {
+            didMount.current = true;
+        }
+    },[confirmation, isSubmitted])
+
+    useEffect(() => {
         // if quote pk is updated and create task is true
         if (task.quote > 0 && isCreateTask) {
             createTask();
@@ -91,15 +113,20 @@ export default function OpportunityForm(props) {
     const createQuote = () => {
         QuoteDataService.createQuote(values, token)
         .then(response => {
-            setConfirmation({...confirmation, database: true})
-            getQuotes();
+            setConfirmation({...confirmation, database: true});
+            if(isCreateTask){
+                getQuotes();
+        } else {
+            setOpenConfirmation(true);
+        };
         })
         .then(() => {
             handleClearInputs()
         })
         .catch( e => {
             console.log(e);
-            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+            setConfirmation({...confirmation, database: false})
+            // handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         })
     };
 
@@ -118,11 +145,16 @@ export default function OpportunityForm(props) {
         TaskDataService.createTask(task, token)
             .then(response => {
                 setConfirmation({...confirmation, task: true})
+                createFolder();
             })
             .catch(e => {
                 console.log(e);
-                handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+                setConfirmation({...confirmation, task: false})
             });
+    };
+
+    const createFolder = () => {
+        setOpenConfirmation(true);
     };
 
     const handleSubmit = () => {
@@ -321,7 +353,15 @@ export default function OpportunityForm(props) {
                 setIsCreateTask={setIsCreateTask}
                 confirmation={confirmation}
                 setConfirmation={setConfirmation}
+                setBackdrop={setBackdrop}
+                openConfirmation={openConfirmation}
+                setOpenConfirmation={setOpenConfirmation}
+                setIsSubmitted={setIsSubmitted}
                 
+            />
+            <LoadingBackdrop
+                open={typeof backdrop == "boolean"? backdrop : true}
+                setOpen={setBackdrop}
             />
         </Box>
     );

@@ -14,22 +14,21 @@ import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
 
 export default function ConfirmationDialogQuote(props) {
 
-    const { open, setOpen, values, task, createQuote, isCreateTask, getQuotes } = props
+    const { open, setOpen, isCreateTask, setIsSubmitted, setBackdrop, setIsCreateTask } = props
     const { confirmation, setConfirmation } = props;
-    
-
-    React.useEffect(() => {
-        // getQuotes();
-    },[open])
 
     const handleClose = () => {
         const initialConfirmation = {
-            database: false, 
-            task: false,
-            folder: false,
+            database: null, 
+            task: null,
+            folder: null,
         }
         setOpen(false);
-        setConfirmation(initialConfirmation)
+        setConfirmation(initialConfirmation);
+        setIsSubmitted(false);
+        setBackdrop(false);
+        setIsCreateTask(true);
+        
     };
 
     return (
@@ -98,8 +97,8 @@ export default function ConfirmationDialogQuote(props) {
                 sx={{mr:3, ml:3, mb:1}}/>
             <DialogActions>
                 <Button variant="outlined" color='error' onClick={() => {window.close()}}>Close Program</Button>
-                <Button variant="outlined" onClick={handleClose}>Create Another Quote</Button>
-                <Button variant="contained" onClick={handleClose}>Open Quote</Button>
+                <Button variant="contained"onClick={handleClose}>Create Another Quote</Button>
+                <Button variant="contained" color='secondary' onClick={handleClose}>Open Quote</Button>
             </DialogActions>
         </Dialog>
         </div>

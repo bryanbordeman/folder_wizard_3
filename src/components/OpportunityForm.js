@@ -12,6 +12,9 @@ import AddressPicker from './AddressPicker';
 import CustomerPicker from './CustomerPicker';
 import QuoteDataService from '../services/Quote.services';
 import TaskDataService from '../services/Task.services'
+import ProjectCategoryService from '../services/ProjectCategory.services';
+import ProjectTypeService from '../services/ProjectType.services';
+import PythonServices from '../services/Python.services';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import VerificationDialogQuote from './VerificationDialogQuote'
@@ -20,15 +23,15 @@ import LoadingBackdrop from './LoadingBackdrop';
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props;
     const [ clear, setClear ] = useState(false);
-    const [ isValid, setIsValid ] = React.useState(true);
-    const [ openVerification, setOpenVerification ] = React.useState(false);
-    const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
-    const [ isCreateTask, setIsCreateTask ] = React.useState(true);
-    const [ task, setTask ] = React.useState('');
-    const [ backdrop, setBackdrop ] = React.useState(false);
-    const [ isSubmitted, setIsSubmitted ] = React.useState(false)
+    const [ isValid, setIsValid ] = useState(true);
+    const [ openVerification, setOpenVerification ] = useState(false);
+    const [ openConfirmation, setOpenConfirmation ] = useState(false);
+    const [ isCreateTask, setIsCreateTask ] = useState(true);
+    const [ task, setTask ] = useState('');
+    const [ backdrop, setBackdrop ] = useState(false);
+    const [ isSubmitted, setIsSubmitted ] = useState(false)
 
-    const didMount = React.useRef(false);
+    const didMount = useRef(false);
 
     const initialConfirmation = {
         database: null, 
@@ -36,7 +39,7 @@ export default function OpportunityForm(props) {
         folder: null,
     };
 
-    const [ confirmation, setConfirmation ] = React.useState(initialConfirmation);
+    const [ confirmation, setConfirmation ] = useState(initialConfirmation);
     
     const initialValues = {
         is_active: true,
@@ -67,32 +70,39 @@ export default function OpportunityForm(props) {
         contacts:'',
     };
 
-    const [ errors, setErrors ] = React.useState(initialErrors);
+    const [ errors, setErrors ] = useState(initialErrors);
 
     useEffect(() => {
         retrieveNextQuoteNumber();
     },[]);
 
-    useEffect(() => {
-        const isNullish = Object.values(confirmation).map(value => {
+    const isNull = (object) =>{
+        let isNullish = false
+        Object.values(object).some(value => {
             if (value === null) {
-                return true;
-                }
-            
-                return false;
+                isNullish = true;
+            }
             });
+        return isNullish
+    };
+
+    useEffect(() => {
         if (didMount.current) {
             if(isSubmitted)
-                { setBackdrop(isNullish)}
+                { setBackdrop(isNull(confirmation))}
         } else {
             didMount.current = true;
         }
-    },[confirmation, isSubmitted])
+    },[confirmation, isSubmitted]);
 
     useEffect(() => {
-        // if quote pk is updated and create task is true
-        if (task.quote > 0 && isCreateTask) {
-            createTask();
+        if (didMount.current) {
+            // if quote pk is updated and create task is true
+            if (task.quote > 0 && isCreateTask) {
+                createTask();
+            }
+        } else {
+            didMount.current = true;
         }
     }, [task.quote]);
 
@@ -110,22 +120,48 @@ export default function OpportunityForm(props) {
         })
     };
 
-    const createQuote = () => {
-        QuoteDataService.createQuote(values, token)
+    const retrieveCategory = () => {
+        ProjectCategoryService.getCategory(values.project_category, token)
         .then(response => {
-            setConfirmation({...confirmation, database: true});
-            if(isCreateTask){
-                getQuotes();
-        } else {
-            setOpenConfirmation(true);
-        };
-        })
-        .then(() => {
-            handleClearInputs()
+            console.log(response.data)
         })
         .catch( e => {
             console.log(e);
-            setConfirmation({...confirmation, database: false})
+        })
+    };
+
+    const retrieveType = () => {
+        ProjectTypeService.getType(values.project_type, token)
+        .then(response => {
+            console.log(response.data)
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
+
+    const createQuote = () => {
+        QuoteDataService.createQuote(values, token)
+        .then(response => {
+            setConfirmation((prevState) => ({
+                ...prevState,
+                database: true,
+            }));
+            // setTimeout(function(){
+                if(isCreateTask){
+                    getQuotes();
+                } else {
+                    createFolder();
+                    // setOpenConfirmation(true);
+                };
+            // }, 1000); 
+        })
+        .catch( e => {
+            console.log(e);
+            setConfirmation((prevState) => ({
+                ...prevState,
+                database: false,
+            }));
             // handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         })
     };
@@ -144,16 +180,33 @@ export default function OpportunityForm(props) {
     const createTask = () => {
         TaskDataService.createTask(task, token)
             .then(response => {
-                setConfirmation({...confirmation, task: true})
-                createFolder();
+                setConfirmation((prevState) => ({
+                    ...prevState,
+                    task: true,
+                }));
+                // console.log(confirmation.task)
+                setTimeout(() => {
+                    createFolder();
+                }, 500);
             })
             .catch(e => {
                 console.log(e);
-                setConfirmation({...confirmation, task: false})
+                setConfirmation((prevState) => ({
+                    ...prevState,
+                    task: false,
+                }));
             });
     };
 
     const createFolder = () => {
+        PythonServices.createQuoteFolder(values);
+        setConfirmation((prevState) => ({
+            ...prevState,
+            folder: true,
+        }));
+        retrieveCategory()
+        retrieveType()
+        handleClearInputs();
         setOpenConfirmation(true);
     };
 
@@ -361,7 +414,6 @@ export default function OpportunityForm(props) {
             />
             <LoadingBackdrop
                 open={typeof backdrop == "boolean"? backdrop : true}
-                setOpen={setBackdrop}
             />
         </Box>
     );

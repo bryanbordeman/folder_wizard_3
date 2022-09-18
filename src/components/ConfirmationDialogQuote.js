@@ -46,51 +46,40 @@ export default function ConfirmationDialogQuote(props) {
                 sx={{mr:3, ml:3, mb:1}}/>
             <DialogContent>
                 <Stack>
-                    {confirmation.database ?
                     <Stack direction="row" spacing={2} sx={{mb:3}}>
-                        <AddTaskSharpIcon fontSize='large' color='success'/>
+                        {confirmation.database ?
+                            <AddTaskSharpIcon fontSize='large' color= 'success'/>
+                            :
+                            <ErrorOutlineSharpIcon fontSize='large' color= 'error'/>
+                        }
                             <Typography variant="h5" gutterBottom>
-                                Database record created
+                                {confirmation.database ? 'Database record created' : 'Database record was not created'}
+                            </Typography>
+                    </Stack>
+                    {isCreateTask ?
+                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                        {confirmation.task ?
+                            <AddTaskSharpIcon fontSize='large' color= 'success'/>
+                            :
+                            <ErrorOutlineSharpIcon fontSize='large' color= 'error'/>
+                        }
+                            <Typography variant="h5" gutterBottom>
+                                {confirmation.task ? 'Task created' : 'Task was not created'}
                             </Typography>
                     </Stack>
                     :
-                    <Stack direction="row" spacing={2} sx={{mb:3}}>
-                        <ErrorOutlineSharpIcon fontSize='large' color='error'/> 
-                            <Typography variant="h5" gutterBottom>
-                                Database record was not created
-                            </Typography>
-                    </Stack>
+                    ''
                     }
-                    {confirmation.task ?
-                    isCreateTask && <Stack direction="row" spacing={2} sx={{mb:3}}>
-                        <AddTaskSharpIcon fontSize='large' color='success'/>
-                            <Typography variant="h5" gutterBottom>
-                                Task created
-                            </Typography>
-                    </Stack>
-                    :
-                    isCreateTask && <Stack direction="row" spacing={2} sx={{mb:3}}>
-                        <ErrorOutlineSharpIcon fontSize='large' color='error'/> 
-                            <Typography variant="h5" gutterBottom>
-                                Task was not created
-                            </Typography>
-                    </Stack>
-                    }
-                    {confirmation.folder ?
                     <Stack direction="row" spacing={2} sx={{mb:3}}>
-                        <AddTaskSharpIcon fontSize='large' color='success'/>
-                            <Typography variant="h5" gutterBottom>
-                                Folder created
+                        {confirmation.folder ?
+                            <AddTaskSharpIcon fontSize='large' color= 'success'/>
+                            :
+                            <ErrorOutlineSharpIcon fontSize='large' color= 'error'/>
+                        }                            <Typography variant="h5" gutterBottom>
+                                {confirmation.folder ? 'Folder created' : 'Folder was not created'}
                             </Typography>
                     </Stack>
-                    :
-                    <Stack direction="row" spacing={2} sx={{mb:3}}>
-                        <ErrorOutlineSharpIcon fontSize='large' color='error'/> 
-                            <Typography variant="h5" gutterBottom>
-                                Folder was not created
-                            </Typography>
-                    </Stack>
-                    }
+                    
                 </Stack>
             </DialogContent>
             <Divider

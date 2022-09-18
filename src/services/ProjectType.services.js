@@ -6,6 +6,10 @@ class ProjectTypeService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/project/types/`);
     };
+    getType(id, token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/project/type/${id}`);
+    };
 };
 export default new ProjectTypeService();
 

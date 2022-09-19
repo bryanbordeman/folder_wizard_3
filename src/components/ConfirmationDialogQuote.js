@@ -15,7 +15,7 @@ import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
 export default function ConfirmationDialogQuote(props) {
 
     const { open, setOpen, isCreateTask, setIsSubmitted, setBackdrop, setIsCreateTask } = props
-    const { confirmation, setConfirmation } = props;
+    const { confirmation, setConfirmation, handleClearInputs } = props;
 
     const handleClose = () => {
         const initialConfirmation = {
@@ -28,6 +28,7 @@ export default function ConfirmationDialogQuote(props) {
         setIsSubmitted(false);
         setBackdrop(false);
         setIsCreateTask(true);
+        handleClearInputs();
         
     };
 

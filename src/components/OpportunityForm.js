@@ -29,7 +29,10 @@ export default function OpportunityForm(props) {
     const [ isCreateTask, setIsCreateTask ] = useState(true);
     const [ task, setTask ] = useState('');
     const [ backdrop, setBackdrop ] = useState(false);
-    const [ isSubmitted, setIsSubmitted ] = useState(false)
+    const [ isSubmitted, setIsSubmitted ] = useState(false);
+    const [ categoryCode, setCategoryCode ] = useState('');
+    const [ typeCode , setTypeCode ] = useState('');
+
 
     const didMount = useRef(false);
 
@@ -106,6 +109,15 @@ export default function OpportunityForm(props) {
         }
     }, [task.quote]);
 
+    useEffect(() =>{
+        if (didMount.current && values.project_category && values.project_type) {
+            retrieveCategory();
+            retrieveType();
+        } else {
+            didMount.current = true;
+        }
+    }, [values.project_category, values.project_type])
+
     const retrieveNextQuoteNumber = () => {
         QuoteDataService.getNextQuoteNumber(token)
         .then(response => {
@@ -123,7 +135,7 @@ export default function OpportunityForm(props) {
     const retrieveCategory = () => {
         ProjectCategoryService.getCategory(values.project_category, token)
         .then(response => {
-            console.log(response.data)
+            setCategoryCode(response.data.code)
         })
         .catch( e => {
             console.log(e);
@@ -133,7 +145,7 @@ export default function OpportunityForm(props) {
     const retrieveType = () => {
         ProjectTypeService.getType(values.project_type, token)
         .then(response => {
-            console.log(response.data)
+            setTypeCode(response.data.code)
         })
         .catch( e => {
             console.log(e);
@@ -199,13 +211,12 @@ export default function OpportunityForm(props) {
     };
 
     const createFolder = () => {
-        PythonServices.createQuoteFolder(values);
+        const folderName = `${values.number} ${values.name} ${categoryCode}-${typeCode}`
+        PythonServices.createQuoteFolder(folderName);
         setConfirmation((prevState) => ({
             ...prevState,
             folder: true,
         }));
-        retrieveCategory()
-        retrieveType()
         handleClearInputs();
         setOpenConfirmation(true);
     };
@@ -270,7 +281,7 @@ export default function OpportunityForm(props) {
         const { name, value } = e.target;
         setValues({
         ...values,
-        [name]: value
+        [name]: value.trim()
         });
     };
 
@@ -410,6 +421,7 @@ export default function OpportunityForm(props) {
                 openConfirmation={openConfirmation}
                 setOpenConfirmation={setOpenConfirmation}
                 setIsSubmitted={setIsSubmitted}
+                handleClearInputs={handleClearInputs}
                 
             />
             <LoadingBackdrop

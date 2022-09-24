@@ -2,14 +2,14 @@ import os
 import sys
 import time
 import os.path
+from directory_list import directory_list
 
 current_year = time.strftime("%Y")
 
 def main():
     inputs = sys.argv[1] # input string
-    inputDict = eval('dict('+inputs+')') # convert input string into dict
-    print(create_opportunity_folder(inputDict))
-    # print('Opportunity Fsolder Created')
+    # print(create_opportunity_folder(inputs))
+    print('Opportunity Folder Created')
 
 def createFolder(directory):
     try:
@@ -18,12 +18,11 @@ def createFolder(directory):
     except OSError:
         print('Error: Creating directory. ' + directory)
 
-def create_opportunity_folder(inputs):
-    opportunity_dir = inputs['directory']
+def create_opportunity_folder(quote):
+    opportunity_dir = directory_list['opportunity_dir']
     opportunity_dir_list = (os.listdir(opportunity_dir)) # make list of folders in directory
     year_list = [] 
-    quote = f"{inputs['quote_number']} {inputs['manager']} {inputs['project_name']} {inputs['type_code']}"
-    
+
     # search for current year folder. If none exist make one
     for year in opportunity_dir_list:
             try:

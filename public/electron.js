@@ -3,7 +3,31 @@ const path = require('path');
 const { app, BrowserWindow, session, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
 const os = require('os')
+let oppCreateFolderResult = ''
+const {PythonShell} = require('python-shell')
 
+//! ----- Python Functions -----
+function createOppFolder(args){
+    var options = {
+        scriptPath : './engine/',
+        args : args,
+        env: process.env,
+    }
+    let pyshell = new PythonShell('create_opp_folder.py', options);
+
+    pyshell.on('message', function(message) {
+            console.log(message);
+            oppCreateFolderResult = true
+            // console.log('Opportunity Folder Created')
+            })
+
+    pyshell.end(function (err) {
+        if (err) {
+            console.log(err)
+            oppCreateFolderResult = false
+        }
+        });
+}
 
 function createWindow() {
     // Create the browser window.
@@ -46,6 +70,14 @@ function createWindow() {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(createWindow);
+
+    ipcMain.on('anything-asynchronous', (event, arg) => {
+        // console.log("async",arg) // prints "async ping"
+        createOppFolder(arg);
+        event.reply('asynchronous-reply', oppCreateFolderResult)
+
+    })
+
 
     // Quit when all windows are closed, except on macOS. There, it's common
     // for applications and their menu bars to stay active until the user quits

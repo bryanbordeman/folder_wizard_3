@@ -14,11 +14,12 @@ import QuoteDataService from '../services/Quote.services';
 import TaskDataService from '../services/Task.services'
 import ProjectCategoryService from '../services/ProjectCategory.services';
 import ProjectTypeService from '../services/ProjectType.services';
-import PythonServices from '../services/Python.services';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import VerificationDialogQuote from './VerificationDialogQuote'
 import LoadingBackdrop from './LoadingBackdrop';
+
+const { ipcRenderer } = window.require('electron');
 
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props;
@@ -174,6 +175,7 @@ export default function OpportunityForm(props) {
                 ...prevState,
                 database: false,
             }));
+            setOpenConfirmation(true);
             // handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         })
     };
@@ -207,18 +209,27 @@ export default function OpportunityForm(props) {
                     ...prevState,
                     task: false,
                 }));
+                setOpenConfirmation(true);
             });
     };
 
     const createFolder = () => {
         const folderName = `${values.number} ${values.name} ${categoryCode}-${typeCode}`
-        PythonServices.createQuoteFolder(folderName);
-        setConfirmation((prevState) => ({
-            ...prevState,
-            folder: true,
-        }));
-        handleClearInputs();
-        setOpenConfirmation(true);
+        
+        ipcRenderer.send('anything-asynchronous', folderName)
+                // reply
+        ipcRenderer.on('asynchronous-reply', (event, arg) => {
+        console.log('OpportunityForm', arg) // prints "Hiii pong"
+        })
+        
+        
+        
+        // setConfirmation((prevState) => ({
+        //     ...prevState,
+        //     folder: true,
+        // }));
+        // handleClearInputs();
+        // setOpenConfirmation(true);
     };
 
     const handleSubmit = () => {
@@ -281,7 +292,7 @@ export default function OpportunityForm(props) {
         const { name, value } = e.target;
         setValues({
         ...values,
-        [name]: value.trim()
+        [name]: value
         });
     };
 
@@ -427,6 +438,10 @@ export default function OpportunityForm(props) {
             <LoadingBackdrop
                 open={typeof backdrop == "boolean"? backdrop : true}
             />
+            <button onClick={createFolder}
+            >
+            Async
+            </button>
         </Box>
     );
 };

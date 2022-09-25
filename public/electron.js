@@ -4,6 +4,7 @@ const { app, BrowserWindow, session, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
 const os = require('os')
 let oppCreateFolderResult = ''
+
 const {PythonShell} = require('python-shell')
 
 //! ----- Python Functions -----
@@ -37,7 +38,7 @@ function createWindow() {
         height: 600,
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false,
+            contextIsolation: true,
             enableRemoteModule: true,
             preload: path.join(__dirname, 'preload.js')
         },
@@ -71,12 +72,22 @@ function createWindow() {
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(createWindow);
 
-    ipcMain.on('anything-asynchronous', (event, arg) => {
-        // console.log("async",arg) // prints "async ping"
-        createOppFolder(arg);
-        event.reply('asynchronous-reply', oppCreateFolderResult)
+    // ipcMain.on('anything-asynchronous', (event, arg) => {
+    //     // console.log("async",arg) // prints "async ping"
+    //     createOppFolder(arg);
+    //     event.reply('asynchronous-reply', oppCreateFolderResult)
 
-    })
+    // })
+
+    ipcMain.handle('ping', () => 'pong');
+
+    ipcMain.handle('createOppFolder', (event, arg) => 
+    {
+        // console.log(arg)
+        createOppFolder(arg);
+        return oppCreateFolderResult
+        // event.reply('asynchronous-reply', oppCreateFolderResult)
+    });
 
 
     // Quit when all windows are closed, except on macOS. There, it's common

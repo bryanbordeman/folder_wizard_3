@@ -19,7 +19,7 @@ import Switch from '@mui/material/Switch';
 import VerificationDialogQuote from './VerificationDialogQuote'
 import LoadingBackdrop from './LoadingBackdrop';
 
-const { ipcRenderer } = window.require('electron');
+// const { ipcRenderer } = window
 
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props;
@@ -213,23 +213,24 @@ export default function OpportunityForm(props) {
             });
     };
 
-    const createFolder = () => {
+    const createFolder = async () => {
         const folderName = `${values.number} ${values.name} ${categoryCode}-${typeCode}`
-        
-        ipcRenderer.send('anything-asynchronous', folderName)
-                // reply
-        ipcRenderer.on('asynchronous-reply', (event, arg) => {
-        console.log('OpportunityForm', arg) // prints "Hiii pong"
-        })
-        
-        
-        
-        // setConfirmation((prevState) => ({
-        //     ...prevState,
-        //     folder: true,
-        // }));
-        // handleClearInputs();
-        // setOpenConfirmation(true);
+        const response = await window.versions.createOppFolder(folderName)
+        console.log(response) // prints out folderName
+
+        // ipcRenderer.send('anything-asynchronous', folderName)
+        //         // reply
+        // ipcRenderer.on('asynchronous-reply', (event, arg) => {
+        //     setConfirmation((prevState) => ({
+        //             ...prevState,
+        //             folder: arg,
+        //         }));
+        //         console.log('OpportunityForm', arg)
+        //         // setTimeout(() => {
+        //         //     handleClearInputs();
+        //         //     setOpenConfirmation(true);
+        //         // }, 500);
+        // })
     };
 
     const handleSubmit = () => {

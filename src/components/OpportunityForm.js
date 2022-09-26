@@ -215,22 +215,11 @@ export default function OpportunityForm(props) {
 
     const createFolder = async () => {
         const folderName = `${values.number} ${values.name} ${categoryCode}-${typeCode}`
-        const response = await window.versions.createOppFolder(folderName)
-        console.log(response) // prints out folderName
-
-        // ipcRenderer.send('anything-asynchronous', folderName)
-        //         // reply
-        // ipcRenderer.on('asynchronous-reply', (event, arg) => {
-        //     setConfirmation((prevState) => ({
-        //             ...prevState,
-        //             folder: arg,
-        //         }));
-        //         console.log('OpportunityForm', arg)
-        //         // setTimeout(() => {
-        //         //     handleClearInputs();
-        //         //     setOpenConfirmation(true);
-        //         // }, 500);
-        // })
+        // send data to electron for folder creation
+        window.api.createOppFolder(folderName)
+        .then(data => {
+            console.log(data);
+        });
     };
 
     const handleSubmit = () => {

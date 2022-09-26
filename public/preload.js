@@ -16,13 +16,7 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 
-contextBridge.exposeInMainWorld('versions', {
-  node: () => process.versions.node,
-  chrome: () => process.versions.chrome,
-  electron: () => process.versions.electron,
-  createOppFolder: (arg) => {
-    ipcRenderer.invoke('createOppFolder', arg)
-    // .then((result) => {
-    //   return (result)})
-  },
+contextBridge.exposeInMainWorld('api', {
+  createOppFolder: (arg) => ipcRenderer.invoke('createOppFolder',arg),
 })
+

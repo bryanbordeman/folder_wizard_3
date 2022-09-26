@@ -3,32 +3,8 @@ const path = require('path');
 const { app, BrowserWindow, session, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
 const os = require('os')
-let oppCreateFolderResult = ''
 
 const {PythonShell} = require('python-shell')
-
-//! ----- Python Functions -----
-function createOppFolder(args){
-    var options = {
-        scriptPath : './engine/',
-        args : args,
-        env: process.env,
-    }
-    let pyshell = new PythonShell('create_opp_folder.py', options);
-
-    pyshell.on('message', function(message) {
-            console.log(message);
-            oppCreateFolderResult = true
-            // console.log('Opportunity Folder Created')
-            })
-
-    pyshell.end(function (err) {
-        if (err) {
-            console.log(err)
-            oppCreateFolderResult = false
-        }
-        });
-}
 
 function createWindow() {
     // Create the browser window.
@@ -81,12 +57,36 @@ function createWindow() {
 
     ipcMain.handle('ping', () => 'pong');
 
-    ipcMain.handle('createOppFolder', (event, arg) => 
-    {
-        // console.log(arg)
-        createOppFolder(arg);
-        return oppCreateFolderResult
-        // event.reply('asynchronous-reply', oppCreateFolderResult)
+    // ipcMain.handle('createOppFolder', (event, arg) => 
+    // {
+    //     // console.log(arg)
+    //     createOppFolder(arg);
+    //     return oppCreateFolderResult
+    //     // event.reply('asynchronous-reply', oppCreateFolderResult)
+    // });
+
+
+    ipcMain.handle('createOppFolder', (event, args) => {
+        var result = ''
+        var options = {
+            scriptPath : './engine/',
+            args : args,
+            env: process.env,
+        }
+        let pyshell = new PythonShell('create_opp_folder.py', options);
+    
+        pyshell.on('message', function(message) {
+                console.log(message); // prints to node terminal
+                result = true
+                })
+        pyshell.end(function (err) {
+            if (err) {
+                console.log(err) // prints to node terminal
+                result = false
+            }
+            });
+
+        return 'returned from electron.js'
     });
 
 

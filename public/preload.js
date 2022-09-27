@@ -15,8 +15,8 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 })
 
-
 contextBridge.exposeInMainWorld('api', {
   createOppFolder: (arg) => ipcRenderer.invoke('createOppFolder',arg),
+  
 })
 

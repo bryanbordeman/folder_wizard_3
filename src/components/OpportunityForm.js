@@ -218,8 +218,12 @@ export default function OpportunityForm(props) {
         // send data to electron for folder creation
         window.api.createOppFolder(folderName)
         .then(data => {
-            console.log(data);
+            setConfirmation((prevState) => ({
+                ...prevState,
+                folder: data,
+            }));
         });
+        setOpenConfirmation(true);
     };
 
     const handleSubmit = () => {

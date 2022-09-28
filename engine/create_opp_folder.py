@@ -10,7 +10,7 @@ def main():
     inputs = sys.argv[1] # input string
     # print(inputs)
     print(create_opportunity_folder(inputs))
-    print('Opportunity Folder Created')
+    # print('Opportunity Folder Created')
 
 def createFolder(directory):
     try:

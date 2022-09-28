@@ -5,6 +5,8 @@ const isDev = require('electron-is-dev');
 const os = require('os')
 const {PythonShell} = require('python-shell')
 
+let currentOppDirectory = ''
+
 function createWindow() {
     // Create the browser window.
 
@@ -58,13 +60,41 @@ function createWindow() {
         return new Promise((resolve,reject) =>{
             pyshell.on('message', (message) => {
                 console.log(message); // prints to node terminal
+                currentOppDirectory = message
                 })
                 
             pyshell.end((err, code) => {
                 if (err) {
                     console.log(err)
                 };
-                console.log(code);
+                // console.log(code);
+                if (code === 0){
+                    resolve(true)
+                }else{
+                    resolve(false)
+                }
+            });
+        })
+    });
+
+    ipcMain.handle('openFolder', (event, args) => {
+        var options = {
+            scriptPath : './engine/',
+            args : currentOppDirectory,
+            env: process.env,
+        }
+        let pyshell = new PythonShell('open_folder.py', options);
+    
+        return new Promise((resolve,reject) =>{
+            pyshell.on('message', (message) => {
+                console.log(message); // prints to node terminal
+                })
+                
+            pyshell.end((err, code) => {
+                if (err) {
+                    console.log(err)
+                };
+                // console.log(code);
                 if (code === 0){
                     resolve(true)
                 }else{

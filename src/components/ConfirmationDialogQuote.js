@@ -15,7 +15,7 @@ import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
 export default function ConfirmationDialogQuote(props) {
 
     const { open, setOpen, isCreateTask, setIsSubmitted, setBackdrop, setIsCreateTask } = props
-    const { confirmation, setConfirmation, handleClearInputs } = props;
+    const { confirmation, setConfirmation, handleClearInputs, openFolder } = props;
 
     const handleClose = () => {
         const initialConfirmation = {
@@ -29,6 +29,12 @@ export default function ConfirmationDialogQuote(props) {
         setBackdrop(false);
         setIsCreateTask(true);
         handleClearInputs();
+        
+    };
+
+    const handleOpenFolder = (path) => {
+        openFolder();
+        handleClose();
         
     };
 
@@ -88,7 +94,7 @@ export default function ConfirmationDialogQuote(props) {
             <DialogActions>
                 <Button variant="outlined" color='error' onClick={() => {window.close()}}>Close Program</Button>
                 <Button variant="contained"onClick={handleClose}>Create Another Quote</Button>
-                <Button variant="contained" color='secondary' onClick={handleClose}>Open Quote</Button>
+                <Button disabled={!confirmation.folder} variant="contained" color='secondary' onClick={handleOpenFolder}>Open Quote Folder</Button>
             </DialogActions>
         </Dialog>
         </div>

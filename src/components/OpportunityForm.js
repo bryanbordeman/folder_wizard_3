@@ -33,6 +33,7 @@ export default function OpportunityForm(props) {
     const [ isSubmitted, setIsSubmitted ] = useState(false);
     const [ categoryCode, setCategoryCode ] = useState('');
     const [ typeCode , setTypeCode ] = useState('');
+    const [ lastQuote, setLastQuote ] = useState('');
 
 
     const didMount = useRef(false);
@@ -110,6 +111,17 @@ export default function OpportunityForm(props) {
         }
     }, [task.quote]);
 
+    useEffect(() => {
+        if (didMount.current) {
+            // if quote pk is updated and create task is true
+            if (confirmation.folder === false) {
+                retrieveLastQuote();
+            }
+        } else {
+            didMount.current = true;
+        }
+    }, [confirmation.folder]);
+
     useEffect(() =>{
         if (didMount.current && values.project_category && values.project_type) {
             retrieveCategory();
@@ -127,6 +139,17 @@ export default function OpportunityForm(props) {
                 ...prevState,
                 number: nextNumberObject.next_quote_number,
             }));
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
+
+    const retrieveLastQuote= () => {
+        QuoteDataService.getLastQuote(token)
+        .then(response => {
+            // const lastQuoteObject = response.data;
+            deleteQuote(response.data.last_quote_id)
         })
         .catch( e => {
             console.log(e);
@@ -180,6 +203,17 @@ export default function OpportunityForm(props) {
         })
     };
 
+    const deleteQuote= (quoteId) => {
+        QuoteDataService.deleteQuote(quoteId, token)
+        .then(response => {
+
+        })
+        .catch( e => {
+            console.log(e);
+        });
+
+    };
+
     const getQuotes = () => {
         QuoteDataService.getAll(token)
         .then(response => {
@@ -213,7 +247,7 @@ export default function OpportunityForm(props) {
             });
     };
 
-    const createFolder = async () => {
+    const createFolder = () => {
         const folderName = `${values.number} ${values.name} ${categoryCode}-${typeCode}`
         // send data to electron for folder creation
         window.api.createOppFolder(folderName)
@@ -224,6 +258,12 @@ export default function OpportunityForm(props) {
             }));
         });
         setOpenConfirmation(true);
+    };
+
+    const openFolder = () => {
+        // send path to electron to open folder
+        window.api.openFolder();
+        
     };
 
     const handleSubmit = () => {
@@ -414,6 +454,7 @@ export default function OpportunityForm(props) {
                 open={openVerification}
                 setOpen={setOpenVerification}
                 createQuote={createQuote}
+                openFolder={openFolder}
                 values={values}
                 getQuotes={getQuotes}
                 task={task}
@@ -432,10 +473,10 @@ export default function OpportunityForm(props) {
             <LoadingBackdrop
                 open={typeof backdrop == "boolean"? backdrop : true}
             />
-            <button onClick={createFolder}
+            {/* <button onClick={createFolder}
             >
             Async
-            </button>
+            </button> */}
         </Box>
     );
 };

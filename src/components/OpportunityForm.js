@@ -149,7 +149,9 @@ export default function OpportunityForm(props) {
         QuoteDataService.getLastQuote(token)
         .then(response => {
             // const lastQuoteObject = response.data;
-            deleteQuote(response.data.last_quote_id)
+            if (confirmation.folder === false) {
+                deleteQuote(response.data.last_quote_id)
+            }
         })
         .catch( e => {
             console.log(e);

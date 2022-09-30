@@ -57,6 +57,8 @@ function Home(props) {
                         <Button 
                             variant='outlined' 
                             color='primary' 
+                            component={Link} 
+                            to='/opportunity/edit'
                         >Edit Quote
                         </Button>
                     </Stack>

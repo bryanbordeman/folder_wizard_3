@@ -5,6 +5,7 @@ import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Home from '../pages/Home';
 import Opportunity from '../pages/Opportunity';
+import OpportunityEdit from '../pages/OpportunityEdit';
 
 function MainRoutes(props) {
     const { user, token, login, logout, signup, loginErrors, darkState, handleOpenSnackbar } = props
@@ -34,6 +35,19 @@ function MainRoutes(props) {
                         <Navigate to="/login" />
                         :
                         <Opportunity
+                            user={user}
+                            token={token}
+                            handleOpenSnackbar={handleOpenSnackbar}
+                        />
+                }/>
+                <Route 
+                    exact 
+                    path='/opportunity/edit' 
+                    element={
+                        !user.username  ? 
+                        <Navigate to="/login" />
+                        :
+                        <OpportunityEdit
                             user={user}
                             token={token}
                             handleOpenSnackbar={handleOpenSnackbar}

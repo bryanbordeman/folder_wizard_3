@@ -19,8 +19,6 @@ import Switch from '@mui/material/Switch';
 import VerificationDialogQuote from './VerificationDialogQuote'
 import LoadingBackdrop from './LoadingBackdrop';
 
-// const { ipcRenderer } = window
-
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props;
     const [ clear, setClear ] = useState(false);
@@ -33,7 +31,6 @@ export default function OpportunityForm(props) {
     const [ isSubmitted, setIsSubmitted ] = useState(false);
     const [ categoryCode, setCategoryCode ] = useState('');
     const [ typeCode , setTypeCode ] = useState('');
-    const [ lastQuote, setLastQuote ] = useState('');
 
 
     const didMount = useRef(false);

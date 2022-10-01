@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
+import OpportunityFormEdit from '../components/OpportunityFormEdit';
 
 export default function Opportunity(props) {
     const { token, user, handleOpenSnackbar } = props
@@ -15,11 +16,11 @@ export default function Opportunity(props) {
                     Edit Opportunity
                 </Box>
             </Typography>
-            {/* <OpportunityForm
+            <OpportunityFormEdit
                 token={token}
                 user={user}
                 handleOpenSnackbar={handleOpenSnackbar}
-            /> */}
+            />
             <div style={{ position:'absolute', top:10, left:10}}>
                 <IconButton 
                     sx={{border: 1, borderColor: "#1BA2F6 !important" }}

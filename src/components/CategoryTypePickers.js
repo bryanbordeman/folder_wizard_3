@@ -10,11 +10,18 @@ import ProjectTypeServices from '../services/ProjectType.services';
 
 export default function CategoryTypePickers(props) {
     const { token } = props
-    const { values, setValues, errors, clear, setClear } = props;
+    const { values, setValues, errors, clear, setClear, quote } = props;
     const [ categories, setCategories ] = useState([]);
     const [ types, setTypes ] = useState([]);
     const [ type, setType ] = useState('');
     const [ category, setCategory ] = useState('');
+
+    React.useEffect(() => {
+        if(quote){
+            setType(quote.project_type.id);
+            setCategory(quote.project_category.id);
+        };
+    },[quote])
 
     useEffect(()=> {
         if(clear){

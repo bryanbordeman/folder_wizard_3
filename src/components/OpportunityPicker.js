@@ -58,6 +58,7 @@ export default function OpportunityPicker(props) {
                                     id="quote"
                                     name='quote'
                                     label="Search Quotes" 
+                                    variant="standard"
                                     />}
         />
     );

@@ -18,6 +18,10 @@ class QuoteDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.post(`${SERVER}/api/create/quote/`, data);
     };
+    getQuote(id, token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/quote/${id}`);
+    };
     updateQuote(id, data, token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.put(`${SERVER}/api/quote/${id}`, data);

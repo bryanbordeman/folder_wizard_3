@@ -7,7 +7,7 @@ import Select from '@mui/material/Select';
 
 
 export default function ManagerPicker(props) {
-    const { token, user, clear, setClear } = props
+    const { token, user, clear, setClear, quote } = props
     const { values, setValues, errors } = props
     const [ managers, setManagers ] = useState([]);
     const [ managerId, setManagerId ] = useState('');
@@ -19,6 +19,12 @@ export default function ManagerPicker(props) {
             setClear(false);
         };
     },[clear]);
+
+    React.useEffect(() => {
+        if(quote){
+            setManagerId(quote.manager.id);
+        };
+    },[quote])
 
     useEffect(() => {
         setManagerId(user.id);

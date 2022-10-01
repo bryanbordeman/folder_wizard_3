@@ -2,13 +2,13 @@ import * as React from 'react';
 import AddressServices from '../services/Address.services';
 import '../css/styles.css'
 import { useState, useEffect } from "react";
-import GooglePlacesAutocomplete, { geocodeByPlaceId } from "react-google-places-autocomplete";
+import GooglePlacesAutocomplete, { geocodeByPlaceId} from "react-google-places-autocomplete";
 import InputLabel from '@mui/material/InputLabel';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 
 export default function AddressPicker(props) {
-    const { token, values, setValues, handleOpenSnackbar, clear, setClear } = props
+    const { token, values, setValues, handleOpenSnackbar, clear, setClear, quote, setQuote } = props
     const [ address, setAddress ] = useState('');
     const [ addressId, setAddressId ] = useState('');
     const [ addressObj, setAddressObj ] = useState('');
@@ -25,6 +25,17 @@ export default function AddressPicker(props) {
             setClear(false);
         };
     },[clear])
+
+    React.useEffect(() => {
+        if(quote){
+            if(quote.address !== null){
+                const label = `${quote.address.address}, ${quote.address.city}, ${quote.address.state}, ${quote.address.postal_code}`
+                setAddress({label: label, value: quote.address})
+            }
+        }else{
+            setAddress('')
+        };
+    },[quote])
 
     useEffect(() => {
         setValues({...values, address: addressId})
@@ -137,7 +148,7 @@ export default function AddressPicker(props) {
         <div>
         <InputLabel 
             shrink
-            id="manager"
+            id="address"
         >
             Address
         </InputLabel>
@@ -148,6 +159,7 @@ export default function AddressPicker(props) {
                 value: address,
                 onChange: (val) => {
                     setAddress(val);
+                    // console.log(val);
                 },
                 styles: {
                     input: (provided) => ({

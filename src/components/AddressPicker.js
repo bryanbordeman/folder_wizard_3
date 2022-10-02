@@ -1,14 +1,13 @@
-import * as React from 'react';
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import AddressServices from '../services/Address.services';
 import '../css/styles.css'
-import { useState, useEffect } from "react";
 import GooglePlacesAutocomplete, { geocodeByPlaceId} from "react-google-places-autocomplete";
 import InputLabel from '@mui/material/InputLabel';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 
 export default function AddressPicker(props) {
-    const { token, values, setValues, handleOpenSnackbar, clear, setClear, quote, setQuote } = props
+    const { token, values, setValues, handleOpenSnackbar, clear, setClear, quote } = props
     const [ address, setAddress ] = useState('');
     const [ addressId, setAddressId ] = useState('');
     const [ addressObj, setAddressObj ] = useState('');
@@ -26,7 +25,7 @@ export default function AddressPicker(props) {
         };
     },[clear])
 
-    React.useEffect(() => {
+    useEffect(() => {
         if(quote){
             if(quote.address !== null){
                 const label = `${quote.address.address}, ${quote.address.city}, ${quote.address.state}, ${quote.address.postal_code}`

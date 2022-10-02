@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -16,7 +16,7 @@ export default function CategoryTypePickers(props) {
     const [ type, setType ] = useState('');
     const [ category, setCategory ] = useState('');
 
-    React.useEffect(() => {
+    useEffect(() => {
         if(quote){
             setType(quote.project_type.id);
             setCategory(quote.project_category.id);

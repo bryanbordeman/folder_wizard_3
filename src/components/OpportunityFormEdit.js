@@ -26,6 +26,8 @@ export default function OpportunityFormEdit(props) {
 
     const initialValues = {
         is_active: true,
+        revision: '',
+        price: '',
         number: '',
         name:'',
         due: new Date(),
@@ -58,6 +60,7 @@ export default function OpportunityFormEdit(props) {
     const handleChangeQuote = (quote) => {
         setQuote(quote)
         if(quote){
+            handleClearInputs();
             setValues(quote)
         }else{
             handleClearInputs();
@@ -67,10 +70,19 @@ export default function OpportunityFormEdit(props) {
 
     const handleInputValue = (e) => {
         const { name, value } = e.target;
+        if(name === 'revision'){
+            if (value > -1) {
+                setValues({
+                    ...values,
+                    [name]: value
+                    });
+            }
+        } else {
         setValues({
         ...values,
         [name]: value
         });
+    }
     };
 
     const handleClearInputs = () => {
@@ -90,6 +102,41 @@ export default function OpportunityFormEdit(props) {
                     sx={{mt:4}}
                     spacing={2}
                 >
+                <Stack
+                    direction="row"
+                    spacing={2}
+                >
+                    <Box>
+                    <TextField
+                    autoFocus={false}
+                    margin="dense"
+                    id="revision"
+                    name='revision'
+                    label="Revision"
+                    onChange={handleInputValue}
+                    // inputProps={{ maxLength: 3 }}
+                    value={values.revision}
+                    type="number"
+                    fullWidth
+                    variant="outlined"
+                    />
+                    </Box>
+                    <Box sx={{width:'100%'}}>
+                    <TextField
+                    autoFocus={false}
+                    margin="dense"
+                    id="price"
+                    name='price'
+                    label="Price"
+                    onChange={handleInputValue}
+                    // inputProps={{ maxLength: 27 }}
+                    value={values.price}
+                    type="number"
+                    fullWidth
+                    variant="outlined"
+                    />
+                    </Box>
+                </Stack>
                 <TextField
                     autoFocus={false}
                     margin="dense"
@@ -170,7 +217,16 @@ export default function OpportunityFormEdit(props) {
                     clear={clear}
                     setClear={setClear}
                     quote={quote}
-                    setQuote={setQuote}
+                />
+                <CustomerPicker
+                    token={token} 
+                    handleOpenSnackbar={handleOpenSnackbar}
+                    values={values}
+                    errors={errors}
+                    setValues={setValues}
+                    clear={clear}
+                    setClear={setClear}
+                    quote={quote}
                 />
             
             </Stack>

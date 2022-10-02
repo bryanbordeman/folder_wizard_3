@@ -47,7 +47,7 @@ function stringAvatar(name) {
 };
 
 export default function CustomerPicker(props) {
-    const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear} = props
+    const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear, quote} = props
     const [ customer, setCustomer ] = useState('');
     const [ editCustomer, setEditCustomer ] = useState('');
     const [ customers, setCustomers ] = useState([]);
@@ -67,6 +67,15 @@ export default function CustomerPicker(props) {
             setClear(false);
         };
     },[clear]);
+
+    useEffect(() => {
+        if(quote && quote.customers){
+            quote.customers.map((customer) => {
+                setCustomers(oldArray => [...oldArray, customer.id]);
+            })
+
+        };
+    },[quote])
 
     useEffect(()=> {
         if(newCustomer){

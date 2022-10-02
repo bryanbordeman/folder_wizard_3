@@ -1,1 +1,2 @@
 - fix ManagerPicker. Warning
+- CategoryTypePicker and Price not updating on OpportunityFormEdit

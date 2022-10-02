@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import QuoteDataService from '../services/Quote.services';
-import ProjectCategoryService from '../services/ProjectCategory.services';
-import ProjectTypeService from '../services/ProjectType.services';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -15,7 +13,9 @@ import  Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-
+import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
+import InputAdornment from '@mui/material/InputAdornment';
 
 export default function OpportunityFormEdit(props) {
 
@@ -23,7 +23,16 @@ export default function OpportunityFormEdit(props) {
     const [ quote , setQuote ] = useState('');
     const [ isValid, setIsValid ] = useState(true);
     const [ clear, setClear ] = useState(false);
+    const [ isDisabled, setIsDisabled ] = useState(true);
+    let navigate = useNavigate();
 
+    useEffect(() => {
+        if(quote){
+            setIsDisabled(false);
+        }else{
+            setIsDisabled(true);
+        }
+    },[quote])
     const initialValues = {
         is_active: true,
         revision: '',
@@ -61,12 +70,16 @@ export default function OpportunityFormEdit(props) {
         setQuote(quote)
         if(quote){
             handleClearInputs();
-            setValues(quote)
+            setValues(quote);
+            setValues((prevState) => ({
+                ...prevState,
+                project_category: quote.project_category.id,
+                project_type: quote.project_type.id,
+            }));
         }else{
             handleClearInputs();
         }
-        // console.log(quote)
-    }
+    };
 
     const handleInputValue = (e) => {
         const { name, value } = e.target;
@@ -90,6 +103,25 @@ export default function OpportunityFormEdit(props) {
         setValues(initialValues);
     };
 
+    const updateQuote = () => {
+        QuoteDataService.updateQuote(quote.id, values, token)
+        .then(response => {
+            handleOpenSnackbar('info', 'Your time has been submitted for approval');
+            setQuote('');
+            handleClearInputs();
+            navigate('/');
+
+        })
+        .catch( e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    const handleSubmit = () => {
+        updateQuote();
+    };
+
     return ( 
         <Box sx={{mr:3, ml:3}}>
             
@@ -109,6 +141,7 @@ export default function OpportunityFormEdit(props) {
                     <Box>
                     <TextField
                     autoFocus={false}
+                    disabled={isDisabled}
                     margin="dense"
                     id="revision"
                     name='revision'
@@ -124,21 +157,26 @@ export default function OpportunityFormEdit(props) {
                     <Box sx={{width:'100%'}}>
                     <TextField
                     autoFocus={false}
+                    disabled={isDisabled}
                     margin="dense"
                     id="price"
                     name='price'
                     label="Price"
                     onChange={handleInputValue}
-                    // inputProps={{ maxLength: 27 }}
+                    InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    }}
                     value={values.price}
                     type="number"
                     fullWidth
                     variant="outlined"
+                
                     />
                     </Box>
                 </Stack>
                 <TextField
                     autoFocus={false}
+                    disabled={isDisabled}
                     margin="dense"
                     id="name"
                     name='name'
@@ -158,6 +196,7 @@ export default function OpportunityFormEdit(props) {
                 <Stack direction="row" spacing={2}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
+                            disabled={isDisabled}
                             label="Due Date"
                             id="due"
                             name="due"
@@ -170,6 +209,7 @@ export default function OpportunityFormEdit(props) {
                     </LocalizationProvider>
                     <FormControlLabel
                         sx={{width: '33%'}}
+                        disabled={isDisabled}
                         onChange={() => {setValues({...values, travel_job: !values.travel_job})}}
                         control={<Switch checked={values.travel_job} color="primary" />}
                         id="travel_job"
@@ -179,6 +219,7 @@ export default function OpportunityFormEdit(props) {
                     />
                     <FormControlLabel
                         sx={{width: '33%'}}
+                        disabled={isDisabled}
                         onChange={() => {setValues({...values, prevailing_rate: !values.prevailing_rate})}}
                         control={<Switch checked={values.prevailing_rate} color="primary" />}
                         id="prevailing_rate"
@@ -197,6 +238,7 @@ export default function OpportunityFormEdit(props) {
                     clear={clear}
                     setClear={setClear}
                     quote={quote}
+                    isDisabled={isDisabled}
                 />
                 <ManagerPicker
                     token={token}
@@ -208,6 +250,7 @@ export default function OpportunityFormEdit(props) {
                     clear={clear}
                     setClear={setClear}
                     quote={quote}
+                    isDisabled={isDisabled}
                 />
                 <AddressPicker
                     token={token} 
@@ -217,6 +260,7 @@ export default function OpportunityFormEdit(props) {
                     clear={clear}
                     setClear={setClear}
                     quote={quote}
+                    isDisabled={isDisabled}
                 />
                 <CustomerPicker
                     token={token} 
@@ -227,8 +271,31 @@ export default function OpportunityFormEdit(props) {
                     clear={clear}
                     setClear={setClear}
                     quote={quote}
+                    isDisabled={isDisabled}
                 />
-            
+                <Divider/>
+                <Stack 
+                    sx={{pb:4}}
+                    direction="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    spacing={2}
+                >
+                    <Button 
+                        onClick={handleClearInputs}
+                        disabled={isDisabled}
+                        variant='outlined' 
+                        size='large'
+                    >Clear</Button>
+                    <Button 
+                        // onClick={handleValidation}
+                        onClick={handleSubmit}
+                        disabled={isDisabled}
+                        variant='contained' 
+                        size='large' 
+                        color={`${isValid? 'primary' : 'error'}`}
+                    >Update</Button>
+                </Stack>
             </Stack>
         </Box>
 

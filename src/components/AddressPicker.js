@@ -7,7 +7,7 @@ import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 
 export default function AddressPicker(props) {
-    const { token, values, setValues, handleOpenSnackbar, clear, setClear, quote } = props
+    const { token, values, setValues, handleOpenSnackbar, clear, setClear, quote, isDisabled } = props
     const [ address, setAddress ] = useState('');
     const [ addressId, setAddressId ] = useState('');
     const [ addressObj, setAddressObj ] = useState('');
@@ -39,6 +39,15 @@ export default function AddressPicker(props) {
     useEffect(() => {
         setValues({...values, address: addressId})
     }, [addressId])
+
+    useEffect(() => {
+        // if cleared erase from DB
+        if(address === null){
+            setValues({...values, address: ''})
+        }
+        
+        
+    }, [address])
 
     const getAddressObject = (address_components) => {
         // console.log(address_components);
@@ -154,6 +163,8 @@ export default function AddressPicker(props) {
         <GooglePlacesAutocomplete
             apiKey="AIzaSyChTcMUCY9Zw3j00st0uKkqTz0RGlOpea8"
             selectProps={{
+                isDisabled: isDisabled,
+                
                 isClearable: true,
                 value: address,
                 onChange: (val) => {

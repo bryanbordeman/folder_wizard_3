@@ -7,7 +7,7 @@ import Select from '@mui/material/Select';
 
 
 export default function ManagerPicker(props) {
-    const { token, user, clear, setClear, quote } = props
+    const { token, user, clear, setClear, quote, isDisabled } = props
     const { values, setValues, errors } = props
     const [ managers, setManagers ] = useState([]);
     const [ managerId, setManagerId ] = useState('');
@@ -62,6 +62,7 @@ export default function ManagerPicker(props) {
             </InputLabel>
             <Select
                 fullWidth
+                disabled={isDisabled}
                 labelId="manager"
                 id="manager"
                 // defaultValue={user.id}

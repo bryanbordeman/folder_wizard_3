@@ -10,7 +10,7 @@ import ProjectTypeServices from '../services/ProjectType.services';
 
 export default function CategoryTypePickers(props) {
     const { token } = props
-    const { values, setValues, errors, clear, setClear, quote } = props;
+    const { values, setValues, errors, clear, setClear, quote, isDisabled } = props;
     const [ categories, setCategories ] = useState([]);
     const [ types, setTypes ] = useState([]);
     const [ type, setType ] = useState('');
@@ -18,8 +18,11 @@ export default function CategoryTypePickers(props) {
 
     useEffect(() => {
         if(quote){
-            setType(quote.project_type.id);
-            setCategory(quote.project_category.id);
+            setTimeout(() => {
+                setType(quote.project_type.id);
+                setCategory(quote.project_category.id);
+            }, 100);
+            
         };
     },[quote])
 
@@ -87,6 +90,7 @@ export default function CategoryTypePickers(props) {
                 </InputLabel>
                 <Select
                     fullWidth
+                    disabled={isDisabled}
                     labelId="project-category"
                     id="project-category"
                     defaultValue={''}

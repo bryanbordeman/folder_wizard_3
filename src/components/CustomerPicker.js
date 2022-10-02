@@ -47,7 +47,7 @@ function stringAvatar(name) {
 };
 
 export default function CustomerPicker(props) {
-    const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear, quote} = props
+    const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear, quote, isDisabled} = props
     const [ customer, setCustomer ] = useState('');
     const [ editCustomer, setEditCustomer ] = useState('');
     const [ customers, setCustomers ] = useState([]);
@@ -150,6 +150,7 @@ export default function CustomerPicker(props) {
             >
                 <Autocomplete
                     freeSolo
+                    disabled={isDisabled}
                     id="customer"
                     disableClearable
                     onInputChange={(event, newValue) => {
@@ -178,6 +179,7 @@ export default function CustomerPicker(props) {
             </FormControl>
             <IconButton 
                 sx={{top: '7px', maxHeight: '2.75rem', border: 1, borderColor: "#1BA2F6 !important" }}
+                disabled={isDisabled}
                 color="primary" 
                 aria-label="back"
                 onClick={customer && !newCustomer? addCustomer : createNewCustomer}

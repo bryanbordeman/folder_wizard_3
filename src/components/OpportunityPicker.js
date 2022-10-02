@@ -4,7 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import QuoteDataService from '../services/Quote.services';
 
 export default function OpportunityPicker(props) {
-    const { token, handleOpenSnackbar } = props;
+    const { token, clear, setClear } = props;
     const [ value, setValue ] = React.useState(null);
     const [ quotes, setQuotes ] = React.useState([{}])
     const [ inputValue, setInputValue ] = React.useState('');
@@ -14,6 +14,13 @@ export default function OpportunityPicker(props) {
     React.useEffect(() => {
         retrieveQuotes()
     },[])
+
+    // useEffect(()=> {
+    //     if(clear){
+    //         setValue(null);
+    //         setClear(false);
+    //     };
+    // },[clear])
 
     const retrieveQuotes = () => {
         QuoteDataService.getAll(token)

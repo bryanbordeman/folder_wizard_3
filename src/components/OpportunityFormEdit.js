@@ -122,6 +122,58 @@ export default function OpportunityFormEdit(props) {
         updateQuote();
     };
 
+    const handleValidation = () => {
+        let formIsValid = true;
+
+        if(values.name === ''){
+            setErrors({...errors, name: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, name: null});
+            }, 3000);
+        }
+
+        else if(values.due === null){
+            setErrors({...errors, due: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, due: null});
+            }, 3000);
+        }
+
+        else if(values.project_category === ''){
+            setErrors({...errors, project_category: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, project_category: null});
+            }, 3000);
+        }
+        else if(values.project_type === ''){
+            setErrors({...errors, project_type: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, project_type: null});
+            }, 3000);
+        }
+        else if(values.customers.length < 1){
+            setErrors({...errors, customers: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, customers: null});
+            }, 3000);
+        }
+        setIsValid(formIsValid)
+        setTimeout(() => {
+            setIsValid(true);
+        }, 3000);
+        return formIsValid ? handleSubmit() : null
+    };
+
     return ( 
         <Box sx={{mr:3, ml:3}}>
             
@@ -288,8 +340,7 @@ export default function OpportunityFormEdit(props) {
                         size='large'
                     >Clear</Button>
                     <Button 
-                        // onClick={handleValidation}
-                        onClick={handleSubmit}
+                        onClick={handleValidation}
                         disabled={isDisabled}
                         variant='contained' 
                         size='large' 

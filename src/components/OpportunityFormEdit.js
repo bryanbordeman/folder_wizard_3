@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import QuoteDataService from '../services/Quote.services';
+import ProjectCategoryService from '../services/ProjectCategory.services';
+import ProjectTypeService from '../services/ProjectType.services';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -24,7 +26,10 @@ export default function OpportunityFormEdit(props) {
     const [ isValid, setIsValid ] = useState(true);
     const [ clear, setClear ] = useState(false);
     const [ isDisabled, setIsDisabled ] = useState(true);
+    const [ categoryCode, setCategoryCode ] = useState('');
+    const [ typeCode , setTypeCode ] = useState('');
     let navigate = useNavigate();
+    const didMount = useRef(false);
 
     useEffect(() => {
         if(quote){
@@ -33,6 +38,8 @@ export default function OpportunityFormEdit(props) {
             setIsDisabled(true);
         }
     },[quote])
+
+
     const initialValues = {
         is_active: true,
         revision: '',
@@ -52,6 +59,15 @@ export default function OpportunityFormEdit(props) {
     };
 
     const [ values, setValues ] = React.useState(initialValues);
+
+    useEffect(() =>{
+        if (didMount.current && values.project_category && values.project_type) {
+            retrieveCategory();
+            retrieveType();
+        } else {
+            didMount.current = true;
+        }
+    }, [values.project_category, values.project_type])
 
     const initialErrors = {
         name:'',
@@ -98,6 +114,26 @@ export default function OpportunityFormEdit(props) {
     }
     };
 
+    const retrieveCategory = () => {
+        ProjectCategoryService.getCategory(values.project_category, token)
+        .then(response => {
+            setCategoryCode(response.data.code)
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
+
+    const retrieveType = () => {
+        ProjectTypeService.getType(values.project_type, token)
+        .then(response => {
+            setTypeCode(response.data.code)
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
+
     const handleClearInputs = () => {
         setClear(true);
         setValues(initialValues);
@@ -118,8 +154,24 @@ export default function OpportunityFormEdit(props) {
         });
     };
 
+    const renameFolder = (existingDir, newDir) => {
+        // send data to electron for renaming folder
+        const inputs = [existingDir, newDir]
+        window.api.renameOppFolder(inputs)
+        .then(data => {
+
+        });
+
+    };
+
     const handleSubmit = () => {
+        const existingDir = `${quote.number} ${quote.name} ${quote.project_category.code}-${quote.project_type.code}`
+        const newDir = `${quote.number} ${values.name} ${categoryCode}-${typeCode}`
         updateQuote();
+        if (existingDir !== newDir){
+            renameFolder(existingDir, newDir)
+        }
+        
     };
 
     const handleValidation = () => {

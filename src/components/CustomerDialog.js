@@ -39,7 +39,7 @@ export default function CustomerDialog(props) {
     const updateCompany = (id, data) => {
         CompanyServices.updateCompanyShort(id, data, token)
         .then(response => {
-            retrieveCompanies();
+            // retrieveCompanies();
             handleOpenSnackbar('info', 'Company was updated')
         })
         .catch(e => {

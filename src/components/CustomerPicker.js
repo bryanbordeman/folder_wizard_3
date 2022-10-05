@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import CompanyServices from '../services/Company.services';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
@@ -32,7 +32,6 @@ function stringToColor(string) {
     color += `00${value.toString(16)}`.slice(-2);
     }
     /* eslint-enable no-bitwise */
-
     return color;
 };
 
@@ -48,18 +47,27 @@ function stringAvatar(name) {
 
 export default function CustomerPicker(props) {
     const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear, quote, isDisabled} = props
-    const [ customer, setCustomer ] = useState('');
-    const [ editCustomer, setEditCustomer ] = useState('');
-    const [ customers, setCustomers ] = useState([]);
-    const [ companies, setCompanies ] = useState([]);
-    const [ newCustomer, setNewCustomer ] = useState('');
+    const [ customer, setCustomer ] = useState(''); // existing value picked from list
+    const [ editCustomer, setEditCustomer ] = useState(''); // used for dialog
+    const [ customers, setCustomers ] = useState([]); // list of customers picked
+    const [ companies, setCompanies ] = useState([]); // list of matching customers from search
+    const [ newCustomer, setNewCustomer ] = useState(''); // manually written input
     const [ open, setOpen ] = React.useState(false);
 
-    useEffect(()=> {
-        retrieveCompanies();
-    },[]);
+    const didMount = useRef(false);
+
+    useEffect(() => {
+        // go to backend and seach for matches. seach starts at third input
+        if (didMount.current) {
+            if(newCustomer !== '' && newCustomer.length > 1)
+                searchCompanies(newCustomer)
+        } else {
+            didMount.current = true;
+        }
+    },[newCustomer]);
 
     useEffect(()=> {
+        // clear list and inputs
         if(clear){
             setCustomers([]);
             setCustomer('');
@@ -69,32 +77,27 @@ export default function CustomerPicker(props) {
     },[clear]);
 
     useEffect(() => {
+        // if editing quote load data
         if(quote && quote.customers){
             quote.customers.map((customer) => {
-                setCustomers(oldArray => [...oldArray, customer.id]);
+                setCustomers(oldArray => [...oldArray, customer]);
             })
-
         };
     },[quote])
 
-    useEffect(()=> {
-        if(newCustomer){
-            const data = (companies.find(element => element.name === newCustomer))
-            setCustomers(oldArray => [...oldArray, data.id]);
-            setNewCustomer('');
-            setCustomer('');
-        }
-    },[companies]);
-
     useEffect(() => {
-        setValues({...values, customers: customers})
+        // if new customer is added to list update values
+        let tempList = []
+        customers.map((customer) => {
+            tempList.push(customer.id)
+        })
+        setValues({...values, customers: tempList})
     }, [customers]);
     
-    const retrieveCompanies= () => {
-        CompanyServices.getAllShort(token)
-        .then(response => {
+    const searchCompanies = (search) => {
+        CompanyServices.searchAll(token, search)
+        .then((response) => {
             setCompanies(response.data);
-            
         })
         .catch( e => {
             console.log(e);
@@ -105,7 +108,9 @@ export default function CustomerPicker(props) {
         CompanyServices.createCompany(data, token)
         .then(response => {
             handleOpenSnackbar('success', 'New Company was created')
-            retrieveCompanies();
+            setCustomers(oldArray => [...oldArray, response.data]);
+            setCustomer('');
+            setNewCustomer('');
         })
         .catch(e => {
             console.log(e);
@@ -115,14 +120,17 @@ export default function CustomerPicker(props) {
 
     const addCustomer = () => {
         if (customer){
-            let customerObj = companies.find(item => item.name === customer);
-            setCustomers(oldArray => [...oldArray, customerObj.id]);
-            setCustomer('');
+            let isExisting = customers.find(item => item.name === customer);
+            if (!isExisting){
+                let customerObj = companies.find(item => item.name === customer);
+                setCustomers(oldArray => [...oldArray, customerObj]);
+                setCustomer('');
+            };
         };
     };
 
     const removeCustomer = (id) => {
-        setCustomers(customers.filter(item => item !== id));
+        setCustomers(customers.filter(item => item.id !== id));
     };
 
     const handleNewCustomer = (e) => {
@@ -131,14 +139,14 @@ export default function CustomerPicker(props) {
 
     const createNewCustomer = () => {
         const data = {
-            'name': newCustomer
+        'name': newCustomer
         };
-        createCompany(data);
+        createCompany(data)
     };
 
     const handleClickOpen = (customerId) => {
         setOpen(true);
-        const customerData = (companies.find(element => element.id === customerId));
+        const customerData = (customers.find(element => element.id === customerId));
         setEditCustomer(customerData);
     };
 
@@ -182,38 +190,38 @@ export default function CustomerPicker(props) {
                 disabled={isDisabled}
                 color="primary" 
                 aria-label="back"
-                onClick={customer && !newCustomer? addCustomer : createNewCustomer}
+                // onClick={customer? addCustomer : createNewCustomer}
+                onClick={customer === newCustomer? createNewCustomer : addCustomer }
             >
                 <AddIcon />
             </IconButton>
         </Stack>
         <Box>
             <List sx={{mt:3}} dense={false}>
-                {customers.map((customerId, key) => (
-                <Box key={customerId}>
+                {customers.map((customer, key) => (
+                <Box key={customer.id}>
                     {key > 0? <Divider/> : ''}
                 <ListItem
                     secondaryAction={
                     <IconButton 
                         edge="end" 
                         aria-label="delete"
-                        onClick={() => removeCustomer(customerId)}>
+                        onClick={() => removeCustomer(customer.id)}>
                         <DeleteIcon />
                     </IconButton>
                 }
                 >
                 <ListItemButton
                     onClick={() => {
-                        handleClickOpen(customerId);
+                        handleClickOpen(customer.id);
                     }}
-                >
-                
+                >     
                 <ListItemAvatar>
-                    <Avatar {...stringAvatar(companies.find(item => item.id === customerId).name)}/>
+                    <Avatar {...stringAvatar(customer.name)}/>
                 </ListItemAvatar>
             
                 <ListItemText
-                    primary={companies.find(item => item.id === customerId).name}
+                    primary={customer.name}
                 />
                 </ListItemButton>
                 </ListItem>
@@ -227,7 +235,6 @@ export default function CustomerPicker(props) {
                 open={open}
                 setOpen={setOpen}
                 customerData={editCustomer}
-                retrieveCompanies={retrieveCompanies}
             />
         </Box>
         </Stack>

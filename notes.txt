@@ -1,2 +1,2 @@
 - fix ManagerPicker. Warning
-- add validator to edit Opportunity
+- fix update customer dialog customerPicker

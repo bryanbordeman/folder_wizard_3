@@ -10,36 +10,37 @@ import Box from '@mui/material/Box';
 import Transition from './DialogTransistion'
 
 export default function CustomerDialog(props) {
-    const { customerData , open, setOpen, token, handleOpenSnackbar, retrieveCompanies } = props;
+    const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers } = props;
     const [ customer, setCustomer ] = useState({});
 
     useEffect(() => {
-        setCustomer(customerData)
+        setCustomer(customerData);
     }, [open])
+    
 
     const handleClose = () => {
         setOpen(false);
     };
 
     const handleUpdate= () => {
-        const data = {
-            "name": customer,
-        }
-        if(customer.name !== customerData.name)
-        {updateCompany(customerData.id, data)
-        setOpen(false);
+        if(customer !== customerData){
+            updateCompany(customerData.id, customer);
+            const updatedCustomers = customers.map(el => (
+                el.id === customer.id? {...el, name: customer.name}: el
+            ))
+            setCustomers(updatedCustomers)
+            setOpen(false);
         }
     };
 
     const handleUpdateCustomer = (e) => {
         const result = e.target.value
-        setCustomer(result);
+        setCustomer({'id': customerData.id, 'name' : result});
     };
 
     const updateCompany = (id, data) => {
         CompanyServices.updateCompanyShort(id, data, token)
         .then(response => {
-            // retrieveCompanies();
             handleOpenSnackbar('info', 'Company was updated')
         })
         .catch(e => {
@@ -70,7 +71,6 @@ export default function CustomerDialog(props) {
                         onInput = {(e) =>{
                             e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
                         }}
-                        // variant="standard"
                     />
                 </DialogContent>
                 <DialogActions>

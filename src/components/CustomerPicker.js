@@ -235,6 +235,8 @@ export default function CustomerPicker(props) {
                 open={open}
                 setOpen={setOpen}
                 customerData={editCustomer}
+                setCustomers={setCustomers}
+                customers={customers}
             />
         </Box>
         </Stack>

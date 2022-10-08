@@ -31,6 +31,7 @@ export default function OpportunityForm(props) {
     const [ isSubmitted, setIsSubmitted ] = useState(false);
     const [ categoryCode, setCategoryCode ] = useState('');
     const [ typeCode , setTypeCode ] = useState('');
+    const [ quoteContacts, setQuoteContacts ] = useState([]);
 
 
     const didMount = useRef(false);
@@ -424,6 +425,8 @@ export default function OpportunityForm(props) {
                     setValues={setValues}
                     clear={clear}
                     setClear={setClear}
+                    quoteContacts={quoteContacts}
+                    setQuoteContacts={setQuoteContacts}
                 />
                 <Divider/>
                 <Stack 

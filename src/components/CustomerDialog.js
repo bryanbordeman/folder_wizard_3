@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CompanyServices from '../services/Company.services';
+import ContactServices from '../services/Contact.services';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -11,20 +12,40 @@ import Transition from './DialogTransistion'
 import AddressPicker from './AddressPicker';
 import CloseIcon from '@mui/icons-material/Close';
 import { Stack, IconButton } from '@mui/material';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
+import ContactsList from './ContactsList';
 
 export default function CustomerDialog(props) {
-    const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers } = props;
+    const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
+    const { quoteContacts, setQuoteContacts } = props
     const [ customer, setCustomer ] = useState({});
+    const [ contacts, setContacts ] = useState('');
     const [ values, setValues ] = useState('');
+    const [ openDelete, setOpenDelete ] = useState(false);
+    const [ deleteMessage, setDeleteMessage] = useState({title: '', content:''});
 
     useEffect(() => {
         setCustomer(customerData);
+        if(customerData && open)
+            recieveContacts(customerData.id)
     }, [open])
     
 
     const handleClose = () => {
         setOpen(false);
     };
+
+    const recieveContacts = (id) => {
+        ContactServices.getContactCompany(id, token)
+        .then(response => {
+            setContacts(response.data)
+            // handleOpenSnackbar('info', 'Company was updated')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    }
 
     const handleUpdate= () => {
         if(customer !== customerData){
@@ -53,8 +74,8 @@ export default function CustomerDialog(props) {
         });
     };
 
-    const deleteCompany = (id) => {
-        CompanyServices.deleteCompany(id, token)
+    const deleteCompany = () => {
+        CompanyServices.deleteCompany(customer.id, token)
         .then(response => {
             handleOpenSnackbar('error', 'Company was deleted')
             const updatedCustomers = customers.filter(el => (
@@ -68,6 +89,11 @@ export default function CustomerDialog(props) {
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         });
     };
+
+    const handleDeleteCompany = (customer) => {
+        setDeleteMessage({title: 'Permanently delete company?', content: `${customer.name}`})
+        setOpenDelete(true)
+    }
 
     return (
         <Box>
@@ -107,6 +133,11 @@ export default function CustomerDialog(props) {
                         onInput = {(e) =>{
                             e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
                         }}
+                    />
+                    <ContactsList
+                        contacts={contacts}
+                        quoteContacts={quoteContacts}
+                        setQuoteContacts={setQuoteContacts}
                     />
                     <AddressPicker
                         token={token} 
@@ -150,15 +181,21 @@ export default function CustomerDialog(props) {
                             e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
                         }}
                     />
-                    <Button variant='contained' color='secondary'>Add Contact</Button>
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant='outlined' color='error' onClick={() => {deleteCompany(customerData.id)}}>Delete</Button>
+                    <Button variant='outlined' color='error' onClick={() => {handleDeleteCompany(customerData)}}>Delete</Button>
                     <Button variant='outlined' onClick={handleClose}>Cancel</Button>
                     <Button variant='contained' onClick={handleUpdate}>Update</Button>
                 </DialogActions>
             </Dialog>
+            <DeleteConfirmationModal
+                openDelete={openDelete}
+                setOpenDelete={setOpenDelete}
+                message={deleteMessage}
+                deleteAction={deleteCompany}
+
+            />
         </Box>
     );
     }

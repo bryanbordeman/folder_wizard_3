@@ -12,7 +12,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 import Avatar from '@mui/material/Avatar';
-import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
 import { Divider } from '@mui/material';
 import CustomerDialog from './CustomerDialog';
 import { FormControl } from '@mui/material';
@@ -47,6 +47,7 @@ function stringAvatar(name) {
 
 export default function CustomerPicker(props) {
     const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear, quote, isDisabled} = props
+    const { quoteContacts, setQuoteContacts } = props
     const [ customer, setCustomer ] = useState(''); // existing value picked from list
     const [ editCustomer, setEditCustomer ] = useState(''); // used for dialog
     const [ customers, setCustomers ] = useState([]); // list of customers picked
@@ -172,6 +173,11 @@ export default function CustomerPicker(props) {
                             {...params}
                             label="Customer(s)"
                             onChange={handleNewCustomer}
+                            // onKeyPress={(e) => {
+                            //     if (e.key === "Enter") {
+                            //             alert(e.target.value);
+                            //     }
+                            // }}
                             onInput = {(e) =>{
                                 e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
                             }}
@@ -207,7 +213,7 @@ export default function CustomerPicker(props) {
                         edge="end" 
                         aria-label="delete"
                         onClick={() => removeCustomer(customer.id)}>
-                        <DeleteIcon />
+                        <CloseIcon />
                     </IconButton>
                 }
                 >
@@ -237,6 +243,8 @@ export default function CustomerPicker(props) {
                 customerData={editCustomer}
                 setCustomers={setCustomers}
                 customers={customers}
+                quoteContacts={quoteContacts}
+                setQuoteContacts={setQuoteContacts}
             />
         </Box>
         </Stack>

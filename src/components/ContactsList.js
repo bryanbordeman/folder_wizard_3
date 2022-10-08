@@ -41,39 +41,30 @@ function stringAvatar(name) {
     };
 };
 
+
 export default function ContactsList(props) {
     const { contacts } = props
-    const { quoteContacts, setQuoteContacts } = props
-    const [ checked, setChecked ] = React.useState([]);
+    const { updateContact, quote } = props
 
-    React.useEffect(() => {
-        const quoteList = []
-        checked.map((check) => {
-            quoteList.push(contacts[check].id)
-        })
-        setQuoteContacts(quoteList)
-    }, [checked])
-    const handleToggle = (value) => () => {
-        
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
-
-        if (currentIndex === -1) {
-        newChecked.push(value);
-        } else {
-        newChecked.splice(currentIndex, 1);
+    const handleChecked = (id, e) => {
+        if(quote){
+        const editContact = contacts.filter(element => element.id === id)
+        if(!e.target.checked){
+            editContact[0].quotes = editContact[0].quotes.filter(element => element.id === quote.id)
+        }else{
+            editContact[0].quotes.push(quote.id)
+        };
+            updateContact(id, editContact[0])
         }
-
-        setChecked(newChecked);
     };
 
+    
     return (
         <List 
             sx={{ width: '100%', bgcolor: 'background.paper', pb:0 }}
             subheader={<ListSubheader>Select Contact(s)</ListSubheader>}
         >
         {contacts? contacts.map((contact, key) => {
-            // const labelId = `checkbox-list-secondary-label-${contact.name}`;
             return (
                 <Box key={contact.id}>
                     {key > 0? <Divider/> : ''}
@@ -82,9 +73,8 @@ export default function ContactsList(props) {
                     secondaryAction={
                     <Checkbox
                         edge="end"
-                        onChange={handleToggle(key)}
-                        checked={checked.indexOf(key) !== -1}
-                        // inputProps={{ 'aria-labelledby': labelId }}
+                        onChange={(e) => handleChecked(contact.id, e)}
+                        checked={quote? contact.quotes.includes(quote.id) : false}
                     />
                     }
                     disablePadding
@@ -96,7 +86,6 @@ export default function ContactsList(props) {
                         <Avatar {...stringAvatar(contact.name)}/>
                     </ListItemAvatar>
                         <ListItemText 
-                            // id={labelId} 
                             primary={`${contact.name}`}
                             secondary={`${contact.job_title}`} />
                     </ListItemButton>

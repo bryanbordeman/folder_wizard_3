@@ -28,7 +28,6 @@ export default function OpportunityFormEdit(props) {
     const [ isDisabled, setIsDisabled ] = useState(true);
     const [ categoryCode, setCategoryCode ] = useState('');
     const [ typeCode , setTypeCode ] = useState('');
-    const [ quoteContacts, setQuoteContacts ] = useState([]);
     let navigate = useNavigate();
     const didMount = useRef(false);
 
@@ -377,8 +376,6 @@ export default function OpportunityFormEdit(props) {
                     setClear={setClear}
                     quote={quote}
                     isDisabled={isDisabled}
-                    quoteContacts={quoteContacts}
-                    setQuoteContacts={setQuoteContacts}
                 />
                 <Divider/>
                 <Stack 

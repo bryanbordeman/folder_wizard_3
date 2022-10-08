@@ -14,10 +14,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Stack, IconButton } from '@mui/material';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import ContactsList from './ContactsList';
+import InputAdornment from '@mui/material/InputAdornment';
 
 export default function CustomerDialog(props) {
     const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
-    const { quoteContacts, setQuoteContacts } = props
+    const [ quoteContacts, setQuoteContacts ] = useState([]);
     const [ customer, setCustomer ] = useState({});
     const [ contacts, setContacts ] = useState('');
     const [ values, setValues ] = useState('');
@@ -29,6 +30,14 @@ export default function CustomerDialog(props) {
         if(customerData && open)
             recieveContacts(customerData.id)
     }, [open])
+
+    // useEffect(() => {
+    //     if(quoteContacts.length > 0){
+    //         quoteContacts.map((id) => {
+    //             recieveContact(id)
+    //         })
+    //     };
+    // },[quoteContacts])
     
 
     const handleClose = () => {
@@ -47,6 +56,32 @@ export default function CustomerDialog(props) {
         });
     }
 
+    const recieveContact = (id) => {
+        ContactServices.getContact(id, token)
+        .then(response => {
+            const tempData = (response.data)
+            tempData.quotes.push(quote.id)
+            updateContact(id, tempData)
+            // handleOpenSnackbar('info', 'Company was updated')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    const updateContact = (id, data) => {
+        ContactServices.updateContact(id, data, token)
+        .then(response => {
+            // console.log(response.data)
+            handleOpenSnackbar('info', 'Contact was updated')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    }
+
     const handleUpdate= () => {
         if(customer !== customerData){
             updateCompany(customerData.id, customer);
@@ -54,6 +89,8 @@ export default function CustomerDialog(props) {
                 el.id === customer.id? {...el, name: customer.name}: el
             ))
             setCustomers(updatedCustomers)
+            setOpen(false);
+        }else{
             setOpen(false);
         }
     };
@@ -136,8 +173,10 @@ export default function CustomerDialog(props) {
                     />
                     <ContactsList
                         contacts={contacts}
-                        quoteContacts={quoteContacts}
-                        setQuoteContacts={setQuoteContacts}
+                        // quoteContacts={quoteContacts}
+                        // setQuoteContacts={setQuoteContacts}
+                        updateContact={updateContact}
+                        quote={quote}
                     />
                     <AddressPicker
                         token={token} 
@@ -176,6 +215,10 @@ export default function CustomerDialog(props) {
                         label="Website"
                         type="text"
                         fullWidth
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start">http://</InputAdornment>,
+                            // endAdornment: <InputAdornment position="end"><.com></InputAdornment>,
+                        }}
                         // onChange={handleUpdateCustomer}
                         onInput = {(e) =>{
                             e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")

@@ -4092,6 +4092,11 @@
     "path-type" "^4.0.0"
     "yaml" "^1.10.0"
 
+"country-flag-icons@^1.4.10":
+  "integrity" "sha512-k4WXZ/WvWOSiYXRG1n8EYHNr1m/IX0GffKqAidaet5DrJsDOmJ8Q/8JvvONhZNnKYg24s4lvsm+9og1HcuIU/g=="
+  "resolved" "https://registry.npmjs.org/country-flag-icons/-/country-flag-icons-1.5.5.tgz"
+  "version" "1.5.5"
+
 "cross-spawn-windows-exe@^1.1.0", "cross-spawn-windows-exe@^1.2.0":
   "integrity" "sha512-mkLtJJcYbDCxEG7Js6eUnUNndWjyUZwJ3H7bErmmtOYU/Zb99DyUkpamuIZE0b3bhmJyZ7D90uS6f+CGxRRjOw=="
   "resolved" "https://registry.npmjs.org/cross-spawn-windows-exe/-/cross-spawn-windows-exe-1.2.0.tgz"
@@ -7687,6 +7692,14 @@
   "version" "3.0.0"
   dependencies:
     "escape-string-regexp" "^4.0.0"
+
+"material-ui-phone-number@^3.0.0":
+  "integrity" "sha512-wZX1PYv990nJUBko93AQxIfvFARHfMtnV/UT1/hVnbJP5x/K7MDuT5T2/ckIG6xyqTZ/wCcHdEK1P60uTOORwA=="
+  "resolved" "https://registry.npmjs.org/material-ui-phone-number/-/material-ui-phone-number-3.0.0.tgz"
+  "version" "3.0.0"
+  dependencies:
+    "country-flag-icons" "^1.4.10"
+    "lodash" "^4.17.21"
 
 "mdn-data@2.0.14":
   "integrity" "sha512-dn6wd0uw5GsdswPFfsgMp5NSB0/aDe6fK94YJV/AJDYXL6HVLWBsxeq7js7Ad+mU2K9LAlwpk6kN2D5mwCPVow=="

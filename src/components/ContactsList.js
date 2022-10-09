@@ -11,6 +11,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
+import AddContactDialog from './AddContactDialog';
 
 
 function stringToColor(string) {
@@ -43,8 +44,9 @@ function stringAvatar(name) {
 
 
 export default function ContactsList(props) {
-    const { contacts } = props
-    const { updateContact, quote } = props
+    const { contacts, company } = props
+    const { updateContact, quote, token } = props
+    const [ openCreate, setOpenCreate ] = React.useState(false);
 
     const handleChecked = (id, e) => {
         if(quote){
@@ -60,49 +62,59 @@ export default function ContactsList(props) {
 
     
     return (
-        <List 
-            sx={{ width: '100%', bgcolor: 'background.paper', pb:0 }}
-            subheader={<ListSubheader>Select Contact(s)</ListSubheader>}
-        >
-        {contacts? contacts.map((contact, key) => {
-            return (
-                <Box key={contact.id}>
-                    {key > 0? <Divider/> : ''}
-                <ListItem
-                    key={key}
-                    secondaryAction={
-                    <Checkbox
-                        edge="end"
-                        onChange={(e) => handleChecked(contact.id, e)}
-                        checked={quote? contact.quotes.includes(quote.id) : false}
-                    />
-                    }
-                    disablePadding
-                >
-                    <ListItemButton
-                        onClick={() => {console.log(contact)}}
-                    >
-                    <ListItemAvatar>
-                        <Avatar {...stringAvatar(contact.name)}/>
-                    </ListItemAvatar>
-                        <ListItemText 
-                            primary={`${contact.name}`}
-                            secondary={`${contact.job_title}`} />
-                    </ListItemButton>
-                </ListItem>
-                </Box>
-            );
-        }): ''}
-        <ListItem sx={{mt:1, mb:1}}>
-            <Button 
-                sx={{width:'100%'}}
-                variant='contained' 
-                color='secondary'
-                startIcon={<AddIcon />}
+        <div>
+            <List 
+                sx={{ width: '100%', bgcolor: 'background.paper', pb:0 }}
+                subheader={<ListSubheader>Select Contact(s)</ListSubheader>}
             >
-                Add Contact
-            </Button>
-        </ListItem>
-        </List>
+                {contacts? contacts.map((contact, key) => {
+                return (
+                    <Box key={contact.id}>
+                        {key > 0? <Divider/> : ''}
+                    <ListItem
+                        key={key}
+                        secondaryAction={
+                        <Checkbox
+                            edge="end"
+                            onChange={(e) => handleChecked(contact.id, e)}
+                            checked={quote? contact.quotes.includes(quote.id) : false}
+                        />
+                        }
+                        disablePadding
+                    >
+                        <ListItemButton
+                            onClick={() => {console.log(contact)}}
+                        >
+                        <ListItemAvatar>
+                            <Avatar {...stringAvatar(contact.name)}/>
+                        </ListItemAvatar>
+                            <ListItemText 
+                                primary={`${contact.name}`}
+                                secondary={`${contact.job_title}`} />
+                        </ListItemButton>
+                    </ListItem>
+                    </Box>
+                );
+                }): ''}
+                <ListItem sx={{mt:1, mb:1}}>
+                    <Button 
+                        sx={{width:'100%'}}
+                        onClick={() => {setOpenCreate(true)}}
+                        variant='contained' 
+                        color='secondary'
+                        startIcon={<AddIcon />}
+                    >
+                        Add Contact
+                    </Button>
+                </ListItem>
+            </List>
+            <AddContactDialog
+                open={openCreate}
+                token={token}
+                setOpen={setOpenCreate}
+                company={company}
+                quote={quote}
+            />
+        </div>
     );
 }

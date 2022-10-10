@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import CompanyServices from '../services/Company.services';
+import PhoneServices from '../services/Phone.services';
 import ContactServices from '../services/Contact.services';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -9,11 +9,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import Transition from './DialogTransistion'
-import AddressPicker from './AddressPicker';
 import CloseIcon from '@mui/icons-material/Close';
 import { Stack, IconButton } from '@mui/material';
-import DeleteConfirmationModal from './DeleteConfirmationModal';
-import ContactsList from './ContactsList';
 import InputAdornment from '@mui/material/InputAdornment';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import Typography from '@mui/material/Typography'
@@ -21,7 +18,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-
+import AddIcon from '@mui/icons-material/Add';
+import Chip from '@mui/material/Chip';
 
 export default function AddContactDialog(props) {
 
@@ -29,8 +27,9 @@ export default function AddContactDialog(props) {
         phone_number: '',
         phone_type: ''
     }
-
-    const [phoneValues, setPhoneValues] = React.useState(initialPhoneValues);
+    const [ extension, setExtension ] = useState('');
+    const [ phoneValues, setPhoneValues ] = useState(initialPhoneValues);
+    const [ phoneNumbers, setPhoneNumbers ] = useState([]);
     const { open, setOpen, token, handleOpenSnackbar, company, quote} = props;
 
     const initialValues = {
@@ -47,7 +46,7 @@ export default function AddContactDialog(props) {
 
     const handleClose = () => {
         setValues(initialValues)
-        setPhoneValues('')
+        setPhoneValues(initialPhoneValues)
         setOpen(false);
     };
 
@@ -63,6 +62,34 @@ export default function AddContactDialog(props) {
         });
     };
 
+    const createPhone = () => {
+        PhoneServices.createPhone(phoneValues, token)
+        .then(response => {
+            setPhoneNumbers(oldArray => [...oldArray, response.data])
+            handleOpenSnackbar('success', 'Phone Number was created')
+        })
+        .then(() => {
+            setPhoneValues(initialPhoneValues)
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    const deletePhone = (id) => {
+        PhoneServices.deletePhone(id, token)
+        .then(response => {
+            
+            handleOpenSnackbar('error', 'Phone was deleted')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+
     const handleInputValue = (e) => {
         const { name, value } = e.target;
         setValues({
@@ -72,9 +99,9 @@ export default function AddContactDialog(props) {
     };
 
     const handlePhoneValue = (value) => {
-        setValues({
-        ...values,
-        phone: [value]
+        setPhoneValues({
+            ...phoneValues,
+        phone_number: value
         });
     };
 
@@ -83,6 +110,22 @@ export default function AddContactDialog(props) {
         ...values,
         fax: value
         });
+    };
+
+
+    const handleChangeExtension = (e) => {
+        const { value } = e.target;
+        setExtension(value)
+    };
+
+    const handleCreatePhone = () => {
+        if (phoneValues.phone_number)
+            createPhone()
+    };
+
+    const handleDeletePhone = (id) => {
+        deletePhone(id)
+        setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id))
     };
 
 
@@ -159,10 +202,21 @@ export default function AddContactDialog(props) {
                         sx={{width: '100%'}}
                         id="phone"
                         name="phone"
-                        label="Phone"
-                        value={values.phone}
+                        label="Phone(s)"
+                        value={phoneValues.phone_number}
                         defaultCountry={'us'} 
                         onChange={handlePhoneValue}
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="extension"
+                        name="extension"
+                        label="Ext."
+                        value={extension}
+                        type="number"
+                        variant="standard"
+                        onChange={handleChangeExtension}
                     />
                     <FormControl sx={{ minWidth: 80 }}>
                         <InputLabel id="phone-type-label">Type</InputLabel>
@@ -170,32 +224,30 @@ export default function AddContactDialog(props) {
                             variant="standard"
                             labelId="phone-type-label"
                             id="phone-type"
+                            defaultValue={phoneValues.phone_type}
                             value={phoneValues.phone_type}
                             label="Type"
-                            onChange={(e) => {setPhoneValues({phone_type: e.target.value})}}
+                            onChange={(e) => {setPhoneValues({...phoneValues, phone_type: e.target.value})}}
                         >
                             <MenuItem value={'Mobile'}>Mobile</MenuItem>
                             <MenuItem value={'Direct'}>Direct</MenuItem>
                             <MenuItem value={'Work'}>Work</MenuItem>
+                            <MenuItem value={'Home'}>Home</MenuItem>
                         </Select>
                     </FormControl>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="extension"
-                        name="extension"
-                        label="Ext."
-                        // value={values.job_title}
-                        type="number"
-                        variant="standard"
-                        
-                        // onChange={handleInputValue}
-                        onInput = {(e) =>{
-                            e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
-                        }}
-                    />
-                    
+                    <IconButton 
+                        sx={{top: '7px', maxHeight: '2.75rem', border: 1 }}
+                        color="primary" 
+                        onClick={handleCreatePhone}
+                    >
+                        <AddIcon />
+                    </IconButton>
                     </Stack>
+                    {phoneNumbers.map((phone) => (
+                        <div key={phone.id}>
+                            <Chip label={`${phone.phone_number} | ${phone.phone_type}`} variant="outlined" onDelete={() => handleDeletePhone(phone.id)} />
+                        </div>
+                    ))}
                     <MuiPhoneNumber
                         margin="dense"
                         id="fax"

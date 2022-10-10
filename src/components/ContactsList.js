@@ -45,7 +45,7 @@ function stringAvatar(name) {
 
 export default function ContactsList(props) {
     const { contacts, company } = props
-    const { updateContact, quote, token } = props
+    const { updateContact, quote, token, handleOpenSnackbar } = props
     const [ openCreate, setOpenCreate ] = React.useState(false);
 
     const handleChecked = (id, e) => {
@@ -111,6 +111,7 @@ export default function ContactsList(props) {
             <AddContactDialog
                 open={openCreate}
                 token={token}
+                handleOpenSnackbar={handleOpenSnackbar}
                 setOpen={setOpenCreate}
                 company={company}
                 quote={quote}

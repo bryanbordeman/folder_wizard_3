@@ -176,6 +176,7 @@ export default function CustomerDialog(props) {
                         updateContact={updateContact}
                         quote={quote}
                         token={token}
+                        handleOpenSnackbar={handleOpenSnackbar}
                     />
                     <AddressPicker
                         token={token} 

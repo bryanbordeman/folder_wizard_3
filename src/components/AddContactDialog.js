@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import Transition from './DialogTransistion'
 import CloseIcon from '@mui/icons-material/Close';
-import { Stack, IconButton } from '@mui/material';
+import { Stack, IconButton, Divider } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import Typography from '@mui/material/Typography'
@@ -26,9 +26,16 @@ export default function AddContactDialog(props) {
     const initialPhoneValues = {
         phone_number: '',
         phone_type: ''
-    }
+    };
+
+    const initialFaxValues = {
+        phone_number: '',
+        phone_type: 'Fax'
+    };
+
     const [ extension, setExtension ] = useState('');
     const [ phoneValues, setPhoneValues ] = useState(initialPhoneValues);
+    const [ faxValues, setFaxValues ] = useState(initialFaxValues);
     const [ phoneNumbers, setPhoneNumbers ] = useState([]);
     const { open, setOpen, token, handleOpenSnackbar, company, quote} = props;
 
@@ -80,7 +87,7 @@ export default function AddContactDialog(props) {
     const deletePhone = (id) => {
         PhoneServices.deletePhone(id, token)
         .then(response => {
-            
+            setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id))
             handleOpenSnackbar('error', 'Phone was deleted')
         })
         .catch(e => {
@@ -88,7 +95,6 @@ export default function AddContactDialog(props) {
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         });
     };
-
 
     const handleInputValue = (e) => {
         const { name, value } = e.target;
@@ -106,16 +112,18 @@ export default function AddContactDialog(props) {
     };
 
     const handleFaxValue = (value) => {
-        setValues({
-        ...values,
-        fax: value
+        setFaxValues({
+        ...faxValues,
+        phone_number: value
         });
     };
 
 
     const handleChangeExtension = (e) => {
         const { value } = e.target;
-        setExtension(value)
+            if (value > -1) {
+                setExtension(value)
+            };
     };
 
     const handleCreatePhone = () => {
@@ -125,7 +133,6 @@ export default function AddContactDialog(props) {
 
     const handleDeletePhone = (id) => {
         deletePhone(id)
-        setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id))
     };
 
 
@@ -175,7 +182,7 @@ export default function AddContactDialog(props) {
                         label="Full Name"
                         value={values.name}
                         type="text"
-                        variant="standard"
+                        // variant="standard"
                         fullWidth
                         onChange={handleInputValue}
                         onInput = {(e) =>{
@@ -190,12 +197,30 @@ export default function AddContactDialog(props) {
                         label="Job Title"
                         value={values.job_title}
                         type="text"
-                        variant="standard"
+                        // variant="standard"
                         fullWidth
                         onChange={handleInputValue}
                         onInput = {(e) =>{
                             e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
                         }}
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="email"
+                        name="email"
+                        label="Email"
+                        type="text"
+                        // variant="standard"
+                        value={values.email}
+                        fullWidth
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start">www.</InputAdornment>,
+                        }}
+                        onChange={handleInputValue}
+                        // onInput = {(e) =>{
+                        //     e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
+                        // }}
                     />
                     <Stack direction="row" spacing={2}>
                     <MuiPhoneNumber
@@ -205,6 +230,7 @@ export default function AddContactDialog(props) {
                         label="Phone(s)"
                         value={phoneValues.phone_number}
                         defaultCountry={'us'} 
+                        variant='outlined'
                         onChange={handlePhoneValue}
                     />
                     <TextField
@@ -215,13 +241,12 @@ export default function AddContactDialog(props) {
                         label="Ext."
                         value={extension}
                         type="number"
-                        variant="standard"
+                        
                         onChange={handleChangeExtension}
                     />
-                    <FormControl sx={{ minWidth: 80 }}>
+                    <FormControl sx={{ minWidth: 120 }}>
                         <InputLabel id="phone-type-label">Type</InputLabel>
                         <Select
-                            variant="standard"
                             labelId="phone-type-label"
                             id="phone-type"
                             defaultValue={phoneValues.phone_type}
@@ -248,33 +273,31 @@ export default function AddContactDialog(props) {
                             <Chip label={`${phone.phone_number} | ${phone.phone_type}`} variant="outlined" onDelete={() => handleDeletePhone(phone.id)} />
                         </div>
                     ))}
-                    <MuiPhoneNumber
-                        margin="dense"
-                        id="fax"
-                        name="fax"
-                        label="Fax"
-                        value={values.fax}
-                        defaultCountry={'us'} 
-                        onChange={handleFaxValue}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="email"
-                        name="email"
-                        label="Email"
-                        type="text"
-                        variant="standard"
-                        value={values.email}
-                        fullWidth
-                        InputProps={{
-                            startAdornment: <InputAdornment position="start">www.</InputAdornment>,
-                        }}
-                        onChange={handleInputValue}
-                        // onInput = {(e) =>{
-                        //     e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
-                        // }}
-                    />
+                    <Stack direction="row" spacing={2}>
+                        <MuiPhoneNumber
+                            margin="dense"
+                            variant='outlined'
+                            sx={{width: '100%'}}
+                            id="fax"
+                            name="fax"
+                            label="Fax"
+                            value={values.fax}
+                            defaultCountry={'us'} 
+                            onChange={handleFaxValue}
+                        />
+                        <IconButton 
+                            sx={{top: '14px', maxHeight: '2.75rem', border: 1 }}
+                            color="primary" 
+                            // onClick={handleCreatePhone}
+                        >
+                            <AddIcon />
+                        </IconButton>
+                        </Stack>
+                            {/* <Chip 
+                                label={`${faxValues.phone_number} | ${faxValues.phone_type}`} 
+                                variant="outlined" 
+                                onDelete={() => handleDeletePhone()}
+                            /> */}
                     </Stack>
                 </DialogContent>
                 <DialogActions>

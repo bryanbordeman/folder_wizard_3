@@ -44,7 +44,7 @@ function stringAvatar(name) {
 
 
 export default function ContactsList(props) {
-    const { contacts, company } = props
+    const { contacts, setContacts, company } = props
     const { updateContact, quote, token, handleOpenSnackbar } = props
     const [ openCreate, setOpenCreate ] = React.useState(false);
 
@@ -115,6 +115,8 @@ export default function ContactsList(props) {
                 setOpen={setOpenCreate}
                 company={company}
                 quote={quote}
+                setContacts={setContacts}
+                contacts={contacts}
             />
         </div>
     );

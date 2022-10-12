@@ -172,6 +172,7 @@ export default function CustomerDialog(props) {
                     />
                     <ContactsList
                         contacts={contacts}
+                        setContacts={setContacts}
                         company={customer}
                         updateContact={updateContact}
                         quote={quote}

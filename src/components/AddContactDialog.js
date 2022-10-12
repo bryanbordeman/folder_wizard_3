@@ -37,19 +37,28 @@ export default function AddContactDialog(props) {
     const [ phoneValues, setPhoneValues ] = useState(initialPhoneValues);
     const [ faxValues, setFaxValues ] = useState(initialFaxValues);
     const [ phoneNumbers, setPhoneNumbers ] = useState([]);
-    const { open, setOpen, token, handleOpenSnackbar, company, quote} = props;
+    const [ faxNumber , setFaxNumber ] = useState('');
+    const { open, setOpen, token, handleOpenSnackbar, company, quote, contacts, setContacts} = props;
 
     const initialValues = {
         name: '',
         job_title: '',
-        company: company.id,
-        phone: '',
+        company: '',
+        phone: [],
         fax: '',
         email: '',
-        quotes: [quote.id],
+        quotes: [],
         projects: [],
     }
     const [ values, setValues ] = useState(initialValues);
+
+    useEffect(() => {
+        setValues({
+            ...values,
+            company: company.id,
+            quotes: [quote.id]
+            });
+    },[open])
 
     const handleClose = () => {
         setValues(initialValues)
@@ -59,9 +68,10 @@ export default function AddContactDialog(props) {
 
     const createContact = () => {
         ContactServices.createContact(values, token)
-        .then(response => {
-            // console.log(response.data)
-            handleOpenSnackbar('info', 'Contact was updated')
+        .then((response) => {
+            setContacts(oldArray => [...oldArray, response.data])
+            handleOpenSnackbar('success', 'Contact was created')
+            handleClose();
         })
         .catch(e => {
             console.log(e);
@@ -69,14 +79,19 @@ export default function AddContactDialog(props) {
         });
     };
 
-    const createPhone = () => {
-        PhoneServices.createPhone(phoneValues, token)
+    const createPhone = (type, data) => {
+        PhoneServices.createPhone(data, token)
         .then(response => {
-            setPhoneNumbers(oldArray => [...oldArray, response.data])
-            handleOpenSnackbar('success', 'Phone Number was created')
-        })
-        .then(() => {
-            setPhoneValues(initialPhoneValues)
+            if(type === 'phone'){
+                setPhoneNumbers(oldArray => [...oldArray, response.data]);
+                setPhoneValues(initialPhoneValues)
+                setValues({...values, phone: [...values.phone, response.data.id]})
+                handleOpenSnackbar('success', 'Phone Number was created')
+            }else{
+                setFaxNumber(response.data)
+                setFaxValues(initialFaxValues)
+                handleOpenSnackbar('success', 'Fax Number was created')
+            }
         })
         .catch(e => {
             console.log(e);
@@ -84,11 +99,17 @@ export default function AddContactDialog(props) {
         });
     };
 
-    const deletePhone = (id) => {
+    const deletePhone = (type, id) => {
         PhoneServices.deletePhone(id, token)
         .then(response => {
-            setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id))
-            handleOpenSnackbar('error', 'Phone was deleted')
+            if(type === 'phone'){
+                setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id))
+                // setValues({...values, phone: [values.phone.filter((phone) => phone.id !== id)]})
+                handleOpenSnackbar('error', 'Phone was deleted')
+            }else{
+                setFaxNumber('')
+                handleOpenSnackbar('error', 'Fax was deleted')
+            }
         })
         .catch(e => {
             console.log(e);
@@ -118,7 +139,6 @@ export default function AddContactDialog(props) {
         });
     };
 
-
     const handleChangeExtension = (e) => {
         const { value } = e.target;
             if (value > -1) {
@@ -127,14 +147,30 @@ export default function AddContactDialog(props) {
     };
 
     const handleCreatePhone = () => {
-        if (phoneValues.phone_number)
-            createPhone()
+        if (phoneValues.phone_number){
+            createPhone('phone', phoneValues)
+        };
+        
+    };
+
+    const handleCreateFax = () => {
+        if (faxValues.phone_number && !faxNumber){
+            createPhone('fax', faxValues)
+        };
+        
     };
 
     const handleDeletePhone = (id) => {
-        deletePhone(id)
+        deletePhone('phone', id)
     };
 
+    const handleDeleteFax = (id) => {
+        deletePhone('fax', id)
+    };
+
+    const handleCreateContact = () => {
+        createContact();
+    };
 
     return (
         <Box >
@@ -288,21 +324,25 @@ export default function AddContactDialog(props) {
                         <IconButton 
                             sx={{top: '14px', maxHeight: '2.75rem', border: 1 }}
                             color="primary" 
-                            // onClick={handleCreatePhone}
+                            onClick={handleCreateFax}
                         >
                             <AddIcon />
                         </IconButton>
                         </Stack>
-                            {/* <Chip 
-                                label={`${faxValues.phone_number} | ${faxValues.phone_type}`} 
-                                variant="outlined" 
-                                onDelete={() => handleDeletePhone()}
-                            /> */}
+                        {faxNumber ? 
+                            <div>
+                                <Chip 
+                                    label={`${faxNumber.phone_number} | ${faxNumber.phone_type}`} 
+                                    variant="outlined" 
+                                    onDelete={() => handleDeleteFax(faxNumber.id)}
+                                />
+                            </div>
+                            : ''}
                     </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button variant='outlined' onClick={handleClose}>Cancel</Button>
-                    <Button variant='contained' color='secondary' onClick={createContact}>Add</Button>
+                    <Button variant='contained' color='secondary' onClick={handleCreateContact}>Add</Button>
                 </DialogActions>
             </Dialog>
         </Box>

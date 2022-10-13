@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import Transition from './DialogTransistion'
 import CloseIcon from '@mui/icons-material/Close';
-import { Stack, IconButton, Divider } from '@mui/material';
+import { Stack, IconButton } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import Typography from '@mui/material/Typography'
@@ -34,11 +34,12 @@ export default function AddContactDialog(props) {
     };
 
     const [ extension, setExtension ] = useState('');
+    const [ isValid, setIsValid ] = useState(true);
     const [ phoneValues, setPhoneValues ] = useState(initialPhoneValues);
     const [ faxValues, setFaxValues ] = useState(initialFaxValues);
     const [ phoneNumbers, setPhoneNumbers ] = useState([]);
     const [ faxNumber , setFaxNumber ] = useState('');
-    const { open, setOpen, token, handleOpenSnackbar, company, quote, contacts, setContacts} = props;
+    const { open, setOpen, token, handleOpenSnackbar, company, quote, setContacts, contact, setContact} = props;
 
     const initialValues = {
         name: '',
@@ -50,20 +51,41 @@ export default function AddContactDialog(props) {
         quotes: [],
         projects: [],
     }
+
     const [ values, setValues ] = useState(initialValues);
 
+    const initialErrors = {
+        name:'',
+        email: '',
+    };
+
+    const [ errors, setErrors ] = useState(initialErrors);
+
     useEffect(() => {
+        if (!contact){
         setValues({
             ...values,
             company: company.id,
             quotes: [quote.id]
             });
+        } else {
+            setValues(contact)
+            // if (values.email == null){
+            //     setValues({
+            //         ...values,
+            //         email: '',
+            //         });
+            // }
+        }
     },[open])
 
     const handleClose = () => {
         setValues(initialValues)
         setPhoneValues(initialPhoneValues)
         setOpen(false);
+        if(contact){
+            setContact('')
+        }
     };
 
     const createContact = () => {
@@ -77,6 +99,10 @@ export default function AddContactDialog(props) {
             console.log(e);
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         });
+    };
+
+    const updateContact = () => {
+        console.log('updated!!!')
     };
 
     const createPhone = (type, data) => {
@@ -150,14 +176,12 @@ export default function AddContactDialog(props) {
         if (phoneValues.phone_number){
             createPhone('phone', phoneValues)
         };
-        
     };
 
     const handleCreateFax = () => {
         if (faxValues.phone_number && !faxNumber){
             createPhone('fax', faxValues)
         };
-        
     };
 
     const handleDeletePhone = (id) => {
@@ -168,8 +192,37 @@ export default function AddContactDialog(props) {
         deletePhone('fax', id)
     };
 
-    const handleCreateContact = () => {
-        createContact();
+    const handleValidation = () => {
+        let formIsValid = true;
+        let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
+
+        if(values.name === ''){
+            setErrors({...errors, name: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, name: null});
+            }, 3000);
+        }
+        else if(values.email.length > 0 && !regex.test(values.email)){
+            setErrors({...errors, email: 'Invalid Email'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, email: null});
+            }, 3000);
+        }
+
+        setIsValid(formIsValid)
+        setTimeout(() => {
+            setIsValid(true);
+        }, 3000);
+        if(contact){
+            return formIsValid? updateContact() : null
+        }else{
+            return formIsValid? createContact() : null
+        }
+        return formIsValid? createContact() : null
     };
 
     return (
@@ -224,6 +277,8 @@ export default function AddContactDialog(props) {
                         onInput = {(e) =>{
                             e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
                         }}
+                        helperText={errors.name === null ? '' : errors.name}
+                        error={errors.name? true : false}
                     />
                     <TextField
                         autoFocus
@@ -254,6 +309,8 @@ export default function AddContactDialog(props) {
                             startAdornment: <InputAdornment position="start">www.</InputAdornment>,
                         }}
                         onChange={handleInputValue}
+                        helperText={errors.email === null ? '' : errors.email}
+                        error={errors.email? true : false}
                         // onInput = {(e) =>{
                         //     e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
                         // }}
@@ -342,7 +399,10 @@ export default function AddContactDialog(props) {
                 </DialogContent>
                 <DialogActions>
                     <Button variant='outlined' onClick={handleClose}>Cancel</Button>
-                    <Button variant='contained' color='secondary' onClick={handleCreateContact}>Add</Button>
+                    <Button 
+                        variant='contained' 
+                        color={`${isValid? 'primary' : 'error'}`}
+                        onClick={handleValidation}>{contact? 'Update' : 'Add'}</Button>
                 </DialogActions>
             </Dialog>
         </Box>

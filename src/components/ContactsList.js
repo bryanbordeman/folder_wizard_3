@@ -47,6 +47,7 @@ export default function ContactsList(props) {
     const { contacts, setContacts, company } = props
     const { updateContact, quote, token, handleOpenSnackbar } = props
     const [ openCreate, setOpenCreate ] = React.useState(false);
+    const [ contact, setContact ] = React.useState('');
 
     const handleChecked = (id, e) => {
         if(quote){
@@ -58,6 +59,11 @@ export default function ContactsList(props) {
         };
             updateContact(id, editContact[0])
         }
+    };
+
+    const handleEdit = (contact) => {
+        setContact(contact);
+        setOpenCreate(true)
     };
 
     
@@ -83,7 +89,7 @@ export default function ContactsList(props) {
                         disablePadding
                     >
                         <ListItemButton
-                            onClick={() => {console.log(contact)}}
+                            onClick={() => {handleEdit(contact)}}
                         >
                         <ListItemAvatar>
                             <Avatar {...stringAvatar(contact.name)}/>
@@ -116,7 +122,8 @@ export default function ContactsList(props) {
                 company={company}
                 quote={quote}
                 setContacts={setContacts}
-                contacts={contacts}
+                contact={contact}
+                setContact={setContact}
             />
         </div>
     );

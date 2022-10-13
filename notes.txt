@@ -1,3 +1,3 @@
 - fix ManagerPicker. Warning
 - fix update customer dialog customerPicker
-- Add title to contact
+- Fix email null value on update contact

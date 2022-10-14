@@ -124,6 +124,7 @@ export default function ContactsList(props) {
                 setContacts={setContacts}
                 contact={contact}
                 setContact={setContact}
+                contacts={contacts}
             />
         </div>
     );

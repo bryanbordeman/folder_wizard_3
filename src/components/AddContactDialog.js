@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PhoneServices from '../services/Phone.services';
 import ContactServices from '../services/Contact.services';
 import Button from '@mui/material/Button';
@@ -39,7 +39,7 @@ export default function AddContactDialog(props) {
     const [ faxValues, setFaxValues ] = useState(initialFaxValues);
     const [ phoneNumbers, setPhoneNumbers ] = useState([]);
     const [ faxNumber , setFaxNumber ] = useState('');
-    const { open, setOpen, token, handleOpenSnackbar, company, quote, setContacts, contact, setContact} = props;
+    const { open, setOpen, token, handleOpenSnackbar, company, quote, setContacts, contacts, contact, setContact} = props;
 
     const initialValues = {
         name: '',
@@ -61,7 +61,7 @@ export default function AddContactDialog(props) {
 
     const [ errors, setErrors ] = useState(initialErrors);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!contact){
         setValues({
             ...values,
@@ -70,18 +70,19 @@ export default function AddContactDialog(props) {
             });
         } else {
             setValues(contact)
-            // if (values.email == null){
-            //     setValues({
-            //         ...values,
-            //         email: '',
-            //         });
-            // }
+            contact.phone.forEach(element => getPhone('phone',element));
+            if(contact.fax){
+                getPhone('fax', contact.fax)
+            }
         }
     },[open])
 
     const handleClose = () => {
         setValues(initialValues)
         setPhoneValues(initialPhoneValues)
+        setPhoneNumbers([])
+        setFaxNumber('')
+        setFaxValues(initialFaxValues)
         setOpen(false);
         if(contact){
             setContact('')
@@ -102,7 +103,16 @@ export default function AddContactDialog(props) {
     };
 
     const updateContact = () => {
-        console.log('updated!!!')
+        ContactServices.updateContact( contact.id, values, token)
+        .then((response) => {
+            setContacts(oldArray => [...oldArray, response.data])
+            handleOpenSnackbar('info', 'Contact was updated')
+            handleClose();
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
     };
 
     const createPhone = (type, data) => {
@@ -135,6 +145,21 @@ export default function AddContactDialog(props) {
             }else{
                 setFaxNumber('')
                 handleOpenSnackbar('error', 'Fax was deleted')
+            }
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    const getPhone = (type, id) => {
+        PhoneServices.getPhone(id, token)
+        .then(response => {
+            if(type === 'phone'){
+                setPhoneNumbers(oldArray => [...oldArray, response.data]);
+            }else{
+                setFaxNumber(response.data)
             }
         })
         .catch(e => {
@@ -222,7 +247,6 @@ export default function AddContactDialog(props) {
         }else{
             return formIsValid? createContact() : null
         }
-        return formIsValid? createContact() : null
     };
 
     return (
@@ -303,7 +327,7 @@ export default function AddContactDialog(props) {
                         label="Email"
                         type="text"
                         // variant="standard"
-                        value={values.email}
+                        value={values.email === null? '' : values.email}
                         fullWidth
                         InputProps={{
                             startAdornment: <InputAdornment position="start">www.</InputAdornment>,
@@ -368,13 +392,12 @@ export default function AddContactDialog(props) {
                     ))}
                     <Stack direction="row" spacing={2}>
                         <MuiPhoneNumber
-                            margin="dense"
                             variant='outlined'
                             sx={{width: '100%'}}
                             id="fax"
                             name="fax"
                             label="Fax"
-                            value={values.fax}
+                            value={faxValues.phone_number}
                             defaultCountry={'us'} 
                             onChange={handleFaxValue}
                         />

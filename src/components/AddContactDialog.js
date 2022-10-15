@@ -83,6 +83,7 @@ export default function AddContactDialog(props) {
         setPhoneNumbers([])
         setFaxNumber('')
         setFaxValues(initialFaxValues)
+        setExtension('')
         setOpen(false);
         if(contact){
             setContact('')
@@ -105,7 +106,9 @@ export default function AddContactDialog(props) {
     const updateContact = () => {
         ContactServices.updateContact( contact.id, values, token)
         .then((response) => {
-            setContacts(oldArray => [...oldArray, response.data])
+            let updatedContacts = contacts.filter(element => element.id !== response.data.id)
+            updatedContacts.push(response.data)
+            setContacts(updatedContacts)
             handleOpenSnackbar('info', 'Contact was updated')
             handleClose();
         })
@@ -121,6 +124,7 @@ export default function AddContactDialog(props) {
             if(type === 'phone'){
                 setPhoneNumbers(oldArray => [...oldArray, response.data]);
                 setPhoneValues(initialPhoneValues)
+                setExtension('');
                 setValues({...values, phone: [...values.phone, response.data.id]})
                 handleOpenSnackbar('success', 'Phone Number was created')
             }else{
@@ -140,7 +144,7 @@ export default function AddContactDialog(props) {
         .then(response => {
             if(type === 'phone'){
                 setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id))
-                // setValues({...values, phone: [values.phone.filter((phone) => phone.id !== id)]})
+                setValues({...values, phone: [values.phone.filter((phone) => phone.id !== id)]})
                 handleOpenSnackbar('error', 'Phone was deleted')
             }else{
                 setFaxNumber('')
@@ -199,7 +203,15 @@ export default function AddContactDialog(props) {
 
     const handleCreatePhone = () => {
         if (phoneValues.phone_number){
-            createPhone('phone', phoneValues)
+            if(extension){
+                let updateExtension = phoneValues
+                updateExtension.phone_number = `${phoneValues.phone_number}, press ${extension}`
+                createPhone('phone', updateExtension);
+            }
+            else{
+                createPhone('phone', phoneValues)
+            }
+            
         };
     };
 
@@ -242,8 +254,9 @@ export default function AddContactDialog(props) {
         setTimeout(() => {
             setIsValid(true);
         }, 3000);
+
         if(contact){
-            return formIsValid? updateContact() : null
+            return formIsValid && contact? updateContact() : null
         }else{
             return formIsValid? createContact() : null
         }

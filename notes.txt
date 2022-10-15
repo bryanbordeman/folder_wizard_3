@@ -1,3 +1,4 @@
 - fix ManagerPicker. Warning
 - fix update customer dialog customerPicker
-- Fix email null value on update contact
+- Fix email validation on updateContact 
+- Fix delete Fax on updateContact

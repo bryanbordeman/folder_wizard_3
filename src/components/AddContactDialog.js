@@ -130,6 +130,7 @@ export default function AddContactDialog(props) {
             }else{
                 setFaxNumber(response.data)
                 setFaxValues(initialFaxValues)
+                setValues({...values, fax: response.data.id})
                 handleOpenSnackbar('success', 'Fax Number was created')
             }
         })
@@ -139,17 +140,25 @@ export default function AddContactDialog(props) {
         });
     };
 
-    const deletePhone = (type, id) => {
+    const deletePhone = (id) => {
         PhoneServices.deletePhone(id, token)
         .then(response => {
-            if(type === 'phone'){
-                setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id))
-                setValues({...values, phone: [values.phone.filter((phone) => phone.id !== id)]})
-                handleOpenSnackbar('error', 'Phone was deleted')
-            }else{
-                setFaxNumber('')
-                handleOpenSnackbar('error', 'Fax was deleted')
-            }
+            setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id));
+            setValues({...values, phone: [values.phone.filter((phone) => phone !== id)][0]});
+            handleOpenSnackbar('error', 'Phone was deleted')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    const deleteFax = (id) => {
+        PhoneServices.deletePhone(id, token)
+        .then(response => {
+            setFaxNumber('');
+            setValues({...values, fax: ''});
+            handleOpenSnackbar('error', 'Fax was deleted')
         })
         .catch(e => {
             console.log(e);
@@ -222,11 +231,16 @@ export default function AddContactDialog(props) {
     };
 
     const handleDeletePhone = (id) => {
-        deletePhone('phone', id)
+        deletePhone(id);
+        // setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id));
+        // setValues({...values, phone: [values.phone.filter((phone) => phone !== id)][0]});
     };
 
     const handleDeleteFax = (id) => {
-        deletePhone('fax', id)
+        // console.log(id)
+        deleteFax(id);
+        // setFaxNumber('');
+        // setValues({...values, fax: ''});
     };
 
     const handleValidation = () => {

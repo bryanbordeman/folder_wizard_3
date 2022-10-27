@@ -47,6 +47,7 @@ export default function CustomerDialog(props) {
         ContactServices.getContactCompany(id, token)
         .then(response => {
             setContacts(response.data)
+            // console.log(contacts)
             // handleOpenSnackbar('info', 'Company was updated')
         })
         .catch(e => {
@@ -238,7 +239,6 @@ export default function CustomerDialog(props) {
                 setOpenDelete={setOpenDelete}
                 message={deleteMessage}
                 deleteAction={deleteCompany}
-
             />
         </Box>
     );

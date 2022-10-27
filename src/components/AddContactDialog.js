@@ -39,7 +39,16 @@ export default function AddContactDialog(props) {
     const [ faxValues, setFaxValues ] = useState(initialFaxValues);
     const [ phoneNumbers, setPhoneNumbers ] = useState([]);
     const [ faxNumber , setFaxNumber ] = useState('');
-    const { open, setOpen, token, handleOpenSnackbar, company, quote, setContacts, contacts, contact, setContact} = props;
+    const { open, 
+            setOpen, 
+            token, 
+            handleOpenSnackbar, 
+            company, 
+            quote, 
+            setContacts, 
+            contacts, 
+            contact, 
+            setContact} = props;
 
     const initialValues = {
         name: '',
@@ -66,7 +75,8 @@ export default function AddContactDialog(props) {
         setValues({
             ...values,
             company: company.id,
-            quotes: [quote.id]
+            // quotes: [quote.id]
+            quotes: []
             });
         } else {
             setValues(contact)
@@ -188,6 +198,10 @@ export default function AddContactDialog(props) {
         [name]: value
         });
     };
+
+    const handleDeleteContact = (id) => {
+        console.log(`deleted!! ${id}`)
+    }
 
     const handlePhoneValue = (value) => {
         setPhoneValues({
@@ -448,11 +462,19 @@ export default function AddContactDialog(props) {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
+                    {contact? 
+                        <Button 
+                            variant='outlined' 
+                            color='error'
+                            onClick={() => handleDeleteContact(contact.id)}>Delete
+                        </Button>
+                    :''}
                     <Button variant='outlined' onClick={handleClose}>Cancel</Button>
                     <Button 
                         variant='contained' 
                         color={`${isValid? 'primary' : 'error'}`}
-                        onClick={handleValidation}>{contact? 'Update' : 'Add'}</Button>
+                        onClick={handleValidation}>{contact? 'Update' : 'Add'}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Box>

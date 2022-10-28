@@ -51,6 +51,7 @@ export default function ContactsList(props) {
 
     const handleChecked = (id, e) => {
         if(quote){
+            // Edit Opportunity
             const editContact = contacts.filter(element => element.id === id)
             if(!e.target.checked){
                 editContact[0].quotes = editContact[0].quotes.filter(element => element.id === quote.id)
@@ -58,6 +59,9 @@ export default function ContactsList(props) {
                 editContact[0].quotes.push(quote.id)
             };
                 updateContact(id, editContact[0])
+        }else{
+            // Create Opportunity
+            console.log(id)
         }
     };
 
@@ -125,6 +129,7 @@ export default function ContactsList(props) {
                 contact={contact}
                 setContact={setContact}
                 contacts={contacts}
+                updateContact={updateContact}
             />
         </div>
     );

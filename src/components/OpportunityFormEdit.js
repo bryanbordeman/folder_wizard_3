@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import QuoteDataService from '../services/Quote.services';
 import ProjectCategoryService from '../services/ProjectCategory.services';
+import ContactServices from '../services/Contact.services';
 import ProjectTypeService from '../services/ProjectType.services';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -22,6 +23,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 export default function OpportunityFormEdit(props) {
 
     const { token, user, handleOpenSnackbar } = props;
+    const [ contacts, setContacts ] = useState('');
     const [ quote , setQuote ] = useState('');
     const [ isValid, setIsValid ] = useState(true);
     const [ clear, setClear ] = useState(false);
@@ -52,7 +54,6 @@ export default function OpportunityFormEdit(props) {
         manager: user.id,
         address:'',
         customers:[],
-        contacts:[],
         prevailing_rate: false,
         travel_job: false,
         notes:''
@@ -77,7 +78,6 @@ export default function OpportunityFormEdit(props) {
         manager: '',
         address:'',
         customers:'',
-        contacts:'',
     };
 
     const [ errors, setErrors ] = useState(initialErrors);
@@ -142,7 +142,7 @@ export default function OpportunityFormEdit(props) {
     const updateQuote = () => {
         QuoteDataService.updateQuote(quote.id, values, token)
         .then(response => {
-            handleOpenSnackbar('info', 'Your time has been submitted for approval');
+            handleOpenSnackbar('info', 'Quote was updated');
             setQuote('');
             handleClearInputs();
             navigate('/');
@@ -153,6 +153,24 @@ export default function OpportunityFormEdit(props) {
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         });
     };
+
+    // contact API's  ---------------------------------
+
+    const updateContact = (id, data) => {
+        ContactServices.updateContact( id, data, token)
+        .then((response) => {
+            let updatedContacts = contacts.filter(element => element.id !== response.data.id)
+            updatedContacts.push(response.data)
+            setContacts(updatedContacts)
+            handleOpenSnackbar('info', 'Contact was updated')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    // ---------------------------------
 
     const renameFolder = (existingDir, newDir) => {
         // send data to electron for renaming folder
@@ -367,6 +385,8 @@ export default function OpportunityFormEdit(props) {
                     isDisabled={isDisabled}
                 />
                 <CustomerPicker
+                    contacts={contacts}
+                    setContacts={setContacts}
                     token={token} 
                     handleOpenSnackbar={handleOpenSnackbar}
                     values={values}
@@ -376,6 +396,7 @@ export default function OpportunityFormEdit(props) {
                     setClear={setClear}
                     quote={quote}
                     isDisabled={isDisabled}
+                    updateContact={updateContact}
                 />
                 <Divider/>
                 <Stack 

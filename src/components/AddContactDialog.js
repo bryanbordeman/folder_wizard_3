@@ -48,7 +48,9 @@ export default function AddContactDialog(props) {
             setContacts, 
             contacts, 
             contact, 
-            setContact} = props;
+            setContact,
+            updateContact
+        } = props;
 
     const initialValues = {
         name: '',
@@ -113,20 +115,25 @@ export default function AddContactDialog(props) {
         });
     };
 
-    const updateContact = () => {
-        ContactServices.updateContact( contact.id, values, token)
-        .then((response) => {
-            let updatedContacts = contacts.filter(element => element.id !== response.data.id)
-            updatedContacts.push(response.data)
-            setContacts(updatedContacts)
-            handleOpenSnackbar('info', 'Contact was updated')
-            handleClose();
-        })
-        .catch(e => {
-            console.log(e);
-            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
-        });
-    };
+    const handleUpdateContact = () =>{
+        updateContact(contact.id, values);
+        handleClose();
+    }
+
+    // const updateContact = () => {
+    //     ContactServices.updateContact( contact.id, values, token)
+    //     .then((response) => {
+    //         let updatedContacts = contacts.filter(element => element.id !== response.data.id)
+    //         updatedContacts.push(response.data)
+    //         setContacts(updatedContacts)
+    //         handleOpenSnackbar('info', 'Contact was updated')
+    //         handleClose();
+    //     })
+    //     .catch(e => {
+    //         console.log(e);
+    //         handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+    //     });
+    // };
 
     const createPhone = (type, data) => {
         PhoneServices.createPhone(data, token)
@@ -284,7 +291,7 @@ export default function AddContactDialog(props) {
         }, 3000);
 
         if(contact){
-            return formIsValid && contact? updateContact() : null
+            return formIsValid && contact? handleUpdateContact() : null
         }else{
             return formIsValid? createContact() : null
         }

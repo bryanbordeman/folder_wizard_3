@@ -18,8 +18,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 export default function CustomerDialog(props) {
     const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
+    const { updateContact } = props;
+    const { contacts, setContacts } = props;
     const [ customer, setCustomer ] = useState({});
-    const [ contacts, setContacts ] = useState('');
     const [ values, setValues ] = useState('');
     const [ openDelete, setOpenDelete ] = useState(false);
     const [ deleteMessage, setDeleteMessage] = useState({title: '', content:''});
@@ -70,17 +71,17 @@ export default function CustomerDialog(props) {
         });
     };
 
-    const updateContact = (id, data) => {
-        ContactServices.updateContact(id, data, token)
-        .then(response => {
-            // console.log(response.data)
-            handleOpenSnackbar('info', 'Contact was updated')
-        })
-        .catch(e => {
-            console.log(e);
-            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
-        });
-    }
+    // const updateContact = (id, data) => {
+    //     ContactServices.updateContact(id, data, token)
+    //     .then(response => {
+    //         // console.log(response.data)
+    //         handleOpenSnackbar('info', 'Contact was updated')
+    //     })
+    //     .catch(e => {
+    //         console.log(e);
+    //         handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+    //     });
+    // }
 
     const handleUpdate= () => {
         if(customer !== customerData){

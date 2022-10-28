@@ -14,6 +14,7 @@ import QuoteDataService from '../services/Quote.services';
 import TaskDataService from '../services/Task.services'
 import ProjectCategoryService from '../services/ProjectCategory.services';
 import ProjectTypeService from '../services/ProjectType.services';
+import ContactServices from '../services/Contact.services';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import VerificationDialogQuote from './VerificationDialogQuote'
@@ -21,6 +22,7 @@ import LoadingBackdrop from './LoadingBackdrop';
 
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props;
+    const [ contacts, setContacts ] = useState('');
     const [ clear, setClear ] = useState(false);
     const [ isValid, setIsValid ] = useState(true);
     const [ openVerification, setOpenVerification ] = useState(false);
@@ -53,7 +55,6 @@ export default function OpportunityForm(props) {
         manager: user.id,
         address:'',
         customers:[],
-        contacts:[],
         prevailing_rate: false,
         travel_job: false,
         notes:''
@@ -69,7 +70,6 @@ export default function OpportunityForm(props) {
         manager: '',
         address:'',
         customers:'',
-        contacts:'',
     };
 
     const [ errors, setErrors ] = useState(initialErrors);
@@ -212,6 +212,26 @@ export default function OpportunityForm(props) {
         });
 
     };
+
+    // contact API's  ---------------------------------
+
+    const updateContact = (id, data) => {
+        ContactServices.updateContact( id, data, token)
+        .then((response) => {
+            let updatedContacts = contacts.filter(element => element.id !== response.data.id)
+            updatedContacts.push(response.data)
+            setContacts(updatedContacts)
+            handleOpenSnackbar('info', 'Contact was updated')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    // ---------------------------------
+
+
 
     const getQuotes = () => {
         QuoteDataService.getAll(token)
@@ -417,6 +437,8 @@ export default function OpportunityForm(props) {
                     setClear={setClear}
                 />
                 <CustomerPicker
+                    contacts={contacts}
+                    setContacts={setContacts}
                     token={token} 
                     handleOpenSnackbar={handleOpenSnackbar}
                     values={values}
@@ -424,6 +446,7 @@ export default function OpportunityForm(props) {
                     setValues={setValues}
                     clear={clear}
                     setClear={setClear}
+                    updateContact={updateContact}
                 />
                 <Divider/>
                 <Stack 

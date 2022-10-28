@@ -47,6 +47,7 @@ function stringAvatar(name) {
 
 export default function CustomerPicker(props) {
     const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear, quote, isDisabled} = props
+    const { updateContact, contacts, setContacts } = props
     const [ customer, setCustomer ] = useState(''); // existing value picked from list
     const [ editCustomer, setEditCustomer ] = useState(''); // used for dialog
     const [ customers, setCustomers ] = useState([]); // list of customers picked
@@ -243,6 +244,9 @@ export default function CustomerPicker(props) {
                 setCustomers={setCustomers}
                 customers={customers}
                 quote={quote}
+                updateContact={updateContact}
+                contacts={contacts}
+                setContacts={setContacts}
             />
         </Box>
         </Stack>

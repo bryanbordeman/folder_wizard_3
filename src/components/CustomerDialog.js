@@ -18,7 +18,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 export default function CustomerDialog(props) {
     const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
-    const { updateContact } = props;
+    const { updateContact, checked, setChecked } = props;
     const { contacts, setContacts } = props;
     const [ customer, setCustomer ] = useState({});
     const [ values, setValues ] = useState('');
@@ -173,6 +173,8 @@ export default function CustomerDialog(props) {
                         }}
                     />
                     <ContactsList
+                        checked={checked}
+                        setChecked={setChecked}
                         contacts={contacts}
                         setContacts={setContacts}
                         company={customer}

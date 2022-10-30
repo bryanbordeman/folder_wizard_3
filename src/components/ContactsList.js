@@ -44,26 +44,41 @@ function stringAvatar(name) {
 
 
 export default function ContactsList(props) {
+    const { checked, setChecked } = props
     const { contacts, setContacts, company } = props
     const { updateContact, quote, token, handleOpenSnackbar } = props
     const [ openCreate, setOpenCreate ] = React.useState(false);
     const [ contact, setContact ] = React.useState('');
 
-    const handleChecked = (id, e) => {
-        if(quote){
-            // Edit Opportunity
-            const editContact = contacts.filter(element => element.id === id)
-            if(!e.target.checked){
-                editContact[0].quotes = editContact[0].quotes.filter(element => element.id === quote.id)
-            }else{
-                editContact[0].quotes.push(quote.id)
-            };
-                updateContact(id, editContact[0])
+    // const handleChecked = (id, e) => {
+    //     if(quote){
+    //         // Edit Opportunity
+    //         const editContact = contacts.filter(element => element.id === id)
+    //         if(!e.target.checked){
+    //             editContact[0].quotes = editContact[0].quotes.filter(element => element.id === quote.id)
+    //         }else{
+    //             editContact[0].quotes.push(quote.id)
+    //         };
+    //             updateContact(id, editContact[0])
+    //     }else{
+    //         // Create Opportunity
+    //         console.log(id)
+    //     }
+    // };
+
+    const handleChecked = (contact) => {
+        // make list of checked contacts
+        // console.log(contact)
+        const isChecked = checked.includes(contact);
+        if(!isChecked){
+            setChecked(oldArray => [...oldArray, contact]);
         }else{
-            // Create Opportunity
-            console.log(id)
+            const newList = checked.filter(c => c !== contact)
+            setChecked(newList);
+            
         }
-    };
+        
+    }
 
     const handleEdit = (contact) => {
         setContact(contact);
@@ -86,8 +101,9 @@ export default function ContactsList(props) {
                         secondaryAction={
                         <Checkbox
                             edge="end"
-                            onChange={(e) => handleChecked(contact.id, e)}
-                            checked={quote? contact.quotes.includes(quote.id) : false}
+                            onChange={() => handleChecked(contact)}
+                            // checked={quote? contact.quotes.includes(quote.id) : false}
+                            checked={checked.includes(contact)}
                         />
                         }
                         disablePadding

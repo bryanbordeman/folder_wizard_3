@@ -23,6 +23,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 export default function OpportunityFormEdit(props) {
 
     const { token, user, handleOpenSnackbar } = props;
+    const [ checked, setChecked ] = React.useState([]);
     const [ contacts, setContacts ] = useState('');
     const [ quote , setQuote ] = useState('');
     const [ isValid, setIsValid ] = useState(true);
@@ -385,6 +386,8 @@ export default function OpportunityFormEdit(props) {
                     isDisabled={isDisabled}
                 />
                 <CustomerPicker
+                    checked={checked}
+                    setChecked={setChecked}
                     contacts={contacts}
                     setContacts={setContacts}
                     token={token} 

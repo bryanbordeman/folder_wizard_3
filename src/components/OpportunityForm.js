@@ -23,6 +23,7 @@ import LoadingBackdrop from './LoadingBackdrop';
 export default function OpportunityForm(props) {
     const { token, user, handleOpenSnackbar } = props;
     const [ contacts, setContacts ] = useState('');
+    const [ checked, setChecked ] = React.useState([]);
     const [ clear, setClear ] = useState(false);
     const [ isValid, setIsValid ] = useState(true);
     const [ openVerification, setOpenVerification ] = useState(false);
@@ -33,6 +34,7 @@ export default function OpportunityForm(props) {
     const [ isSubmitted, setIsSubmitted ] = useState(false);
     const [ categoryCode, setCategoryCode ] = useState('');
     const [ typeCode , setTypeCode ] = useState('');
+    const [ isUpdateContact, setIsUpdateContact ] = useState(false);
 
 
     const didMount = useRef(false);
@@ -110,6 +112,19 @@ export default function OpportunityForm(props) {
 
     useEffect(() => {
         if (didMount.current) {
+            // if quote pk is updated and isUpdateContact is true
+            if (isUpdateContact) {
+                checked.map((c) => {
+                    updateContact(c.id, c)
+                });
+            }
+        } else {
+            didMount.current = true;
+        }
+    }, [isUpdateContact]);
+
+    useEffect(() => {
+        if (didMount.current) {
             // if quote pk is updated and create task is true
             if (confirmation.folder === false) {
                 retrieveLastQuote();
@@ -183,9 +198,10 @@ export default function OpportunityForm(props) {
                 database: true,
             }));
             // setTimeout(function(){
-                if(isCreateTask){
+                if(isCreateTask || checked.length > 0){
                     getQuotes();
-                } else {
+                }
+                else {
                     createFolder();
                     // setOpenConfirmation(true);
                 };
@@ -231,12 +247,20 @@ export default function OpportunityForm(props) {
 
     // ---------------------------------
 
-
-
     const getQuotes = () => {
         QuoteDataService.getAll(token)
         .then(response => {
-            setTask({...task, quote : response.data[0].id});
+            if(isCreateTask){
+                setTask({...task, quote : response.data[0].id});
+            }
+            if(checked.length > 0){
+                let updatedList = []
+                checked.map((c) => {
+                    updatedList.push({...c, quotes: [...c.quotes, response.data[0].id]})
+                });
+                setChecked(updatedList);
+                setIsUpdateContact(true);
+            }
         })
         .catch( e => {
             console.log(e);
@@ -352,6 +376,7 @@ export default function OpportunityForm(props) {
     const handleClearInputs = () => {
         setClear(true);
         setValues(initialValues);
+        setChecked([]);
         retrieveNextQuoteNumber();
     };
 
@@ -437,6 +462,8 @@ export default function OpportunityForm(props) {
                     setClear={setClear}
                 />
                 <CustomerPicker
+                    checked={checked}
+                    setChecked={setChecked}
                     contacts={contacts}
                     setContacts={setContacts}
                     token={token} 

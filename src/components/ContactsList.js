@@ -45,40 +45,23 @@ function stringAvatar(name) {
 
 export default function ContactsList(props) {
     const { checked, setChecked } = props
-    const { contacts, setContacts, company } = props
+    const { contacts, setContacts, company, open } = props
     const { updateContact, quote, token, handleOpenSnackbar } = props
     const [ openCreate, setOpenCreate ] = React.useState(false);
     const [ contact, setContact ] = React.useState('');
 
-    // const handleChecked = (id, e) => {
-    //     if(quote){
-    //         // Edit Opportunity
-    //         const editContact = contacts.filter(element => element.id === id)
-    //         if(!e.target.checked){
-    //             editContact[0].quotes = editContact[0].quotes.filter(element => element.id === quote.id)
-    //         }else{
-    //             editContact[0].quotes.push(quote.id)
-    //         };
-    //             updateContact(id, editContact[0])
-    //     }else{
-    //         // Create Opportunity
-    //         console.log(id)
-    //     }
-    // };
-
     const handleChecked = (contact) => {
         // make list of checked contacts
-        // console.log(contact)
-        const isChecked = checked.includes(contact);
+        const isChecked = checked.includes(contact); // check if its already in list
         if(!isChecked){
+            // if not already in list add to list
             setChecked(oldArray => [...oldArray, contact]);
         }else{
-            const newList = checked.filter(c => c !== contact)
+            // remove from list
+            const newList = checked.filter(c => c !== contact);
             setChecked(newList);
-            
-        }
-        
-    }
+        };
+    };
 
     const handleEdit = (contact) => {
         setContact(contact);

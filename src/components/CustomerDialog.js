@@ -18,7 +18,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 export default function CustomerDialog(props) {
     const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
-    const { updateContact, checked, setChecked } = props;
+    const { updateContact, checked, setChecked, setEditContacts } = props;
     const { contacts, setContacts } = props;
     const [ customer, setCustomer ] = useState({});
     const [ values, setValues ] = useState('');
@@ -42,13 +42,27 @@ export default function CustomerDialog(props) {
 
     const handleClose = () => {
         setOpen(false);
+        setChecked([]);
+        setEditContacts([]);
+        setContacts([]);
     };
 
     const recieveContacts = (id) => {
         ContactServices.getContactCompany(id, token)
         .then(response => {
             setContacts(response.data)
-            // console.log(contacts)
+            // add contacts to checked list in edit opportunity form
+            if(quote){
+                const editContacts = response.data
+                editContacts.map((c) => {
+                    if(c.quotes.includes(quote.id)){
+                        setChecked(oldArray => [...oldArray, c]);
+                        setEditContacts(oldArray => [...oldArray, c]);
+                        // setChecked([c]);
+                    }
+                })
+            }
+            
             // handleOpenSnackbar('info', 'Company was updated')
         })
         .catch(e => {

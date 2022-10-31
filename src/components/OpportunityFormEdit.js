@@ -25,6 +25,8 @@ export default function OpportunityFormEdit(props) {
     const { token, user, handleOpenSnackbar } = props;
     const [ checked, setChecked ] = React.useState([]);
     const [ contacts, setContacts ] = useState('');
+    const [ editContacts, setEditContacts ] = useState([]);
+    const [ difference, setDifference ] = useState([]);
     const [ quote , setQuote ] = useState('');
     const [ isValid, setIsValid ] = useState(true);
     const [ clear, setClear ] = useState(false);
@@ -41,6 +43,43 @@ export default function OpportunityFormEdit(props) {
             setIsDisabled(true);
         }
     },[quote])
+
+    useEffect(() => {
+        //! add and remove contacts here for edit
+        if (didMount.current) {
+            if(quote){
+                // const existingContacts = []
+                // contacts.map((c) => {
+                //     if(c.quotes.includes(quote.id)){
+                //         existingContacts.push(c)
+                //     }
+                // })
+                
+                // setDifference(editContacts.filter(x => !checked.includes(x)))
+                setDifference(checked
+                    .filter(x => !editContacts.includes(x))
+                    .concat(editContacts.filter(x => !checked.includes(x)))
+                )
+                
+                // const d = existingContacts.filter(x => !checked.includes(x))
+                // d.map((c) => {
+                //     // get index of quote id in contact quotes list
+                //     let index = c.quotes.indexOf(quote.id)
+                //     if (index > -1) { // only splice array when item is found
+                //         c.quotes.splice(index, 1); // remove quote id from array
+                //     }
+                    //! make function to update contact here
+                    //* removes quote from quotes in contact state
+                    // const tempContacts = contacts.filter(cnt => cnt.id !== c.id)
+                    // setContacts(tempContacts)
+                    // setContacts(oldArray => [...oldArray, c])
+                // })
+            }
+        } else {
+            didMount.current = true;
+        }
+    },[checked]);
+
 
 
     const initialValues = {
@@ -155,7 +194,7 @@ export default function OpportunityFormEdit(props) {
         });
     };
 
-    // contact API's  ---------------------------------
+     // contact API's  ---------------------------------
 
     const updateContact = (id, data) => {
         ContactServices.updateContact( id, data, token)
@@ -184,11 +223,17 @@ export default function OpportunityFormEdit(props) {
     };
 
     const handleSubmit = () => {
-        const existingDir = `${quote.number} ${quote.name} ${quote.project_category.code}-${quote.project_type.code}`
-        const newDir = `${quote.number} ${values.name} ${categoryCode}-${typeCode}`
-        updateQuote();
-        if (existingDir !== newDir){
-            renameFolder(existingDir, newDir)
+        
+        // const existingDir = `${quote.number} ${quote.name} ${quote.project_category.code}-${quote.project_type.code}`
+        // const newDir = `${quote.number} ${values.name} ${categoryCode}-${typeCode}`
+        // updateQuote();
+        // // if name, category, or type changed update folder name.
+        // if (existingDir !== newDir){
+        //     renameFolder(existingDir, newDir)
+        // }
+        //! update contacts here
+        if(difference || checked.length > editContacts.length){
+            console.log('changed!!')
         }
         
     };
@@ -400,6 +445,7 @@ export default function OpportunityFormEdit(props) {
                     quote={quote}
                     isDisabled={isDisabled}
                     updateContact={updateContact}
+                    setEditContacts={setEditContacts}
                 />
                 <Divider/>
                 <Stack 

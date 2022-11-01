@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import PhoneServices from '../services/Phone.services';
 import ContactServices from '../services/Contact.services';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -34,6 +35,8 @@ export default function AddContactDialog(props) {
     };
 
     const [ extension, setExtension ] = useState('');
+    const [ openDelete, setOpenDelete ] = useState(false);
+    const [ deleteMessage, setDeleteMessage] = useState({title: '', content:''});
     const [ isValid, setIsValid ] = useState(true);
     const [ phoneValues, setPhoneValues ] = useState(initialPhoneValues);
     const [ faxValues, setFaxValues ] = useState(initialFaxValues);
@@ -49,7 +52,7 @@ export default function AddContactDialog(props) {
             contacts, 
             contact, 
             setContact,
-            updateContact
+            updateContact,
         } = props;
 
     const initialValues = {
@@ -115,25 +118,27 @@ export default function AddContactDialog(props) {
         });
     };
 
+    const deleteContact = () => {
+        ContactServices.deleteContact(contact.id, token)
+        .then((response) => {
+            handleOpenSnackbar('error', 'Contact was deleted');
+            // update contacts list here
+            const contactId = response.request.responseURL.toString().split("/").at(-1);
+            const tempList = contacts.filter((c) => (c.id != contactId))
+            setContacts(tempList)
+            handleClose();
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
     const handleUpdateContact = () =>{
+        // console.log(contact.id, values);
         updateContact(contact.id, values);
         handleClose();
     }
-
-    // const updateContact = () => {
-    //     ContactServices.updateContact( contact.id, values, token)
-    //     .then((response) => {
-    //         let updatedContacts = contacts.filter(element => element.id !== response.data.id)
-    //         updatedContacts.push(response.data)
-    //         setContacts(updatedContacts)
-    //         handleOpenSnackbar('info', 'Contact was updated')
-    //         handleClose();
-    //     })
-    //     .catch(e => {
-    //         console.log(e);
-    //         handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
-    //     });
-    // };
 
     const createPhone = (type, data) => {
         PhoneServices.createPhone(data, token)
@@ -206,9 +211,10 @@ export default function AddContactDialog(props) {
         });
     };
 
-    const handleDeleteContact = (id) => {
-        console.log(`deleted!! ${id}`)
-    }
+    const handleDeleteContact = (contact) => {
+        setDeleteMessage({title: 'Permanently delete contact?', content: `${contact.name}`})
+        setOpenDelete(true)
+    };
 
     const handlePhoneValue = (value) => {
         setPhoneValues({
@@ -276,7 +282,7 @@ export default function AddContactDialog(props) {
                 setErrors({...errors, name: null});
             }, 3000);
         }
-        else if(values.email.length > 0 && !regex.test(values.email)){
+        else if(values.email !== null && values.email.length > 0 && !regex.test(values.email)){
             setErrors({...errors, email: 'Invalid Email'});
             formIsValid = false;
             setTimeout(() => {
@@ -473,7 +479,7 @@ export default function AddContactDialog(props) {
                         <Button 
                             variant='outlined' 
                             color='error'
-                            onClick={() => handleDeleteContact(contact.id)}>Delete
+                            onClick={() => handleDeleteContact(contact)}>Delete
                         </Button>
                     :''}
                     <Button variant='outlined' onClick={handleClose}>Cancel</Button>
@@ -484,6 +490,12 @@ export default function AddContactDialog(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <DeleteConfirmationModal
+                openDelete={openDelete}
+                setOpenDelete={setOpenDelete}
+                message={deleteMessage}
+                deleteAction={deleteContact}
+            />
         </Box>
     );
 }

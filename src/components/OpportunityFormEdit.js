@@ -202,6 +202,16 @@ export default function OpportunityFormEdit(props) {
             let updatedContacts = contacts.filter(element => element.id !== response.data.id)
             updatedContacts.push(response.data)
             setContacts(updatedContacts)
+            //! problem with updated contacts is here. need to update data not replace data 
+
+            // let updatedContacts = contacts.map((c) => {
+            //     if(c.id === response.data.id){
+            //         c = response.data
+            //     }
+            // })
+            
+            // setContacts(updatedContacts)
+
             handleOpenSnackbar('info', 'Contact was updated')
         })
         .catch(e => {
@@ -224,18 +234,13 @@ export default function OpportunityFormEdit(props) {
 
     const handleSubmit = () => {
         
-        // const existingDir = `${quote.number} ${quote.name} ${quote.project_category.code}-${quote.project_type.code}`
-        // const newDir = `${quote.number} ${values.name} ${categoryCode}-${typeCode}`
-        // updateQuote();
-        // // if name, category, or type changed update folder name.
-        // if (existingDir !== newDir){
-        //     renameFolder(existingDir, newDir)
-        // }
-        //! update contacts here
-        if(difference || checked.length > editContacts.length){
-            console.log('changed!!')
+        const existingDir = `${quote.number} ${quote.name} ${quote.project_category.code}-${quote.project_type.code}`
+        const newDir = `${quote.number} ${values.name} ${categoryCode}-${typeCode}`
+        updateQuote();
+        // if name, category, or type changed update folder name.
+        if (existingDir !== newDir){
+            renameFolder(existingDir, newDir)
         }
-        
     };
 
     const handleValidation = () => {
@@ -445,6 +450,7 @@ export default function OpportunityFormEdit(props) {
                     quote={quote}
                     isDisabled={isDisabled}
                     updateContact={updateContact}
+                    difference={difference}
                     setEditContacts={setEditContacts}
                 />
                 <Divider/>

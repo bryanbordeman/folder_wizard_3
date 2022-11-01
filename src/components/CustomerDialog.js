@@ -18,7 +18,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 export default function CustomerDialog(props) {
     const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
-    const { updateContact, checked, setChecked, setEditContacts } = props;
+    const { updateContact, checked, setChecked, setEditContacts, difference } = props;
     const { contacts, setContacts } = props;
     const [ customer, setCustomer ] = useState({});
     const [ values, setValues ] = useState('');
@@ -31,20 +31,13 @@ export default function CustomerDialog(props) {
             recieveContacts(customerData.id)
     }, [open])
 
-    // useEffect(() => {
-    //     if(quoteContacts.length > 0){
-    //         quoteContacts.map((id) => {
-    //             recieveContact(id)
-    //         })
-    //     };
-    // },[quoteContacts])
-    
-
     const handleClose = () => {
         setOpen(false);
         setChecked([]);
-        setEditContacts([]);
         setContacts([]);
+        if(quote){
+            setEditContacts([]);
+        }
     };
 
     const recieveContacts = (id) => {
@@ -71,33 +64,24 @@ export default function CustomerDialog(props) {
         });
     }
 
-    const recieveContact = (id) => {
-        ContactServices.getContact(id, token)
-        .then(response => {
-            const tempData = (response.data)
-            tempData.quotes.push(quote.id)
-            updateContact(id, tempData)
-            // handleOpenSnackbar('info', 'Company was updated')
-        })
-        .catch(e => {
-            console.log(e);
-            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
-        });
-    };
-
-    // const updateContact = (id, data) => {
-    //     ContactServices.updateContact(id, data, token)
-    //     .then(response => {
-    //         // console.log(response.data)
-    //         handleOpenSnackbar('info', 'Contact was updated')
-    //     })
-    //     .catch(e => {
-    //         console.log(e);
-    //         handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
-    //     });
-    // }
 
     const handleUpdate= () => {
+        if(difference){
+            difference.map((c) => {
+                if(c.quotes.includes(quote.id)){
+                    let index = c.quotes.indexOf(quote.id)
+                    if (index > -1) { // only splice array when item is found
+                        c.quotes.splice(index, 1); // remove quote id from array
+                    }
+                    updateContact(c.id, c)
+                }else{
+                    let updatedContact = c 
+                    updatedContact.quotes.push(quote.id)
+                    updateContact(c.id, updatedContact)
+                }
+            })
+            handleClose();
+        }
         if(customer !== customerData){
             updateCompany(customerData.id, customer);
             const updatedCustomers = customers.map(el => (
@@ -193,6 +177,7 @@ export default function CustomerDialog(props) {
                         setContacts={setContacts}
                         company={customer}
                         updateContact={updateContact}
+                        difference={difference}
                         quote={quote}
                         token={token}
                         handleOpenSnackbar={handleOpenSnackbar}

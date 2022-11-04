@@ -45,61 +45,79 @@ function stringAvatar(name) {
 
 export default function ContactsList(props) {
     const { checked, setChecked } = props
+    // const [ localChecked, setLocalChecked ] = React.useState([]);
     const { contacts, setContacts, company, open } = props
     const { updateContact, quote, token, handleOpenSnackbar } = props
     const [ openCreate, setOpenCreate ] = React.useState(false);
     const [ contact, setContact ] = React.useState('');
+    const didMount = React.useRef(false);
+
+    // React.useEffect(() => {
+    //     if (didMount.current) {
+    //         //! update checked here
+    //         contacts.map((c) => {
+    //             handleChecked(c)
+    //         })
+            
+    //     } else {
+    //         didMount.current = true;
+    //     }
+    // },[contacts]);
 
     const handleChecked = (contact) => {
         // make list of checked contacts
-        const isChecked = checked.includes(contact); // check if its already in list
+        //! need to prevent duplicates
+        
+        // const isChecked = checked.includes(contact); // check if its already in list. does't work
+        const isChecked = checked.find(({id}) => id === contact.id) //! prevents duplicates
         if(!isChecked){
             // if not already in list add to list
             setChecked(oldArray => [...oldArray, contact]);
         }else{
             // remove from list
-            const newList = checked.filter(c => c !== contact);
+            const newList = checked.filter(c => c.id !== contact.id);
             setChecked(newList);
         };
     };
 
     const handleEdit = (contact) => {
         setContact(contact);
-        setOpenCreate(true)
+        setOpenCreate(true);
     };
 
-    
     return (
         <div>
             <List 
                 sx={{ width: '100%', bgcolor: 'background.paper', pb:0 }}
                 subheader={<ListSubheader>Select Contact(s)</ListSubheader>}
             >
-                {contacts? contacts.map((contact, key) => {
+                {contacts? contacts.map((c, key) => {
                 return (
-                    <Box key={contact.id}>
+                    <Box key={c.id}>
                         {key > 0? <Divider/> : ''}
                     <ListItem
-                        key={key}
+                        // key={c.id}
                         secondaryAction={
                         <Checkbox
                             edge="end"
-                            onChange={() => handleChecked(contact)}
+                            onChange={() => handleChecked(c)}
                             // checked={quote? contact.quotes.includes(quote.id) : false}
-                            checked={checked.includes(contact)}
+                            // checked={checked.includes(c)} //! need to fix this
+                            checked={checked.find(({id}) => id === c.id)? true : false} //! stick after update
+                            
                         />
                         }
                         disablePadding
                     >
                         <ListItemButton
-                            onClick={() => {handleEdit(contact)}}
+                            onClick={() => {handleEdit(c)}}
                         >
                         <ListItemAvatar>
-                            <Avatar {...stringAvatar(contact.name)}/>
+                            <Avatar {...stringAvatar(c.name)}/>
                         </ListItemAvatar>
                             <ListItemText 
-                                primary={`${contact.name}`}
-                                secondary={`${contact.job_title}`} />
+                                primary={`${c.name}`}
+                                secondary={`${c.job_title}`} />
                         </ListItemButton>
                     </ListItem>
                     </Box>

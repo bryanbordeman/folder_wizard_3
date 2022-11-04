@@ -45,42 +45,18 @@ export default function OpportunityFormEdit(props) {
     },[quote])
 
     useEffect(() => {
-        //! add and remove contacts here for edit
+        // add and remove contacts here for edit
         if (didMount.current) {
             if(quote){
-                // const existingContacts = []
-                // contacts.map((c) => {
-                //     if(c.quotes.includes(quote.id)){
-                //         existingContacts.push(c)
-                //     }
-                // })
-                
-                // setDifference(editContacts.filter(x => !checked.includes(x)))
                 setDifference(checked
                     .filter(x => !editContacts.includes(x))
                     .concat(editContacts.filter(x => !checked.includes(x)))
                 )
-                
-                // const d = existingContacts.filter(x => !checked.includes(x))
-                // d.map((c) => {
-                //     // get index of quote id in contact quotes list
-                //     let index = c.quotes.indexOf(quote.id)
-                //     if (index > -1) { // only splice array when item is found
-                //         c.quotes.splice(index, 1); // remove quote id from array
-                //     }
-                    //! make function to update contact here
-                    //* removes quote from quotes in contact state
-                    // const tempContacts = contacts.filter(cnt => cnt.id !== c.id)
-                    // setContacts(tempContacts)
-                    // setContacts(oldArray => [...oldArray, c])
-                // })
             }
         } else {
             didMount.current = true;
         }
     },[checked]);
-
-
 
     const initialValues = {
         is_active: true,
@@ -199,19 +175,14 @@ export default function OpportunityFormEdit(props) {
     const updateContact = (id, data) => {
         ContactServices.updateContact( id, data, token)
         .then((response) => {
-            let updatedContacts = contacts.filter(element => element.id !== response.data.id)
-            updatedContacts.push(response.data)
-            setContacts(updatedContacts)
-            //! problem with updated contacts is here. need to update data not replace data 
-
-            // let updatedContacts = contacts.map((c) => {
-            //     if(c.id === response.data.id){
-            //         c = response.data
-            //     }
-            // })
+            const newState = contacts.map(obj => {
+                if (obj.id === id) {
+                return response.data;
+                }
+                return obj;
+            });
+            setContacts(newState);
             
-            // setContacts(updatedContacts)
-
             handleOpenSnackbar('info', 'Contact was updated')
         })
         .catch(e => {

@@ -33,7 +33,7 @@ export default function CustomerDialog(props) {
 
     const handleClose = () => {
         setOpen(false);
-        setChecked([]);
+        setChecked([]); //! need to fix this. should not need to be cleared
         setContacts([]);
         if(quote){
             setEditContacts([]);
@@ -63,7 +63,6 @@ export default function CustomerDialog(props) {
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         });
     }
-
 
     const handleUpdate= () => {
         if(difference){

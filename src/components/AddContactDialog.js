@@ -46,8 +46,7 @@ export default function AddContactDialog(props) {
             setOpen, 
             token, 
             handleOpenSnackbar, 
-            company, 
-            quote, 
+            company,
             setContacts, 
             contacts, 
             contact, 
@@ -80,7 +79,6 @@ export default function AddContactDialog(props) {
         setValues({
             ...values,
             company: company.id,
-            // quotes: [quote.id]
             quotes: []
             });
         } else {
@@ -135,10 +133,9 @@ export default function AddContactDialog(props) {
     };
 
     const handleUpdateContact = () =>{
-        // console.log(contact.id, values);
         updateContact(contact.id, values);
         handleClose();
-    }
+    };
 
     const createPhone = (type, data) => {
         PhoneServices.createPhone(data, token)
@@ -247,7 +244,6 @@ export default function AddContactDialog(props) {
             else{
                 createPhone('phone', phoneValues)
             }
-            
         };
     };
 
@@ -259,15 +255,10 @@ export default function AddContactDialog(props) {
 
     const handleDeletePhone = (id) => {
         deletePhone(id);
-        // setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id));
-        // setValues({...values, phone: [values.phone.filter((phone) => phone !== id)][0]});
     };
 
     const handleDeleteFax = (id) => {
-        // console.log(id)
         deleteFax(id);
-        // setFaxNumber('');
-        // setValues({...values, fax: ''});
     };
 
     const handleValidation = () => {
@@ -322,7 +313,7 @@ export default function AddContactDialog(props) {
                     <div style={{display: 'flex', justifyContent: 'space-between'}}>
                         <Stack>
                             <Typography variant="h4">
-                                {'Create Contact'}
+                                {contact? 'Edit Contact' : 'Create Contact' }
                             </Typography>
                             <Typography variant="subtitle1">
                                 {`${company.name}`}

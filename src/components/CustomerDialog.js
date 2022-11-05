@@ -15,6 +15,14 @@ import { Stack, IconButton } from '@mui/material';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import ContactsList from './ContactsList';
 import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import MuiPhoneNumber from 'material-ui-phone-number';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import AddIcon from '@mui/icons-material/Add';
+import Chip from '@mui/material/Chip';
+
 
 export default function CustomerDialog(props) {
     const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
@@ -33,7 +41,7 @@ export default function CustomerDialog(props) {
 
     const handleClose = () => {
         setOpen(false);
-        setChecked([]); //! need to fix this. should not need to be cleared
+        setChecked([]);
         setContacts([]);
         if(quote){
             setEditContacts([]);
@@ -51,11 +59,9 @@ export default function CustomerDialog(props) {
                     if(c.quotes.includes(quote.id)){
                         setChecked(oldArray => [...oldArray, c]);
                         setEditContacts(oldArray => [...oldArray, c]);
-                        // setChecked([c]);
                     }
                 })
             }
-            
             // handleOpenSnackbar('info', 'Company was updated')
         })
         .catch(e => {
@@ -94,8 +100,14 @@ export default function CustomerDialog(props) {
     };
 
     const handleUpdateCustomer = (e) => {
-        const result = e.target.value
-        setCustomer({'id': customerData.id, 'name' : result});
+        const { name, value } = e.target;
+        setCustomer({
+        ...customer,
+        'id': customerData.id,
+        [name]: name === 'website'? `http://${value}` : value
+        });
+        // const result = e.target.value
+        // setCustomer({'id': customerData.id, 'name' : result});
     };
 
     const updateCompany = (id, data) => {
@@ -128,7 +140,7 @@ export default function CustomerDialog(props) {
     const handleDeleteCompany = (customer) => {
         setDeleteMessage({title: 'Permanently delete company?', content: `${customer.name}`})
         setOpenDelete(true)
-    }
+    };
 
     return (
         <Box>
@@ -160,6 +172,7 @@ export default function CustomerDialog(props) {
                         autoFocus
                         margin="dense"
                         id="name"
+                        name="name"
                         label="Company Name"
                         defaultValue={customerData.name}
                         type="text"
@@ -187,30 +200,58 @@ export default function CustomerDialog(props) {
                         values={values}
                         setValues={setValues}
                     />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="phone"
-                        label="Phone"
-                        type="text"
-                        fullWidth
-                        // onChange={handleUpdateCustomer}
-                        onInput = {(e) =>{
-                            e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
-                        }}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="fax"
-                        label="Fax"
-                        type="text"
-                        fullWidth
-                        // onChange={handleUpdateCustomer}
-                        onInput = {(e) =>{
-                            e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
-                        }}
-                    />
+                    <Stack direction="row" spacing={2}>
+                        <MuiPhoneNumber
+                            sx={{width: '100%'}}
+                            id="phone"
+                            name="phone"
+                            label="Phone(s)"
+                            // value={phoneValues.phone_number}
+                            defaultCountry={'us'} 
+                            variant='outlined'
+                            // onChange={handlePhoneValue}
+                        />
+                        <IconButton 
+                            sx={{top: '7px', maxHeight: '2.75rem', border: 1 }}
+                            color="primary" 
+                            // onClick={handleCreatePhone}
+                        >
+                            <AddIcon />
+                        </IconButton>
+                    </Stack>
+                    {/* {phoneNumbers.map((phone) => (
+                        <div key={phone.id}>
+                            <Chip label={`${phone.phone_number} | ${phone.phone_type}`} variant="outlined" onDelete={() => handleDeletePhone(phone.id)} />
+                        </div>
+                    ))} */}
+                    <Stack direction="row" spacing={2}>
+                        <MuiPhoneNumber
+                            variant='outlined'
+                            sx={{width: '100%'}}
+                            id="fax"
+                            name="fax"
+                            label="Fax"
+                            // value={faxValues.phone_number}
+                            defaultCountry={'us'} 
+                            // onChange={handleFaxValue}
+                        />
+                        <IconButton 
+                            sx={{top: '14px', maxHeight: '2.75rem', border: 1 }}
+                            color="primary" 
+                            // onClick={handleCreateFax}
+                        >
+                            <AddIcon />
+                        </IconButton>
+                        </Stack>
+                        {/* {faxNumber ? 
+                            <div>
+                                <Chip 
+                                    label={`${faxNumber.phone_number} | ${faxNumber.phone_type}`} 
+                                    variant="outlined" 
+                                    onDelete={() => handleDeleteFax(faxNumber.id)}
+                                />
+                            </div>
+                            : ''} */}
                     <TextField
                         autoFocus
                         margin="dense"
@@ -218,14 +259,17 @@ export default function CustomerDialog(props) {
                         label="Website"
                         type="text"
                         fullWidth
+                        name="website"
+                        defaultValue={`${customerData.website}`.split('/').slice(2).join('/')} // slice off http:// from start of string
+                        onChange={handleUpdateCustomer}
                         InputProps={{
                             startAdornment: <InputAdornment position="start">http://</InputAdornment>,
                             // endAdornment: <InputAdornment position="end"><.com></InputAdornment>,
                         }}
-                        // onChange={handleUpdateCustomer}
-                        onInput = {(e) =>{
-                            e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
-                        }}
+                        
+                        // onInput = {(e) =>{
+                        //     e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
+                        // }}
                     />
                     </Stack>
                 </DialogContent>

@@ -160,7 +160,6 @@ export default function OpportunityForm(props) {
     const retrieveLastQuote= () => {
         QuoteDataService.getLastQuote(token)
         .then(response => {
-            // const lastQuoteObject = response.data;
             if (confirmation.folder === false) {
                 deleteQuote(response.data.last_quote_id)
             }
@@ -197,7 +196,6 @@ export default function OpportunityForm(props) {
                 ...prevState,
                 database: true,
             }));
-            // setTimeout(function(){
                 if(isCreateTask || checked.length > 0){
                     getQuotes();
                 }
@@ -205,7 +203,6 @@ export default function OpportunityForm(props) {
                     createFolder();
                     // setOpenConfirmation(true);
                 };
-            // }, 1000); 
         })
         .catch( e => {
             console.log(e);

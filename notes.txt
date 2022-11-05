@@ -1,3 +1,2 @@
 - fix ManagerPicker. Warning
-- fix update customer dialog customerPicker
 - Fix email validation on updateContact 

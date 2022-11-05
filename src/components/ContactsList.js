@@ -50,26 +50,10 @@ export default function ContactsList(props) {
     const { updateContact, quote, token, handleOpenSnackbar } = props
     const [ openCreate, setOpenCreate ] = React.useState(false);
     const [ contact, setContact ] = React.useState('');
-    const didMount = React.useRef(false);
-
-    // React.useEffect(() => {
-    //     if (didMount.current) {
-    //         //! update checked here
-    //         contacts.map((c) => {
-    //             handleChecked(c)
-    //         })
-            
-    //     } else {
-    //         didMount.current = true;
-    //     }
-    // },[contacts]);
 
     const handleChecked = (contact) => {
         // make list of checked contacts
-        //! need to prevent duplicates
-        
-        // const isChecked = checked.includes(contact); // check if its already in list. does't work
-        const isChecked = checked.find(({id}) => id === contact.id) //! prevents duplicates
+        const isChecked = checked.find(({id}) => id === contact.id) // prevents duplicates
         if(!isChecked){
             // if not already in list add to list
             setChecked(oldArray => [...oldArray, contact]);
@@ -96,13 +80,10 @@ export default function ContactsList(props) {
                     <Box key={c.id}>
                         {key > 0? <Divider/> : ''}
                     <ListItem
-                        // key={c.id}
                         secondaryAction={
                         <Checkbox
                             edge="end"
                             onChange={() => handleChecked(c)}
-                            // checked={quote? contact.quotes.includes(quote.id) : false}
-                            // checked={checked.includes(c)} //! need to fix this
                             checked={checked.find(({id}) => id === c.id)? true : false} //! stick after update
                             
                         />

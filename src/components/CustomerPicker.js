@@ -148,7 +148,7 @@ export default function CustomerPicker(props) {
     const handleClickOpen = (customerId) => {
         setOpen(true);
         const customerData = (customers.find(element => element.id === customerId));
-        setEditCustomer(customerData);
+        setEditCustomer(customerData); //! need to fix this for create quote. Phone, Address, and Fax not updating
     };
 
     return (
@@ -241,6 +241,7 @@ export default function CustomerPicker(props) {
                 open={open}
                 setOpen={setOpen}
                 customerData={editCustomer}
+                setCustomerData={setEditCustomer}
                 setCustomers={setCustomers}
                 customers={customers}
                 quote={quote}

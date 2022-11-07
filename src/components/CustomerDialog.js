@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import CompanyServices from '../services/Company.services';
 import ContactServices from '../services/Contact.services';
+import PhoneServices from '../services/Phone.services';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -25,7 +26,7 @@ import Chip from '@mui/material/Chip';
 
 
 export default function CustomerDialog(props) {
-    const { customerData , open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
+    const { customerData , setCustomerData, open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
     const { updateContact, checked, setChecked, setEditContacts, difference } = props;
     const { contacts, setContacts } = props;
     const [ customer, setCustomer ] = useState({});
@@ -33,19 +34,50 @@ export default function CustomerDialog(props) {
     const [ openDelete, setOpenDelete ] = useState(false);
     const [ deleteMessage, setDeleteMessage] = useState({title: '', content:''});
 
+    
     useEffect(() => {
-        setCustomer(customerData);
+        
+        setCustomer({
+            id: customerData.id,
+            name: customerData.name,
+            address: customerData.address? customerData.address.map((obj) => (obj.id? obj.id : obj)) : [],
+            phone: customerData.phone ? customerData.phone.map((obj) => (obj.id? obj.id : obj)) : [],
+            fax: customerData.fax? customerData.fax.id : '',
+            website: customerData.website
+        });
+        if(open === true && customerData.phone !== undefined && customerData.phone.length > 0){
+            // if open is true and data not equal to undefined and data list not empty
+            if(customerData.phone && customerData.phone[0].id && phoneNumbers.length < 1){
+                // if data exist and data is object and phone list is empty
+                setPhoneNumbers(customerData.phone)
+            }
+            if(customerData.phone && !customerData.phone[0].id && phoneNumbers.length < 1){
+                // if data exist and data is pk and phone list is empty
+                customerData.phone.map((obj) => (getPhone('phone',obj)))
+            }
+        }else{
+            // if no phone assigned to customer
+            setPhoneNumbers([])
+        }
+        
         if(customerData && open)
+            // fill ContactList
             recieveContacts(customerData.id)
     }, [open])
 
     const handleClose = () => {
         setOpen(false);
-        setChecked([]);
+        setCustomerData(customer)
+        // setChecked([]);
         setContacts([]);
+        setCustomer('');
+        setPhoneNumbers([]);
+        setFaxNumber('');
+        
+        
         if(quote){
             setEditContacts([]);
-        }
+        };
     };
 
     const recieveContacts = (id) => {
@@ -77,25 +109,23 @@ export default function CustomerDialog(props) {
                     let index = c.quotes.indexOf(quote.id)
                     if (index > -1) { // only splice array when item is found
                         c.quotes.splice(index, 1); // remove quote id from array
-                    }
-                    updateContact(c.id, c)
+                    };
+                    updateContact(c.id, c);
                 }else{
                     let updatedContact = c 
-                    updatedContact.quotes.push(quote.id)
-                    updateContact(c.id, updatedContact)
-                }
-            })
+                    updatedContact.quotes.push(quote.id);
+                    updateContact(c.id, updatedContact);
+                };
+            });
             handleClose();
         }
         if(customer !== customerData){
             updateCompany(customerData.id, customer);
-            const updatedCustomers = customers.map(el => (
-                el.id === customer.id? {...el, name: customer.name}: el
-            ))
-            setCustomers(updatedCustomers)
-            setOpen(false);
+            handleClose();
+            // setOpen(false); //! should probably use handleClose
         }else{
-            setOpen(false);
+            handleClose();
+            // setOpen(false);
         }
     };
 
@@ -111,8 +141,22 @@ export default function CustomerDialog(props) {
     };
 
     const updateCompany = (id, data) => {
-        CompanyServices.updateCompanyShort(id, data, token)
+        CompanyServices.updateCompany(id, data, token)
         .then(response => {
+            const updatedCustomer = response.data  // this works
+
+            //! below not working
+            const updatedCustomers = customers.map(el => (
+                el.id === customer.id ? 
+                updatedCustomer
+                : el
+            ));
+            setCustomers(updatedCustomers)
+            // console.log(customers)
+            // const updatedPhone = updatedCustomer.phone.map((p) => {
+            //     return getPhone('phone', p )
+            // })
+            // setPhoneNumbers(updatedPhone)
             handleOpenSnackbar('info', 'Company was updated')
         })
         .catch(e => {
@@ -129,7 +173,8 @@ export default function CustomerDialog(props) {
                 el.id !== customer.id
             ))
             setCustomers(updatedCustomers)
-            setOpen(false);
+            // setOpen(false);
+            handleClose();
         })
         .catch(e => {
             console.log(e);
@@ -140,6 +185,128 @@ export default function CustomerDialog(props) {
     const handleDeleteCompany = (customer) => {
         setDeleteMessage({title: 'Permanently delete company?', content: `${customer.name}`})
         setOpenDelete(true)
+    };
+
+    //! --------------------------- phone and fax states ------------------------//
+
+    const initialPhoneValues = {
+        phone_number: '',
+        phone_type: 'Main'
+    };
+
+    const initialFaxValues = {
+        phone_number: '',
+        phone_type: 'Fax'
+    };
+
+    const [ phoneValues, setPhoneValues ] = useState(initialPhoneValues);
+    const [ faxValues, setFaxValues ] = useState(initialFaxValues);
+    const [ phoneNumbers, setPhoneNumbers ] = useState([]);
+    const [ faxNumber , setFaxNumber ] = useState('');
+    const [ tobeDeleted, setTobeDeleted ] = useState([]);
+
+    const createPhone = (type, data) => {
+        PhoneServices.createPhone(data, token)
+        .then(response => {
+            if(type === 'phone'){
+                setPhoneNumbers(oldArray => [...oldArray, response.data]); // add phone to list
+                setPhoneValues(initialPhoneValues) // clear input
+                setCustomer({...customer, phone: [...customer.phone, response.data.id]}) // add phone to customer
+                handleOpenSnackbar('success', 'Phone Number was created')
+            }else{
+                setFaxNumber(response.data)
+                setFaxValues(initialFaxValues)
+                setCustomer({...customer, fax: response.data.id})
+                handleOpenSnackbar('success', 'Fax Number was created')
+            }
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    const deletePhone = (id) => {
+        PhoneServices.deletePhone(id, token)
+        .then(response => {
+            setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id));
+            setCustomer({...customer, phone: [customer.phone.filter((phone) => phone !== id)][0]});
+            handleOpenSnackbar('warning', 'Phone was deleted')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    const deleteFax = (id) => {
+        PhoneServices.deletePhone(id, token)
+        .then(response => {
+            setFaxNumber('');
+            setCustomer({...customer, fax: ''});
+            // setCustomerData({...customer, fax: ''});
+            handleOpenSnackbar('warning', 'Fax was deleted')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    const getPhone = (type, id) => {
+        PhoneServices.getPhone(id, token)
+        .then(response => {
+            if(type === 'phone'){
+                setPhoneNumbers(oldArray => [...oldArray, response.data]);
+            }else{
+                setFaxNumber(response.data)
+            }
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
+
+    const handlePhoneValue = (value) => {
+        setPhoneValues({
+            ...phoneValues,
+        phone_number: value
+        });
+    };
+
+    const handleFaxValue = (value) => {
+        setFaxValues({
+        ...faxValues,
+        phone_number: value
+        });
+    };
+
+    const handleCreatePhone = () => {
+        if (phoneValues.phone_number){
+            createPhone('phone', phoneValues)
+        };
+    };
+
+    const handleCreateFax = () => {
+        if (faxValues.phone_number && !faxNumber){
+            createPhone('fax', faxValues)
+        };
+    };
+
+    const handleDeletePhone = (id) => {
+        setTobeDeleted(oldArray => [...oldArray, id]); // add to delete list
+        setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id)); // subtract from phone list
+        setCustomer({
+            ...customer,
+            phone: customer.phone.filter((phone) => phone !== id)
+            }); // update customer
+        
+        // deletePhone(id);
+    };
+
+    const handleDeleteFax = (id) => {
+        deleteFax(id);
     };
 
     return (
@@ -206,24 +373,24 @@ export default function CustomerDialog(props) {
                             id="phone"
                             name="phone"
                             label="Phone(s)"
-                            // value={phoneValues.phone_number}
+                            value={phoneValues.phone_number}
                             defaultCountry={'us'} 
                             variant='outlined'
-                            // onChange={handlePhoneValue}
+                            onChange={handlePhoneValue}
                         />
                         <IconButton 
                             sx={{top: '7px', maxHeight: '2.75rem', border: 1 }}
                             color="primary" 
-                            // onClick={handleCreatePhone}
+                            onClick={handleCreatePhone}
                         >
                             <AddIcon />
                         </IconButton>
                     </Stack>
-                    {/* {phoneNumbers.map((phone) => (
+                    {phoneNumbers.map((phone) => (
                         <div key={phone.id}>
                             <Chip label={`${phone.phone_number} | ${phone.phone_type}`} variant="outlined" onDelete={() => handleDeletePhone(phone.id)} />
                         </div>
-                    ))} */}
+                    ))}
                     <Stack direction="row" spacing={2}>
                         <MuiPhoneNumber
                             variant='outlined'
@@ -231,19 +398,19 @@ export default function CustomerDialog(props) {
                             id="fax"
                             name="fax"
                             label="Fax"
-                            // value={faxValues.phone_number}
+                            value={faxValues.phone_number}
                             defaultCountry={'us'} 
-                            // onChange={handleFaxValue}
+                            onChange={handleFaxValue}
                         />
                         <IconButton 
                             sx={{top: '14px', maxHeight: '2.75rem', border: 1 }}
                             color="primary" 
-                            // onClick={handleCreateFax}
+                            onClick={handleCreateFax}
                         >
                             <AddIcon />
                         </IconButton>
                         </Stack>
-                        {/* {faxNumber ? 
+                        {faxNumber ? 
                             <div>
                                 <Chip 
                                     label={`${faxNumber.phone_number} | ${faxNumber.phone_type}`} 
@@ -251,7 +418,7 @@ export default function CustomerDialog(props) {
                                     onDelete={() => handleDeleteFax(faxNumber.id)}
                                 />
                             </div>
-                            : ''} */}
+                            : ''}
                     <TextField
                         autoFocus
                         margin="dense"

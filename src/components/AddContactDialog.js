@@ -119,7 +119,7 @@ export default function AddContactDialog(props) {
     const deleteContact = () => {
         ContactServices.deleteContact(contact.id, token)
         .then((response) => {
-            handleOpenSnackbar('error', 'Contact was deleted');
+            handleOpenSnackbar('warning', 'Contact was deleted');
             // update contacts list here
             const contactId = response.request.responseURL.toString().split("/").at(-1);
             const tempList = contacts.filter((c) => (c.id != contactId))
@@ -164,7 +164,7 @@ export default function AddContactDialog(props) {
         .then(response => {
             setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id));
             setValues({...values, phone: [values.phone.filter((phone) => phone !== id)][0]});
-            handleOpenSnackbar('error', 'Phone was deleted')
+            handleOpenSnackbar('warning', 'Phone was deleted')
         })
         .catch(e => {
             console.log(e);
@@ -177,7 +177,7 @@ export default function AddContactDialog(props) {
         .then(response => {
             setFaxNumber('');
             setValues({...values, fax: ''});
-            handleOpenSnackbar('error', 'Fax was deleted')
+            handleOpenSnackbar('warning', 'Fax was deleted')
         })
         .catch(e => {
             console.log(e);

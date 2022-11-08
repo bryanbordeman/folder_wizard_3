@@ -124,6 +124,7 @@ export default function CustomerPicker(props) {
             let isExisting = customers.find(item => item.name === customer);
             if (!isExisting){
                 let customerObj = companies.find(item => item.name === customer);
+                // console.log(customerObj)
                 setCustomers(oldArray => [...oldArray, customerObj]);
                 setCustomer('');
             };
@@ -148,7 +149,7 @@ export default function CustomerPicker(props) {
     const handleClickOpen = (customerId) => {
         setOpen(true);
         const customerData = (customers.find(element => element.id === customerId));
-        setEditCustomer(customerData); //! need to fix this for create quote. Phone, Address, and Fax not updating
+        setEditCustomer(customerData);
     };
 
     return (

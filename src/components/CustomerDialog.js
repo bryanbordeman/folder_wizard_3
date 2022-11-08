@@ -33,10 +33,8 @@ export default function CustomerDialog(props) {
     const [ values, setValues ] = useState('');
     const [ openDelete, setOpenDelete ] = useState(false);
     const [ deleteMessage, setDeleteMessage] = useState({title: '', content:''});
-
     
     useEffect(() => {
-        
         setCustomer({
             id: customerData.id,
             name: customerData.name,
@@ -59,6 +57,16 @@ export default function CustomerDialog(props) {
             // if no phone assigned to customer
             setPhoneNumbers([])
         }
+
+
+        if(open === true && customerData.fax !== null){
+            if(customerData.fax.id){
+                setFaxNumber(customerData.fax);
+            }
+            if(!customerData.fax.id && customerData.fax){
+                setFaxNumber(getPhone('fax', customerData.fax))
+            }
+        }
         
         if(customerData && open)
             // fill ContactList
@@ -73,7 +81,8 @@ export default function CustomerDialog(props) {
         setCustomer('');
         setPhoneNumbers([]);
         setFaxNumber('');
-        
+        setDeletePhoneList([]);
+        setDeleteFaxId('');
         
         if(quote){
             setEditContacts([]);
@@ -103,6 +112,7 @@ export default function CustomerDialog(props) {
     }
 
     const handleUpdate= () => {
+        // if contact is checked update contact
         if(difference){
             difference.map((c) => {
                 if(c.quotes.includes(quote.id)){
@@ -119,13 +129,25 @@ export default function CustomerDialog(props) {
             });
             handleClose();
         }
+        // if customer was edited update
         if(customer !== customerData){
             updateCompany(customerData.id, customer);
             handleClose();
-            // setOpen(false); //! should probably use handleClose
         }else{
             handleClose();
-            // setOpen(false);
+        }
+        // if phone key is in delete list delete phone from db
+        if (deletePhoneList.length > 0){
+            deletePhoneList.map((id) => {
+                //* set delay so db doesn,t lockout. 
+                //* this can be updated once db is updated to postgreSQL.
+                setTimeout(() => {
+                    deletePhone(id);
+                }, 3000);
+            })
+        }
+        if(deleteFaxId.length > 0){
+            deleteFax(deleteFaxId);
         }
     };
 
@@ -203,7 +225,8 @@ export default function CustomerDialog(props) {
     const [ faxValues, setFaxValues ] = useState(initialFaxValues);
     const [ phoneNumbers, setPhoneNumbers ] = useState([]);
     const [ faxNumber , setFaxNumber ] = useState('');
-    const [ tobeDeleted, setTobeDeleted ] = useState([]);
+    const [ deletePhoneList, setDeletePhoneList ] = useState([]);
+    const [ deleteFaxId, setDeleteFaxId ] = useState([]);
 
     const createPhone = (type, data) => {
         PhoneServices.createPhone(data, token)
@@ -229,9 +252,6 @@ export default function CustomerDialog(props) {
     const deletePhone = (id) => {
         PhoneServices.deletePhone(id, token)
         .then(response => {
-            setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id));
-            setCustomer({...customer, phone: [customer.phone.filter((phone) => phone !== id)][0]});
-            handleOpenSnackbar('warning', 'Phone was deleted')
         })
         .catch(e => {
             console.log(e);
@@ -242,10 +262,6 @@ export default function CustomerDialog(props) {
     const deleteFax = (id) => {
         PhoneServices.deletePhone(id, token)
         .then(response => {
-            setFaxNumber('');
-            setCustomer({...customer, fax: ''});
-            // setCustomerData({...customer, fax: ''});
-            handleOpenSnackbar('warning', 'Fax was deleted')
         })
         .catch(e => {
             console.log(e);
@@ -295,18 +311,21 @@ export default function CustomerDialog(props) {
     };
 
     const handleDeletePhone = (id) => {
-        setTobeDeleted(oldArray => [...oldArray, id]); // add to delete list
+        setDeletePhoneList(oldArray => [...oldArray, id]); // add to delete list
         setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id)); // subtract from phone list
         setCustomer({
             ...customer,
             phone: customer.phone.filter((phone) => phone !== id)
             }); // update customer
-        
-        // deletePhone(id);
     };
 
     const handleDeleteFax = (id) => {
-        deleteFax(id);
+        setDeleteFaxId(id); // add to delete var
+        setFaxNumber(''); // clear var
+        setCustomer({
+            ...customer,
+            fax: ''
+            }); // update customer
     };
 
     return (

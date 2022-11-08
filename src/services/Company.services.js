@@ -8,7 +8,7 @@ class CompanyDataService {
     };
     searchAll(token, search){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
-        return axios.get(`${SERVER}/api/companies/short/?search=${search}`);
+        return axios.get(`${SERVER}/api/companies/?search=${search}`);
     };
     getAllShort(token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import CompanyServices from '../services/Company.services';
 import ContactServices from '../services/Contact.services';
 import PhoneServices from '../services/Phone.services';
@@ -16,11 +16,7 @@ import { Stack, IconButton } from '@mui/material';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import ContactsList from './ContactsList';
 import InputAdornment from '@mui/material/InputAdornment';
-import InputLabel from '@mui/material/InputLabel';
 import MuiPhoneNumber from 'material-ui-phone-number';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 import AddIcon from '@mui/icons-material/Add';
 import Chip from '@mui/material/Chip';
 
@@ -76,7 +72,6 @@ export default function CustomerDialog(props) {
     const handleClose = () => {
         setOpen(false);
         setCustomerData(customer)
-        // setChecked([]);
         setContacts([]);
         setCustomer('');
         setPhoneNumbers([]);
@@ -139,16 +134,12 @@ export default function CustomerDialog(props) {
         // if phone key is in delete list delete phone from db
         if (deletePhoneList.length > 0){
             deletePhoneList.map((id) => {
-                //* set delay so db doesn,t lockout. 
-                //* this can be updated once db is updated to postgreSQL.
-                setTimeout(() => {
-                    deletePhone(id);
-                }, 3000);
-            })
-        }
+                deletePhone(id);
+            });
+        };
         if(deleteFaxId.length > 0){
             deleteFax(deleteFaxId);
-        }
+        };
     };
 
     const handleUpdateCustomer = (e) => {
@@ -158,27 +149,18 @@ export default function CustomerDialog(props) {
         'id': customerData.id,
         [name]: name === 'website'? `http://${value}` : value
         });
-        // const result = e.target.value
-        // setCustomer({'id': customerData.id, 'name' : result});
     };
 
     const updateCompany = (id, data) => {
         CompanyServices.updateCompany(id, data, token)
         .then(response => {
             const updatedCustomer = response.data  // this works
-
-            //! below not working
             const updatedCustomers = customers.map(el => (
                 el.id === customer.id ? 
                 updatedCustomer
                 : el
             ));
             setCustomers(updatedCustomers)
-            // console.log(customers)
-            // const updatedPhone = updatedCustomer.phone.map((p) => {
-            //     return getPhone('phone', p )
-            // })
-            // setPhoneNumbers(updatedPhone)
             handleOpenSnackbar('info', 'Company was updated')
         })
         .catch(e => {
@@ -195,7 +177,6 @@ export default function CustomerDialog(props) {
                 el.id !== customer.id
             ))
             setCustomers(updatedCustomers)
-            // setOpen(false);
             handleClose();
         })
         .catch(e => {

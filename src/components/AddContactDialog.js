@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import PhoneServices from '../services/Phone.services';
 import ContactServices from '../services/Contact.services';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -23,25 +23,10 @@ import AddIcon from '@mui/icons-material/Add';
 import Chip from '@mui/material/Chip';
 
 export default function AddContactDialog(props) {
-
-    const initialPhoneValues = {
-        phone_number: '',
-        phone_type: ''
-    };
-
-    const initialFaxValues = {
-        phone_number: '',
-        phone_type: 'Fax'
-    };
-
     const [ extension, setExtension ] = useState('');
     const [ openDelete, setOpenDelete ] = useState(false);
     const [ deleteMessage, setDeleteMessage] = useState({title: '', content:''});
     const [ isValid, setIsValid ] = useState(true);
-    const [ phoneValues, setPhoneValues ] = useState(initialPhoneValues);
-    const [ faxValues, setFaxValues ] = useState(initialFaxValues);
-    const [ phoneNumbers, setPhoneNumbers ] = useState([]);
-    const [ faxNumber , setFaxNumber ] = useState('');
     const { open, 
             setOpen, 
             token, 
@@ -63,7 +48,7 @@ export default function AddContactDialog(props) {
         email: '',
         quotes: [],
         projects: [],
-    }
+    };
 
     const [ values, setValues ] = useState(initialValues);
 
@@ -88,19 +73,21 @@ export default function AddContactDialog(props) {
                 getPhone('fax', contact.fax)
             }
         }
-    },[open])
+    },[open]);
 
     const handleClose = () => {
-        setValues(initialValues)
-        setPhoneValues(initialPhoneValues)
-        setPhoneNumbers([])
-        setFaxNumber('')
-        setFaxValues(initialFaxValues)
-        setExtension('')
+        setValues(initialValues);
+        setPhoneValues(initialPhoneValues);
+        setFaxValues(initialFaxValues);
+        setExtension('');
+        setPhoneNumbers([]);
+        setFaxNumber('');
+        setDeletePhoneList([]);
+        setDeleteFaxId('');
         setOpen(false);
         if(contact){
             setContact('')
-        }
+        };
     };
 
     const createContact = () => {
@@ -135,8 +122,82 @@ export default function AddContactDialog(props) {
     const handleUpdateContact = () =>{
         updateContact(contact.id, values);
         handleClose();
+         // if phone key is in delete list delete phone from db
+        if (deletePhoneList.length > 0){
+            deletePhoneList.map((id) => {
+                deletePhone(id);
+            });
+        };
+        if(deleteFaxId.length > 0){
+            deleteFax(deleteFaxId);
+        };
     };
 
+    const handleInputValue = (e) => {
+        const { name, value } = e.target;
+        setValues({
+        ...values,
+        [name]: value
+        });
+    };
+
+    const handleValidation = () => {
+        let formIsValid = true;
+        let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
+
+        if(values.name === ''){
+            setErrors({...errors, name: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, name: null});
+            }, 3000);
+        }
+        else if(values.email !== null && values.email.length > 0 && !regex.test(values.email)){
+            setErrors({...errors, email: 'Invalid Email'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, email: null});
+            }, 3000);
+        }
+        setIsValid(formIsValid)
+        setTimeout(() => {
+            setIsValid(true);
+        }, 3000);
+
+        if(contact){
+            return formIsValid && contact? handleUpdateContact() : null
+        }else{
+            return formIsValid? createContact() : null
+        }
+    };
+
+    const handleDeleteContact = (contact) => {
+        setDeleteMessage({title: 'Permanently delete contact?', content: `${contact.name}`})
+        setOpenDelete(true)
+    };
+
+
+    //! --------------------------- phone and fax states ------------------------//
+
+    const initialPhoneValues = {
+        phone_number: '',
+        phone_type: ''
+    };
+
+    const initialFaxValues = {
+        phone_number: '',
+        phone_type: 'Fax'
+    };
+
+    const [ phoneValues, setPhoneValues ] = useState(initialPhoneValues);
+    const [ faxValues, setFaxValues ] = useState(initialFaxValues);
+    const [ phoneNumbers, setPhoneNumbers ] = useState([]);
+    const [ faxNumber , setFaxNumber ] = useState('');
+    const [ deletePhoneList, setDeletePhoneList ] = useState([]);
+    const [ deleteFaxId, setDeleteFaxId ] = useState([]);
+    
     const createPhone = (type, data) => {
         PhoneServices.createPhone(data, token)
         .then(response => {
@@ -162,9 +223,6 @@ export default function AddContactDialog(props) {
     const deletePhone = (id) => {
         PhoneServices.deletePhone(id, token)
         .then(response => {
-            setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id));
-            setValues({...values, phone: [values.phone.filter((phone) => phone !== id)][0]});
-            handleOpenSnackbar('warning', 'Phone was deleted')
         })
         .catch(e => {
             console.log(e);
@@ -175,9 +233,6 @@ export default function AddContactDialog(props) {
     const deleteFax = (id) => {
         PhoneServices.deletePhone(id, token)
         .then(response => {
-            setFaxNumber('');
-            setValues({...values, fax: ''});
-            handleOpenSnackbar('warning', 'Fax was deleted')
         })
         .catch(e => {
             console.log(e);
@@ -198,19 +253,6 @@ export default function AddContactDialog(props) {
             console.log(e);
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         });
-    };
-
-    const handleInputValue = (e) => {
-        const { name, value } = e.target;
-        setValues({
-        ...values,
-        [name]: value
-        });
-    };
-
-    const handleDeleteContact = (contact) => {
-        setDeleteMessage({title: 'Permanently delete contact?', content: `${contact.name}`})
-        setOpenDelete(true)
     };
 
     const handlePhoneValue = (value) => {
@@ -254,44 +296,17 @@ export default function AddContactDialog(props) {
     };
 
     const handleDeletePhone = (id) => {
-        deletePhone(id);
+        setDeletePhoneList(oldArray => [...oldArray, id]); // add to delete list
+        setPhoneNumbers(phoneNumbers.filter((phone) => phone.id !== id)); // subtract from phone list
+        setValues({...values, phone: [values.phone.filter((phone) => phone !== id)][0]});
+        // deletePhone(id);
     };
 
     const handleDeleteFax = (id) => {
-        deleteFax(id);
-    };
-
-    const handleValidation = () => {
-        let formIsValid = true;
-        let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
-
-        if(values.name === ''){
-            setErrors({...errors, name: 'Required field'});
-            formIsValid = false;
-            setTimeout(() => {
-                formIsValid = true;
-                setErrors({...errors, name: null});
-            }, 3000);
-        }
-        else if(values.email !== null && values.email.length > 0 && !regex.test(values.email)){
-            setErrors({...errors, email: 'Invalid Email'});
-            formIsValid = false;
-            setTimeout(() => {
-                formIsValid = true;
-                setErrors({...errors, email: null});
-            }, 3000);
-        }
-
-        setIsValid(formIsValid)
-        setTimeout(() => {
-            setIsValid(true);
-        }, 3000);
-
-        if(contact){
-            return formIsValid && contact? handleUpdateContact() : null
-        }else{
-            return formIsValid? createContact() : null
-        }
+        setDeleteFaxId(id); // add to delete var
+        setFaxNumber(''); // clear var
+        setValues({...values, fax: ''});
+        // deleteFax(id);
     };
 
     return (

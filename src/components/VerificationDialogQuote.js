@@ -27,7 +27,7 @@ export default function VerificationDialogQuote(props) {
     const initialFormValues = {
         created_by: user.id,
         assignee: user.id,
-        tasklist: 3,
+        tasklist: 1,
         title:'Proposal / Estimate',
         notes:'Task generated from Folder Wizard',
         due: values.due,

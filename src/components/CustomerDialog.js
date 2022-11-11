@@ -10,7 +10,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import Transition from './DialogTransistion'
-import AddressPicker from './AddressPicker';
 import CloseIcon from '@mui/icons-material/Close';
 import { Stack, IconButton } from '@mui/material';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -26,7 +25,6 @@ export default function CustomerDialog(props) {
     const { updateContact, checked, setChecked, setEditContacts, difference } = props;
     const { contacts, setContacts } = props;
     const [ customer, setCustomer ] = useState({});
-    const [ values, setValues ] = useState('');
     const [ openDelete, setOpenDelete ] = useState(false);
     const [ deleteMessage, setDeleteMessage] = useState({title: '', content:''});
     
@@ -34,7 +32,7 @@ export default function CustomerDialog(props) {
         setCustomer({
             id: customerData.id,
             name: customerData.name,
-            address: customerData.address? customerData.address.map((obj) => (obj.id? obj.id : obj)) : [],
+            // address: customerData.address? customerData.address.map((obj) => (obj.id? obj.id : obj)) : [],
             phone: customerData.phone ? customerData.phone.map((obj) => (obj.id? obj.id : obj)) : [],
             fax: customerData.fax? customerData.fax.id : '',
             website: customerData.website
@@ -360,12 +358,6 @@ export default function CustomerDialog(props) {
                         quote={quote}
                         token={token}
                         handleOpenSnackbar={handleOpenSnackbar}
-                    />
-                    <AddressPicker
-                        token={token} 
-                        handleOpenSnackbar={handleOpenSnackbar}
-                        values={values}
-                        setValues={setValues}
                     />
                     <Stack direction="row" spacing={2}>
                         <MuiPhoneNumber

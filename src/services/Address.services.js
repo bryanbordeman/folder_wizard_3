@@ -10,6 +10,10 @@ class AddressDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/address/lookup/${placeId}`);
     };
+    getAddress(id, token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/address/${id}`);
+    };
     createAddress(data, token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.post(`${SERVER}/api/create/address/`, data);

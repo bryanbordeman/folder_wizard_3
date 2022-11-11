@@ -27,7 +27,7 @@ export default function AddressPicker(props) {
 
     useEffect(() => {
         if(quote){
-            if(quote.address !== null){
+            if(quote.address !== null && quote.address !== undefined){
                 const label = `${quote.address.address}, ${quote.address.city}, ${quote.address.state}, ${quote.address.postal_code}`
                 setAddress({label: label, value: quote.address})
             }

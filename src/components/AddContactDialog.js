@@ -1,7 +1,9 @@
 import React, { useState, useLayoutEffect } from 'react';
 import PhoneServices from '../services/Phone.services';
 import ContactServices from '../services/Contact.services';
+import AddressServices from '../services/Address.services';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import AddressPicker from './AddressPicker';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -24,6 +26,7 @@ import Chip from '@mui/material/Chip';
 
 export default function AddContactDialog(props) {
     const [ extension, setExtension ] = useState('');
+    const [ address, setAddress ] = useState({});
     const [ openDelete, setOpenDelete ] = useState(false);
     const [ deleteMessage, setDeleteMessage] = useState({title: '', content:''});
     const [ isValid, setIsValid ] = useState(true);
@@ -43,6 +46,7 @@ export default function AddContactDialog(props) {
         name: '',
         job_title: '',
         company: '',
+        address: '',
         phone: [],
         fax: '',
         email: '',
@@ -67,11 +71,17 @@ export default function AddContactDialog(props) {
             quotes: []
             });
         } else {
-            setValues(contact)
+            //! address is not updating
+            setValues(contact);
+            
             contact.phone.forEach(element => getPhone('phone',element));
             if(contact.fax){
                 getPhone('fax', contact.fax)
             }
+            if(contact.address){
+                getAddress(contact.address)
+            }
+            
         }
     },[open]);
 
@@ -84,6 +94,7 @@ export default function AddContactDialog(props) {
         setFaxNumber('');
         setDeletePhoneList([]);
         setDeleteFaxId('');
+        setAddress({});
         setOpen(false);
         if(contact){
             setContact('')
@@ -176,6 +187,19 @@ export default function AddContactDialog(props) {
     const handleDeleteContact = (contact) => {
         setDeleteMessage({title: 'Permanently delete contact?', content: `${contact.name}`})
         setOpenDelete(true)
+    };
+
+    const getAddress = (id) => {
+        AddressServices.getAddress(id, token)
+        .then(response => {
+            setAddress({address: response.data})
+            // handleOpenSnackbar('success', 'New Address was created')
+        })
+        .catch(e => {
+            console.log(e);
+            // setAddress('')
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
     };
 
 
@@ -398,6 +422,13 @@ export default function AddContactDialog(props) {
                         // onInput = {(e) =>{
                         //     e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
                         // }}
+                    />
+                    <AddressPicker
+                        token={token} 
+                        handleOpenSnackbar={handleOpenSnackbar}
+                        values={values}
+                        setValues={setValues}
+                        quote={address}
                     />
                     <Stack direction="row" spacing={2}>
                     <MuiPhoneNumber

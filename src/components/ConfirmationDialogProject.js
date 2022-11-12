@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -6,37 +6,86 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Transition from './DialogTransistion'
 import { Stack } from '@mui/material';
+import  Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import AddTaskSharpIcon from '@mui/icons-material/AddTaskSharp';
 import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
+import ReactCanvasConfetti from "react-canvas-confetti";
 
-export default function ConfirmationDialogQuote(props) {
+const canvasStyles = {
+    position: "fixed",
+    pointerEvents: "none",
+    width: "100%",
+    height: "100%",
+    top: 0,
+    left: 0
+};
 
-    const { open, setOpen, isCreateTask, setIsSubmitted, setBackdrop, setIsCreateTask } = props
-    const { confirmation, setConfirmation, handleClearInputs, openFolder } = props;
 
+export default function ConfirmationDialogProject(props) {
+    const { open, setOpen, confirmation, setConfirmation } = props
+  
+    useEffect(() => {
+        // fire Confetti
+        if(open)
+        setTimeout(() => {
+            fire();
+        }, 500);
+    },[open])
+    
     const handleClose = () => {
-        const initialConfirmation = {
-            database: null, 
-            task: null,
-            folder: null,
-        }
         setOpen(false);
-        setConfirmation(initialConfirmation);
-        setIsSubmitted(false);
-        setBackdrop(false);
-        setIsCreateTask(true);
-        handleClearInputs();
-        
     };
 
-    const handleOpenFolder = (path) => {
-        openFolder();
-        handleClose();
-    };
+    //----------------------------Confetti-------------------------//
+    const refAnimationInstance = useRef(null);
+    const { complete } = props
 
-    return (
+    const getInstance = useCallback((instance) => {
+        refAnimationInstance.current = instance;
+    }, []);
+
+    const makeShot = useCallback((particleRatio, opts) => {
+        refAnimationInstance.current &&
+        refAnimationInstance.current({
+            ...opts,
+            origin: { y: 0.7 },
+            particleCount: Math.floor(200 * particleRatio)
+        });
+    }, []);
+
+    const fire = useCallback(() => {
+        makeShot(0.25, {
+        spread: 26,
+        startVelocity: 55
+        });
+
+        makeShot(0.2, {
+        spread: 60
+        });
+
+        makeShot(0.35, {
+        spread: 100,
+        decay: 0.91,
+        scalar: 0.8
+        });
+
+        makeShot(0.1, {
+        spread: 120,
+        startVelocity: 25,
+        decay: 0.92,
+        scalar: 1.2
+        });
+
+        makeShot(0.1, {
+        spread: 120,
+        startVelocity: 45
+        });
+    }, [makeShot]);
+
+    //----------------------------Confetti-------------------------//
+
+    return ( 
         <div>
         <Dialog
             fullScreen
@@ -51,7 +100,7 @@ export default function ConfirmationDialogQuote(props) {
                 sx={{mr:3, ml:3, mb:1}}/>
             <DialogContent>
                 <Stack>
-                    <Stack direction="row" spacing={2} sx={{mb:3}}>
+                <Stack direction="row" spacing={2} sx={{mb:3}}>
                         {confirmation.database ?
                             <AddTaskSharpIcon fontSize='large' color= 'success'/>
                             :
@@ -61,7 +110,7 @@ export default function ConfirmationDialogQuote(props) {
                                 {confirmation.database ? 'Database record created' : 'Database record was not created'}
                             </Typography>
                     </Stack>
-                    {isCreateTask ?
+                    {/* {isCreateTask ? */}
                     <Stack direction="row" spacing={2} sx={{mb:3}}>
                         {confirmation.task ?
                             <AddTaskSharpIcon fontSize='large' color= 'success'/>
@@ -72,9 +121,9 @@ export default function ConfirmationDialogQuote(props) {
                                 {confirmation.task ? 'Task created' : 'Task was not created'}
                             </Typography>
                     </Stack>
-                    :
+                    {/* :
                     ''
-                    }
+                    } */}
                     <Stack direction="row" spacing={2} sx={{mb:3}}>
                         {confirmation.folder ?
                             <AddTaskSharpIcon fontSize='large' color= 'success'/>
@@ -85,15 +134,27 @@ export default function ConfirmationDialogQuote(props) {
                             </Typography>
                     </Stack>
                 </Stack>
+                <Typography sx={{fontWeight: 500, color: '#EA39B8'}} align='center' variant="h5" gutterBottom>
+                Another sale. Keep up the great work!
+                </Typography>
+                <Typography sx={{fontWeight: 500, color: '#1BA2F6'}} align='center' variant="h1" gutterBottom>
+                YUDHA!!!
+                </Typography>
             </DialogContent>
             <Divider
                 sx={{mr:3, ml:3, mb:1}}/>
             <DialogActions>
                 <Button variant="outlined" color='error' onClick={() => {window.close()}}>Close Program</Button>
                 <Button variant="contained"onClick={handleClose}>Create Another Quote</Button>
-                <Button disabled={!confirmation.folder} variant="contained" color='secondary' onClick={handleOpenFolder}>Open Quote Folder</Button>
+                <Button variant="contained" color='secondary'>Open Quote Folder</Button>
             </DialogActions>
+            {/* <button onClick={fire}>Fire</button> */}
+            <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
         </Dialog>
+        
         </div>
     );
-}
+};
+
+
+

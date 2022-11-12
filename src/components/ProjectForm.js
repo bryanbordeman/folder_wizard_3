@@ -11,6 +11,7 @@ import CategoryTypePickers from './CategoryTypePickers';
 import BillingOrderTypePickers from './BillingOrderTypePickers';
 import AddressPicker from './AddressPicker';
 import CustomerPicker from './CustomerPicker';
+import ConfirmationDialogProject from './ConfirmationDialogProject';
 
 //! to do notes
 /*
@@ -24,6 +25,7 @@ export default function ProjectForm(props) {
     const [ clear, setClear ] = useState(false);
     const [ contacts, setContacts ] = useState('');
     const [ checked, setChecked ] = React.useState([]);
+    const [ openConfirmation, setOpenConfirmation ] = React.useState(false)
 
     const initialValues = {
         is_active: true,
@@ -57,6 +59,20 @@ export default function ProjectForm(props) {
     };
 
     const [ errors, setErrors ] = useState(initialErrors);
+
+    const initialConfirmation = {
+        database: null, 
+        task: null,
+        folder: null,
+    };
+
+    // const initialConfirmation = {
+    //     database: true, 
+    //     task: true,
+    //     folder: true,
+    // };
+
+    const [ confirmation, setConfirmation ] = useState(initialConfirmation);
 
 
     // contact API's  ---------------------------------
@@ -100,6 +116,10 @@ export default function ProjectForm(props) {
         setChecked([]);
         
     };
+
+    const handleOpenConfirmation = () => {
+        setOpenConfirmation(!openConfirmation)
+    }
     
     return ( 
         <Box sx={{mr:3, ml:3}}>
@@ -304,6 +324,7 @@ export default function ProjectForm(props) {
                     >Clear</Button>
                     <Button 
                         // onClick={handleValidation}
+                        onClick={handleOpenConfirmation}
                         variant='contained' 
                         size='large' 
                         // color={`${isValid? 'secondary' : 'error'}`}
@@ -313,6 +334,12 @@ export default function ProjectForm(props) {
             
 
             </Stack>
+            <ConfirmationDialogProject
+                open={openConfirmation}
+                setOpen={setOpenConfirmation}
+                confirmation={confirmation}
+                setConfirmation={setConfirmation}
+            />
         </Box>
     );
 };

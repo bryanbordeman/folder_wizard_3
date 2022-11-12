@@ -300,21 +300,20 @@ export default function OpportunityFormEdit(props) {
                     </Box>
                     <Box sx={{width:'100%'}}>
                     <TextField
-                    autoFocus={false}
-                    disabled={isDisabled}
-                    margin="dense"
-                    id="price"
-                    name='price'
-                    label="Price"
-                    onChange={handleInputValue}
-                    InputProps={{
-                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                    }}
-                    value={values.price}
-                    type="number"
-                    fullWidth
-                    variant="outlined"
-                
+                        autoFocus={false}
+                        disabled={isDisabled}
+                        margin="dense"
+                        id="price"
+                        name='price'
+                        label="Price"
+                        onChange={handleInputValue}
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        }}
+                        value={values.price}
+                        type="number"
+                        fullWidth
+                        variant="outlined"
                     />
                     </Box>
                 </Stack>

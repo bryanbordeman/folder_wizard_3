@@ -203,6 +203,7 @@ export default function CustomerPicker(props) {
                 <AddIcon />
             </IconButton>
         </Stack>
+        {customers.length > 0?
         <Box>
             <List sx={{mt:3}} dense={false}>
                 {customers.map((customer, key) => (
@@ -255,6 +256,7 @@ export default function CustomerPicker(props) {
                 difference={difference}
             />
         </Box>
+        : ''}
         </Stack>
     );
 };

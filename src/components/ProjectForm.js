@@ -14,7 +14,7 @@ import CustomerPicker from './CustomerPicker';
 
 //! to do notes
 /*
-- address not updating
+- Get next project number
 - make customers single customer not multiple
 
 */ 

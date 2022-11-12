@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useLayoutEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
 import { FormControl, Stack } from '@mui/material';
+import ProjectBillingType from '../services/ProjectBillingType.services';
+import ProjectOrderType from '../services/ProjectOrderType.services';
 
 export default function BillingOrderTypePickers(props) {
     const { token } = props
@@ -19,36 +21,32 @@ export default function BillingOrderTypePickers(props) {
             setOrder('');
             setClear(false);
         };
-    },[clear])
+    },[clear]);
 
     useEffect(() => {
-        // retrieveCategories();
-    },[])
+        retrieveBillings();
+        retrieveOrders();
+    },[]);
 
+    const retrieveBillings = () => {
+        ProjectBillingType.getTypes(token)
+        .then(response => {
+            setBillings(response.data);
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
 
-    // const retrieveCategories = () => {
-    //     ProjectCategoryServices.getCategories(token)
-    //     .then(response => {
-    //         setCategories(response.data);
-            
-    //     })
-    //     .catch( e => {
-    //         console.log(e);
-    //     })
-    // }
-
-    // const retrieveTypes= () => {
-    //     ProjectTypeServices.getTypes(token)
-    //     .then(response => {
-    //         if (category){
-    //             const allTypes = response.data
-    //             setTypes(allTypes.filter(type => type.project_category === category))
-    //         }
-    //     })
-    //     .catch( e => {
-    //         console.log(e);
-    //     })
-    // }
+    const retrieveOrders = () => {
+        ProjectOrderType.getTypes(token)
+        .then(response => {
+            setOrders(response.data);
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
 
     const hangleChangeBilling = (e) => {
         setBilling(e.target.value);
@@ -59,7 +57,6 @@ export default function BillingOrderTypePickers(props) {
         setOrder(e.target.value);
         setValues({...values, order_type: e.target.value})
     };
-
 
     return ( 
         <Stack direction='row' spacing={2}>
@@ -113,7 +110,7 @@ export default function BillingOrderTypePickers(props) {
                     label="Project Category"
                     onChange={hangleChangeOrder}
                 >
-                {orders.map((billing, key) => (
+                {orders.map((order, key) => (
                     <MenuItem 
                         key={key} 
                         value={order.id}

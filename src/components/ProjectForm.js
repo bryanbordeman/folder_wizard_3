@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ContactServices from '../services/Contact.services';
+import ProjectDataService from '../services/Project.services';
 import { Stack, Box, Divider, Switch } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -66,13 +67,25 @@ export default function ProjectForm(props) {
         folder: null,
     };
 
-    // const initialConfirmation = {
-    //     database: true, 
-    //     task: true,
-    //     folder: true,
-    // };
-
     const [ confirmation, setConfirmation ] = useState(initialConfirmation);
+
+    useEffect(() => {
+        retrieveNextProjectNumber();
+    },[])
+
+    const retrieveNextProjectNumber = () => {
+        ProjectDataService.getNextProjectNumber(token)
+        .then(response => {
+            const nextNumberObject = response.data;
+            setValues((prevState) => ({
+                ...prevState,
+                number: nextNumberObject.next_project_number,
+            }));
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
 
 
     // contact API's  ---------------------------------
@@ -253,6 +266,7 @@ export default function ProjectForm(props) {
                     clear={clear}
                     setClear={setClear}
                     updateContact={updateContact}
+                    project={true}
                 />
                 <Stack 
                     direction="row"

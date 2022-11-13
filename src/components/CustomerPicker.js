@@ -47,7 +47,7 @@ function stringAvatar(name) {
 
 export default function CustomerPicker(props) {
     const { token, handleOpenSnackbar, errors, values, setValues, clear, setClear, quote, isDisabled} = props
-    const { updateContact, contacts, setContacts, checked, setChecked, setEditContacts, difference } = props
+    const { updateContact, contacts, setContacts, checked, setChecked, setEditContacts, difference, project } = props
     const [ customer, setCustomer ] = useState(''); // existing value picked from list
     const [ editCustomer, setEditCustomer ] = useState(''); // used for dialog
     const [ customers, setCustomers ] = useState([]); // list of customers picked
@@ -92,7 +92,12 @@ export default function CustomerPicker(props) {
         customers.map((customer) => {
             tempList.push(customer.id)
         })
-        setValues({...values, customers: tempList})
+        if(project){
+            // if project only make one customer
+            setValues({...values, customers: tempList.at(-1)})
+        }else{
+            setValues({...values, customers: tempList})
+        }
     }, [customers]);
     
     const searchCompanies = (search) => {
@@ -109,7 +114,11 @@ export default function CustomerPicker(props) {
         CompanyServices.createCompany(data, token)
         .then(response => {
             handleOpenSnackbar('success', 'New Company was created')
-            setCustomers(oldArray => [...oldArray, response.data]);
+            if(project){
+                setCustomers([response.data]);
+            }else{
+                setCustomers(oldArray => [...oldArray, response.data]);
+            }
             setCustomer('');
             setNewCustomer('');
         })
@@ -125,7 +134,11 @@ export default function CustomerPicker(props) {
             if (!isExisting){
                 let customerObj = companies.find(item => item.name === customer);
                 // console.log(customerObj)
-                setCustomers(oldArray => [...oldArray, customerObj]);
+                if(project){
+                    setCustomers([customerObj]);
+                }else{
+                    setCustomers(oldArray => [...oldArray, customerObj]);
+                }
                 setCustomer('');
             };
         };
@@ -172,13 +185,8 @@ export default function CustomerPicker(props) {
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            label="Customer(s)"
+                            label={project? "Customer" : "Customer(s)"}
                             onChange={handleNewCustomer}
-                            // onKeyPress={(e) => {
-                            //     if (e.key === "Enter") {
-                            //             alert(e.target.value);
-                            //     }
-                            // }}
                             onInput = {(e) =>{
                                 e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
                             }}

@@ -170,7 +170,7 @@ export default function CustomerDialog(props) {
     const deleteCompany = () => {
         CompanyServices.deleteCompany(customer.id, token)
         .then(response => {
-            handleOpenSnackbar('error', 'Company was deleted')
+            handleOpenSnackbar('warning', 'Company was deleted')
             const updatedCustomers = customers.filter(el => (
                 el.id !== customer.id
             ))

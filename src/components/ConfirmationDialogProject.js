@@ -5,11 +5,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Transition from './DialogTransistion'
-import { Stack } from '@mui/material';
+import { Stack, Chip } from '@mui/material';
 import  Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import AddTaskSharpIcon from '@mui/icons-material/AddTaskSharp';
 import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ReactCanvasConfetti from "react-canvas-confetti";
 
 const canvasStyles = {
@@ -24,14 +25,15 @@ const canvasStyles = {
 
 export default function ConfirmationDialogProject(props) {
     const { open, setOpen, confirmation, setConfirmation } = props
-  
+
     useEffect(() => {
         // fire Confetti
-        if(open)
+        if(open && complete)
         setTimeout(() => {
             fire();
         }, 500);
     },[open])
+    
     
     const handleClose = () => {
         setOpen(false);
@@ -39,7 +41,8 @@ export default function ConfirmationDialogProject(props) {
 
     //----------------------------Confetti-------------------------//
     const refAnimationInstance = useRef(null);
-    const { complete } = props
+    // const { complete } = props
+    const complete = true;
 
     const getInstance = useCallback((instance) => {
         refAnimationInstance.current = instance;
@@ -134,12 +137,61 @@ export default function ConfirmationDialogProject(props) {
                             </Typography>
                     </Stack>
                 </Stack>
-                <Typography sx={{fontWeight: 500, color: '#EA39B8'}} align='center' variant="h5" gutterBottom>
-                Another sale. Keep up the great work!
-                </Typography>
-                <Typography sx={{fontWeight: 500, color: '#1BA2F6'}} align='center' variant="h1" gutterBottom>
+                {complete? 
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                <Stack>
+                    <Typography sx={{fontWeight: 500}} color='secondary' align='center' variant="h5" gutterBottom>
+                    Another sale. Keep up the great work!
+                    </Typography>
+                    <Chip 
+                        sx={{
+                            fontWeight: '500',
+                            marginTop: '20px',
+                            fontSize: '4rem',
+                            paddingTop:'50px',
+                            paddingBottom:'50px',
+                            display: 'flex',
+                            alignSelf: 'center',
+                            justifyContent: 'center'
+                        }}  
+                        icon={<MonetizationOnIcon sx={{fontSize: '100%'}}/>}
+                        label='YUDHA!!!'
+                        color="primary" 
+                        variant="outlined" 
+                    />
+                </Stack>
+                {/* <Typography sx={{fontWeight: 500}} color='primary' align='center' variant="h1" gutterBottom>
                 YUDHA!!!
-                </Typography>
+                </Typography> */}
+                </div>
+                : 
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                <Chip 
+                    sx={{
+                        fontWeight: '500',
+                        marginTop: '20px',
+                        fontSize: '2rem',
+                        paddingTop:'30px',
+                        paddingBottom:'30px',
+                        display: 'flex',
+                        alignSelf: 'center',
+                        justifyContent: 'center'
+                    }}  
+                    icon={<ErrorOutlineSharpIcon sx={{fontSize: '100%'}}/>}
+                    label='Something Went Wrong!! Please try again.'
+                    color="error" 
+                    // variant="outlined" 
+                />
+                </div>
+                }
             </DialogContent>
             <Divider
                 sx={{mr:3, ml:3, mb:1}}/>

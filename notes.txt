@@ -1,3 +1,3 @@
 - fix ManagerPicker. Warning
 - Fix email validation on updateContact 
-- updateContact with quote does not work every time
+- on quotes need to fix if somethig goes wrong erase data 

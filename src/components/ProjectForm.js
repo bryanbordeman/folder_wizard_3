@@ -35,6 +35,7 @@ export default function ProjectForm(props) {
         project_category:'',
         project_type:'',
         address:'',
+        customers: '',
         prevailing_rate: false,
         union: false,
         certified_payroll: false,
@@ -56,10 +57,13 @@ export default function ProjectForm(props) {
         project_type:'',
         billing_type: '',
         order_type: '',
+        terms: '',
+        customers:'',
         price:'',
     };
 
     const [ errors, setErrors ] = useState(initialErrors);
+    const [ isValid, setIsValid ] = useState(true);
 
     const initialConfirmation = {
         database: null, 
@@ -71,19 +75,42 @@ export default function ProjectForm(props) {
 
     useEffect(() => {
         retrieveNextProjectNumber();
-    },[])
+    },[projectType, clear])
 
     const retrieveNextProjectNumber = () => {
         ProjectDataService.getNextProjectNumber(token)
         .then(response => {
             const nextNumberObject = response.data;
+            let nextNumber = ''
+            switch(projectType) {
+                case 2:
+                    nextNumber = nextNumberObject.next_service_number
+                    break;
+                case 3:
+                    nextNumber = nextNumberObject.next_hse_number
+                    break;
+                default:
+                    nextNumber = nextNumberObject.next_project_number
+            }
+
             setValues((prevState) => ({
                 ...prevState,
-                number: nextNumberObject.next_project_number,
+                number: nextNumber,
             }));
         })
         .catch( e => {
             console.log(e);
+        })
+    };
+
+    const createProject = () => {
+        ProjectDataService.createProject(values, token)
+        .then(response => {
+            handleOpenSnackbar('success', 'Project was created')
+        })
+        .catch( e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         })
     };
 
@@ -130,9 +157,87 @@ export default function ProjectForm(props) {
         
     };
 
-    const handleOpenConfirmation = () => {
+    const handleValidation = () => {
+        let formIsValid = true;
+
+        if(values.name === ''){
+            setErrors({...errors, name: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, name: null});
+            }, 3000);
+        }
+
+        else if(values.project_category === ''){
+            setErrors({...errors, project_category: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, project_category: null});
+            }, 3000);
+        }
+        else if(values.project_type === ''){
+            setErrors({...errors, project_type: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, project_type: null});
+            }, 3000);
+        }
+        else if(values.billing_type === ''){
+            setErrors({...errors, billing_type: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, billing_type: null});
+            }, 3000);
+        }
+        else if(values.order_type === ''){
+            setErrors({...errors, order_type: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, order_type: null});
+            }, 3000);
+        }
+        else if(values.customers === undefined){
+            setErrors({...errors, customers: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, customers: null});
+            }, 3000);
+        }
+        else if(values.terms === ''){
+            setErrors({...errors, terms: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, terms: null});
+            }, 3000);
+        }
+        else if(values.price === ''){
+            setErrors({...errors, price: 'Required field'});
+            formIsValid = false;
+            setTimeout(() => {
+                formIsValid = true;
+                setErrors({...errors, price: null});
+            }, 3000);
+        }
+        
+        setIsValid(formIsValid)
+        setTimeout(() => {
+            setIsValid(true);
+        }, 3000);
+        return formIsValid ? handleSubmit() : null
+    };
+
+    const handleSubmit = () => {
         setOpenConfirmation(!openConfirmation)
-    }
+    };
+
+
     
     return ( 
         <Box sx={{mr:3, ml:3}}>
@@ -284,6 +389,8 @@ export default function ProjectForm(props) {
                         value={values.terms}
                         fullWidth
                         variant="outlined"
+                        helperText={errors.terms === null ? '' : errors.terms}
+                        error={errors.terms? true : false}
                     />
                     <TextField
                         autoFocus={false}
@@ -322,6 +429,8 @@ export default function ProjectForm(props) {
                         type="number"
                         fullWidth
                         variant="outlined"
+                        helperText={errors.price === null ? '' : errors.price}
+                        error={errors.price? true : false}
                     />
                     <Divider/>
                 <Stack 
@@ -337,11 +446,11 @@ export default function ProjectForm(props) {
                         size='large'
                     >Clear</Button>
                     <Button 
-                        // onClick={handleValidation}
-                        onClick={handleOpenConfirmation}
+                        onClick={handleValidation}
+                        // onClick={createProject}
                         variant='contained' 
                         size='large' 
-                        // color={`${isValid? 'secondary' : 'error'}`}
+                        color={`${isValid? 'secondary' : 'error'}`}
                     >Submit</Button>
                 </Stack>
 

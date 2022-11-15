@@ -472,6 +472,18 @@ export default function OpportunityForm(props) {
                     setClear={setClear}
                     updateContact={updateContact}
                 />
+                <TextField
+                        autoFocus={false}
+                        id="notes"
+                        name='notes'
+                        label="Notes"
+                        onChange={handleInputValue}
+                        multiline
+                        rows={3}
+                        value={values.notes}
+                        fullWidth
+                        variant="outlined"
+                />
                 <Divider/>
                 <Stack 
                     sx={{pb:4}}

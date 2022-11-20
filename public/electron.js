@@ -77,6 +77,34 @@ function createWindow() {
         })
     });
 
+    ipcMain.handle('createProjectFolder', (event, args) => {
+        var options = {
+            scriptPath : './engine/',
+            args : args,
+            env: process.env,
+        }
+        let pyshell = new PythonShell('create_project_folder.py', options);
+    
+        return new Promise((resolve,reject) =>{
+            pyshell.on('message', (message) => {
+                console.log(message); // prints to node terminal
+                currentProjectDirectory = message
+                })
+                
+            pyshell.end((err, code) => {
+                if (err) {
+                    console.log(err)
+                };
+                // console.log(code);
+                if (code === 0){
+                    resolve(true)
+                }else{
+                    resolve(false)
+                }
+            });
+        })
+    });
+
     ipcMain.handle('renameOppFolder', (event, args) => {
         var options = {
             scriptPath : './engine/',

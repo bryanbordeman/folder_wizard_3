@@ -35,7 +35,9 @@ export default function AssigneePicker(props) {
 
     const handleInputValue = (newValue) => {
         setValue(newValue);
-        handleChangeAssignee(newValue.id);
+        if(newValue){
+            handleChangeAssignee(newValue.id);
+        }
     };
 
     return (

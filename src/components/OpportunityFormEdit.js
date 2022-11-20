@@ -99,7 +99,7 @@ export default function OpportunityFormEdit(props) {
     const [ errors, setErrors ] = useState(initialErrors);
 
     const handleChangeQuote = (quote) => {
-        setQuote(quote)
+        setQuote(quote);
         if(quote){
             handleClearInputs();
             setValues(quote);

@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ContactServices from '../services/Contact.services';
 import ProjectDataService from '../services/Project.services';
+import ProjectCategoryService from '../services/ProjectCategory.services';
+import ProjectTypeService from '../services/ProjectType.services';
+import TaskDataService from '../services/Task.services'
 import { Stack, Box, Divider, Switch } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -13,20 +16,27 @@ import BillingOrderTypePickers from './BillingOrderTypePickers';
 import AddressPicker from './AddressPicker';
 import CustomerPicker from './CustomerPicker';
 import ConfirmationDialogProject from './ConfirmationDialogProject';
+import VerificationDialogProject from './VerificationDialogProject';
 
 //! to do notes
 /*
-- Get next project number
-- make customers single customer not multiple
+
 
 */ 
 export default function ProjectForm(props) {
-    const { user, token, handleChangeQuote, handleOpenSnackbar, darkState} = props;
-    const [ projectType, setProjectType ] = useState(''); // project type
+    const { user, token, handleOpenSnackbar, darkState} = props;
+    const [ projectType, setProjectType ] = useState(1); // project type
     const [ clear, setClear ] = useState(false);
     const [ contacts, setContacts ] = useState('');
     const [ checked, setChecked ] = React.useState([]);
+    const [ isCreateTask, setIsCreateTask ] = useState(true);
+    const [ task, setTask ] = useState('');
+    const [ quote , setQuote ] = useState('');
+    const [ categoryCode, setCategoryCode ] = useState('');
+    const [ typeCode , setTypeCode ] = useState('');
+    const [ openVerification, setOpenVerification ] = useState(false);
     const [ openConfirmation, setOpenConfirmation ] = React.useState(false)
+    const didMount = useRef(false);
 
     const initialValues = {
         is_active: true,
@@ -66,9 +76,9 @@ export default function ProjectForm(props) {
     const [ isValid, setIsValid ] = useState(true);
 
     const initialConfirmation = {
-        database: null, 
-        task: null,
-        folder: null,
+        database: null, //! working
+        task: null, //! needs to be updated
+        folder: null, //! working
     };
 
     const [ confirmation, setConfirmation ] = useState(initialConfirmation);
@@ -76,6 +86,15 @@ export default function ProjectForm(props) {
     useEffect(() => {
         retrieveNextProjectNumber();
     },[projectType, clear])
+
+    useEffect(() =>{
+        if (didMount.current && values.project_category && values.project_type) {
+            retrieveCategory();
+            retrieveType();
+        } else {
+            didMount.current = true;
+        }
+    }, [values.project_category, values.project_type])
 
     const retrieveNextProjectNumber = () => {
         ProjectDataService.getNextProjectNumber(token)
@@ -103,6 +122,26 @@ export default function ProjectForm(props) {
         })
     };
 
+    const handleChangeQuote = (quote) => {
+        setQuote(quote);
+        if(quote){
+            handleClearInputs();
+            setValues((prevState) => ({
+                ...prevState,
+                name: quote.name,
+                project_category: quote.project_category.id,
+                project_type: quote.project_type.id,
+                prevailing_rate: quote.prevailing_rate,
+                travel_job: quote.travel_job,
+                notes: quote.notes,
+                price: quote.price
+            }));
+        }else{
+            handleClearInputs();
+        }
+    };
+    
+
     const createProject = () => {
         ProjectDataService.createProject(values, token)
         .then(response => {
@@ -114,8 +153,56 @@ export default function ProjectForm(props) {
         })
     };
 
+    const retrieveCategory = () => {
+        ProjectCategoryService.getCategory(values.project_category, token)
+        .then(response => {
+            setCategoryCode(response.data.code)
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
 
-    // contact API's  ---------------------------------
+    const retrieveType = () => {
+        ProjectTypeService.getType(values.project_type, token)
+        .then(response => {
+            setTypeCode(response.data.code)
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
+
+    const createFolder = () => {
+        // send object with folderName and projectType to electron. 
+        const folderName = `${values.number} ${values.name} ${categoryCode}-${typeCode}`
+        const inputs = JSON.stringify({folderName: folderName, projectType: projectType}) //! might need to modify format for electron to accept
+        window.api.createProjectFolder(inputs)
+    };
+
+    const createTask = () => {
+        TaskDataService.createTask(task, token)
+            .then(response => {
+                setConfirmation((prevState) => ({
+                    ...prevState,
+                    task: true,
+                }));
+                // console.log(confirmation.task)
+                setTimeout(() => {
+                    createFolder();
+                }, 500);
+            })
+            .catch(e => {
+                console.log(e);
+                setConfirmation((prevState) => ({
+                    ...prevState,
+                    task: false,
+                }));
+                setOpenConfirmation(true);
+            });
+    };
+
+    // ---------------------------contact API's  ---------------------------------
 
     const updateContact = (id, data) => {
         ContactServices.updateContact( id, data, token)
@@ -275,6 +362,7 @@ export default function ProjectForm(props) {
                     token={token}
                     user={user}
                     values={values}
+                    quote={quote}
                     setValues={setValues}
                     errors={errors}
                     handleInputValue={handleInputValue}
@@ -354,6 +442,7 @@ export default function ProjectForm(props) {
                     token={token} 
                     handleOpenSnackbar={handleOpenSnackbar}
                     values={values}
+                    quote={quote}
                     setValues={setValues}
                     clear={clear}
                     setClear={setClear}
@@ -367,6 +456,7 @@ export default function ProjectForm(props) {
                     handleOpenSnackbar={handleOpenSnackbar}
                     values={values}
                     errors={errors}
+                    // quote={quote} //! needs to only be one customer.
                     setValues={setValues}
                     clear={clear}
                     setClear={setClear}
@@ -446,8 +536,8 @@ export default function ProjectForm(props) {
                         size='large'
                     >Clear</Button>
                     <Button 
-                        onClick={handleValidation}
-                        // onClick={createProject}
+                        // onClick={handleValidation}
+                        onClick={() => setOpenVerification(!openVerification)}
                         variant='contained' 
                         size='large' 
                         color={`${isValid? 'secondary' : 'error'}`}
@@ -462,6 +552,17 @@ export default function ProjectForm(props) {
                 setOpen={setOpenConfirmation}
                 confirmation={confirmation}
                 setConfirmation={setConfirmation}
+            />
+            <VerificationDialogProject
+                user={user}
+                token={token}
+                handleOpenSnackbar={handleOpenSnackbar}
+                open={openVerification}
+                setOpen={setOpenVerification}
+                projectType={projectType}
+                isCreateTask={isCreateTask}
+                setIsCreateTask={setIsCreateTask}
+                values={values}
             />
         </Box>
     );

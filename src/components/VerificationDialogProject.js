@@ -74,7 +74,7 @@ export default function VerificationDialogProject(props) {
                         control={<Switch checked={isCreateTask} color="primary" />}
                         id="create_task"
                         name="create_task"
-                        label="Create Task?"
+                        label="Create Task(s)?"
                         value={isCreateTask}
                     />
                     <TasksList

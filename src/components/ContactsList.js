@@ -73,7 +73,7 @@ export default function ContactsList(props) {
         <div>
             <List 
                 sx={{ width: '100%', bgcolor: 'background.paper', pb:0 }}
-                subheader={<ListSubheader>Select Contact(s)</ListSubheader>}
+                subheader={<ListSubheader disableSticky={true}>Select Contact(s)</ListSubheader>}
             >
                 {contacts? contacts.map((c, key) => {
                 return (

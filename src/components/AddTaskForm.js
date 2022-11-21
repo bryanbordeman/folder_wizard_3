@@ -6,19 +6,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Stack, TextField, Divider,IconButton} from '@mui/material';
 import AssigneePicker from './AssigneePicker';
-// import ProjectPicker from './ProjectPicker';
 import TaskListPicker from './TaskListPicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import CloseIcon from '@mui/icons-material/Close';
 import moment from 'moment-timezone';
 import Transition from './DialogTransistion'
-// import QuoteProjectToggle from './QuoteProjectToggle';
-// import QuotePicker from './QuotePicker'
-// import { projectType } from './ToggleObjects';
 
 export default function AddTaskForm(props) {
     const { user, token, handleUpdateTaskList } = props;
@@ -29,7 +23,6 @@ export default function AddTaskForm(props) {
     const { updateTask } = props;
     const [ isValid, setIsValid ] = React.useState(true);
     const [ errors, setErrors ] = React.useState({});
-    // const [ choosePicker, setChoosePicker ] = React.useState('projects')
 
     const initialFormValues = {
         created_by: user.id,
@@ -111,7 +104,7 @@ export default function AddTaskForm(props) {
             ...values,
             assignee: newValue
             });
-        }
+        };
     };
 
     const handleChangeList = (newValue) => {
@@ -120,7 +113,7 @@ export default function AddTaskForm(props) {
             ...values,
             tasklist: newValue.id
             });
-        }
+        };
     };
 
 
@@ -183,7 +176,7 @@ export default function AddTaskForm(props) {
         setTimeout(() => {
             setIsValid(true);
         }, 3000);
-    return formIsValid ? handleSubmit() : null
+    return formIsValid ? handleUpdateTaskList(values) : null
     };
 
     const handleClose = () => {
@@ -244,6 +237,7 @@ export default function AddTaskForm(props) {
                         />
                         <AssigneePicker
                             //! need to fix this because it is setup only to work with users in SALES group.
+                            project={true}
                             editing={editing}
                             task={task}
                             errors={errors}
@@ -299,8 +293,8 @@ export default function AddTaskForm(props) {
                 >Cancel</Button>
                 <Button 
                     variant='contained' 
-                    onClick={() => handleUpdateTaskList(values)}
-                    // onClick={handleValidation}
+                    // onClick={() => handleUpdateTaskList(values)}
+                    onClick={handleValidation}
                     color={`${isValid? 'primary' : 'error'}`}
                 >
                     {editing ? 'Update' : 'Submit'}

@@ -4,7 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import UserService from '../services/User.services'
 
 export default function AssigneePicker(props) {
-    const { handleChangeAssignee, errors, token, open, user, isCreateTask} = props;
+    const { handleChangeAssignee, errors, token, open, user, isCreateTask, project, task, editing} = props;
     const [ value, setValue ] = React.useState('');
 
     const [ assignees, setAssignees ] = React.useState([{}]);
@@ -18,15 +18,28 @@ export default function AssigneePicker(props) {
     const retrieveEmployees = () => {
         UserService.getUsers(token)
         .then(response => {
-            const obj = response.data;
-            const assigneesList = [];
-            obj.map(assignee => (
-                assignee.groups.filter(group => (group.name === 'SALES')).length > 0 ? 
-                assigneesList.push(assignee) : ''
-            ))
-            setAssignees(assigneesList);
-            setValue(user);
-            handleChangeAssignee(user.id)
+            if(project && task){
+                setAssignees(response.data);
+                const newAssignee = response.data.find((a) => a.id === task.assignee)
+                setValue(newAssignee); 
+                handleChangeAssignee(task.assignee);
+            }
+            else if(project && !task){
+                setAssignees(response.data);
+                setValue(user);
+                handleChangeAssignee(user.id)
+
+            }else{
+                const obj = response.data;
+                const assigneesList = [];
+                obj.map(assignee => (
+                    assignee.groups.filter(group => (group.name === 'SALES')).length > 0 ? 
+                    assigneesList.push(assignee) : ''
+                ))
+                setAssignees(assigneesList);
+                setValue(user);
+                handleChangeAssignee(user.id)
+            }
         })
         .catch( e => {
             console.log(e);

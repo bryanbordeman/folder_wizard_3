@@ -51,15 +51,15 @@ export default function TaskListPicker(props) {
                 Select Task List
             </InputLabel>
             <Select
-            labelId="select-list-label"
-            id="select-list"
-            // value={editing? task.tasklist : value}
-            renderValue={(v)=> <span>{v.title}</span>}
-            value={value? value : ''}
-            label="Select Task List"
-            onChange={handleChange}
+                error={errors.tasklist? true : false}
+                labelId="select-list-label"
+                id="select-list"
+                // value={editing? task.tasklist : value}
+                renderValue={(v)=> <span>{v.title}</span>}
+                value={value? value : ''}
+                label="Select Task List"
+                onChange={handleChange}
             >
-            
             {taskLists.map(list => (
                 <MenuItem 
                     key={list.id} 

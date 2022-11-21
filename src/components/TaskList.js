@@ -131,11 +131,19 @@ export default function TasksList(props) {
 
     const handleUpdateTaskList = (t) => {
         const newList = tasks
-        newList[taskIndex] = t
-        setTasks(newList)
-        setOpenTaskForm(false);
-        setTask('');
+        if(editing){
+            newList[taskIndex] = t
+        }else{
+            newList.push(t)
+        };
+            setTasks(newList)
+            setOpenTaskForm(false);
     };
+
+    const handleAddTaskToList = () =>{
+        setEditing(false);
+        setOpenTaskForm(true);
+    }
 
     return (
         
@@ -143,7 +151,8 @@ export default function TasksList(props) {
             {isCreateTask? 
             <List 
                 sx={{ width: '100%', bgcolor: 'background.paper', pb:0 }}
-                subheader={<ListSubheader>Select Task(s)</ListSubheader>}
+                subheader={<ListSubheader disableSticky={true}>Select Task(s)</ListSubheader>}
+                
             >
                 {tasks ? tasks.map((t, key) => {
                 var taskUser = users? users.find((u) => (u.id === t.assignee)):''
@@ -177,7 +186,7 @@ export default function TasksList(props) {
                 <ListItem sx={{mt:1, mb:1}}>
                     <Button 
                         sx={{width:'100%'}}
-                        onClick={() => {setOpenCreate(true)}}
+                        onClick={handleAddTaskToList}
                         variant='contained' 
                         color='secondary'
                         startIcon={<AddIcon />}

@@ -505,7 +505,6 @@ export default function OpportunityForm(props) {
                     >Submit</Button>
                 </Stack>
             </Stack>
-            
             <VerificationDialogQuote
                 user={user}
                 token={token}

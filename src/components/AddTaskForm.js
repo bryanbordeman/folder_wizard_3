@@ -11,7 +11,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CloseIcon from '@mui/icons-material/Close';
-import moment from 'moment-timezone';
 import Transition from './DialogTransistion'
 
 export default function AddTaskForm(props) {
@@ -19,8 +18,6 @@ export default function AddTaskForm(props) {
     const { handleOpenSnackbar } = props;
     const { open, setOpen } = props;
     const { editing, task, setEditing } = props;
-    const { createTask } = props;
-    const { updateTask } = props;
     const [ isValid, setIsValid ] = React.useState(true);
     const [ errors, setErrors ] = React.useState({});
 
@@ -65,14 +62,7 @@ export default function AddTaskForm(props) {
 
     React.useLayoutEffect(() => {
         setValues(editing ? editFormValues : initialFormValues);
-        // if(editing && task.project){
-        //     setChoosePicker('projects')
-        // }
-        // else if (editing && task.quote)
-        // {
-        //     setChoosePicker('quotes')
-        // }
-    },[open])
+    },[open]);
     
     const handleInputValue = (e) => {
         const { name, value } = e.target;
@@ -81,22 +71,6 @@ export default function AddTaskForm(props) {
         [name]: value
         });
     };
-
-    // const handleChangeProject = (newValue) => {
-
-    //     if(newValue && choosePicker === projectType[0].name){
-    //         setValues({
-    //         ...values,
-    //         project: newValue.id
-    //         });
-    //     }
-    //     if(newValue && choosePicker === projectType[1].name){
-    //         setValues({
-    //         ...values,
-    //         quote: newValue.id
-    //         });
-    //     }
-    // };
 
     const handleChangeAssignee = (newValue) => {
         if(newValue){
@@ -115,7 +89,6 @@ export default function AddTaskForm(props) {
             });
         };
     };
-
 
     const handleValidation = () => {
         let formIsValid = true;
@@ -184,21 +157,6 @@ export default function AddTaskForm(props) {
         setEditing(false);
     };
 
-    const handleSubmit = () => {
-        if(editing){
-            const data = values
-            data.created_by = values.created_by.id
-            data.due = moment.tz(data.due, "America/New_York")._d
-            data.assignee = values.assignee.id === undefined? values.assignee : values.assignee.id
-            data.tasklist = values.tasklist.id === undefined? values.tasklist : values.tasklist.id
-            data.subtasks = values.subtasks.map(subT => (subT.id))
-            updateTask(task.id, data);
-        }else{
-            createTask(values);
-        }
-        handleClose();
-    };
-
     return (
         <div>
             <Dialog
@@ -236,7 +194,6 @@ export default function AddTaskForm(props) {
                             handleChangeList={handleChangeList}
                         />
                         <AssigneePicker
-                            //! need to fix this because it is setup only to work with users in SALES group.
                             project={true}
                             editing={editing}
                             task={task}
@@ -293,7 +250,6 @@ export default function AddTaskForm(props) {
                 >Cancel</Button>
                 <Button 
                     variant='contained' 
-                    // onClick={() => handleUpdateTaskList(values)}
                     onClick={handleValidation}
                     color={`${isValid? 'primary' : 'error'}`}
                 >

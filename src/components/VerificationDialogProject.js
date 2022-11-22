@@ -19,6 +19,8 @@ import TasksList from './TaskList';
 export default function VerificationDialogProject(props) {
     const { user, values, projectType, token, handleOpenSnackbar } = props;
     const { open, setOpen } = props;
+    const { checked, setChecked } = props
+    const { submit } = props
     const { isCreateTask, setIsCreateTask } = props;
     const [ addTasks, setAddTasks ] = React.useState([]);
     const [ dialogTitle, setDialogTitle ] = React.useState('');
@@ -40,6 +42,10 @@ export default function VerificationDialogProject(props) {
         setOpen(false);
     };
 
+    const handleSubmit = () => {
+        submit();
+        setOpen(false);
+    };
 
     return (
         <div>
@@ -84,6 +90,8 @@ export default function VerificationDialogProject(props) {
                         values={values}
                         open={open}
                         isCreateTask={isCreateTask}
+                        checked={checked}
+                        setChecked={setChecked}
                     />
                 </Stack>
             </DialogContent>
@@ -94,9 +102,8 @@ export default function VerificationDialogProject(props) {
             >Cancel</Button>
             <Button 
                 variant='contained' 
-                // onClick={handleValidation}
-                // onClick={handleValidation}
-                // color={`${isValid? 'secondary' : 'error'}`}
+                onClick={handleSubmit}
+                color='secondary'
             >
                 Create
             </Button>

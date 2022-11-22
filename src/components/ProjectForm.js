@@ -17,6 +17,7 @@ import AddressPicker from './AddressPicker';
 import CustomerPicker from './CustomerPicker';
 import ConfirmationDialogProject from './ConfirmationDialogProject';
 import VerificationDialogProject from './VerificationDialogProject';
+import LoadingBackdrop from './LoadingBackdrop';
 
 //! to do notes
 /*
@@ -30,7 +31,9 @@ export default function ProjectForm(props) {
     const [ contacts, setContacts ] = useState('');
     const [ checked, setChecked ] = React.useState([]);
     const [ isCreateTask, setIsCreateTask ] = useState(true);
-    const [ task, setTask ] = useState('');
+    
+    const [ backdrop, setBackdrop ] = useState(false);
+    const [ isSubmitted, setIsSubmitted ] = useState(false);
     const [ quote , setQuote ] = useState('');
     const [ categoryCode, setCategoryCode ] = useState('');
     const [ typeCode , setTypeCode ] = useState('');
@@ -85,7 +88,7 @@ export default function ProjectForm(props) {
 
     useEffect(() => {
         retrieveNextProjectNumber();
-    },[projectType, clear])
+    },[projectType, clear]);
 
     useEffect(() =>{
         if (didMount.current && values.project_category && values.project_type) {
@@ -94,7 +97,28 @@ export default function ProjectForm(props) {
         } else {
             didMount.current = true;
         }
-    }, [values.project_category, values.project_type])
+    }, [values.project_category, values.project_type]);
+
+    const isNull = (object) =>{
+        let isNullish = false
+        Object.values(object).some(value => {
+            if (value === null) {
+                isNullish = true;
+            }
+            });
+        return isNullish
+    };
+
+    useEffect(() => {
+        if (didMount.current) {
+            if(isSubmitted){
+                setBackdrop(isNull(confirmation))
+            }
+        } else {
+            didMount.current = true;
+        }
+    },[confirmation, isSubmitted]);
+    
 
     const retrieveNextProjectNumber = () => {
         ProjectDataService.getNextProjectNumber(token)
@@ -145,11 +169,26 @@ export default function ProjectForm(props) {
     const createProject = () => {
         ProjectDataService.createProject(values, token)
         .then(response => {
-            handleOpenSnackbar('success', 'Project was created')
+            setConfirmation((prevState) => ({
+                ...prevState,
+                database: true,
+            }));
+                if(isCreateTask || checked.length > 0){
+                    //! need to add something here
+                }
+                else {
+                    createFolder();
+                };
+            // handleOpenSnackbar('success', 'Project was created')
         })
         .catch( e => {
             console.log(e);
-            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+            setConfirmation((prevState) => ({
+                ...prevState,
+                database: false,
+            }));
+            setOpenConfirmation(true);
+            // handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         })
     };
 
@@ -180,7 +219,7 @@ export default function ProjectForm(props) {
         window.api.createProjectFolder(inputs)
     };
 
-    const createTask = () => {
+    const createTask = (task) => {
         TaskDataService.createTask(task, token)
             .then(response => {
                 setConfirmation((prevState) => ({
@@ -227,6 +266,12 @@ export default function ProjectForm(props) {
         {id: 3, name: 'HSE project'}
         */
         setProjectType(id);
+    };
+
+    const openFolder = () => {
+        // send path to electron to open folder
+        window.api.openFolder();
+        
     };
 
     const handleInputValue = (e) => {
@@ -317,15 +362,13 @@ export default function ProjectForm(props) {
         setTimeout(() => {
             setIsValid(true);
         }, 3000);
-        return formIsValid ? handleSubmit() : null
+        return formIsValid ? setOpenVerification(!openVerification) : null
     };
 
     const handleSubmit = () => {
         setOpenConfirmation(!openConfirmation)
     };
 
-
-    
     return ( 
         <Box sx={{mr:3, ml:3}}>
             <Stack spacing={2}>
@@ -536,8 +579,8 @@ export default function ProjectForm(props) {
                         size='large'
                     >Clear</Button>
                     <Button 
-                        // onClick={handleValidation}
-                        onClick={() => setOpenVerification(!openVerification)}
+                        onClick={handleValidation}
+                        // onClick={() => setOpenVerification(!openVerification)}
                         variant='contained' 
                         size='large' 
                         color={`${isValid? 'secondary' : 'error'}`}
@@ -552,6 +595,7 @@ export default function ProjectForm(props) {
                 setOpen={setOpenConfirmation}
                 confirmation={confirmation}
                 setConfirmation={setConfirmation}
+                openFolder={openFolder}
             />
             <VerificationDialogProject
                 user={user}
@@ -563,6 +607,12 @@ export default function ProjectForm(props) {
                 isCreateTask={isCreateTask}
                 setIsCreateTask={setIsCreateTask}
                 values={values}
+                checked={checked}
+                setChecked={setChecked}
+                submit={handleSubmit}
+            />
+            <LoadingBackdrop
+                open={typeof backdrop == "boolean"? backdrop : true}
             />
         </Box>
     );

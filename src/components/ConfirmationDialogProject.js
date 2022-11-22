@@ -24,7 +24,7 @@ const canvasStyles = {
 
 
 export default function ConfirmationDialogProject(props) {
-    const { open, setOpen, confirmation, setConfirmation } = props
+    const { open, setOpen, confirmation, setConfirmation, openFolder } = props
 
     useEffect(() => {
         // fire Confetti
@@ -197,10 +197,9 @@ export default function ConfirmationDialogProject(props) {
                 sx={{mr:3, ml:3, mb:1}}/>
             <DialogActions>
                 <Button variant="outlined" color='error' onClick={() => {window.close()}}>Close Program</Button>
-                <Button variant="contained"onClick={handleClose}>Create Another Quote</Button>
-                <Button variant="contained" color='secondary'>Open Quote Folder</Button>
+                <Button variant="contained" onClick={handleClose} >Create Another Quote</Button>
+                <Button variant="contained" color='secondary' onClick={openFolder}>Open Project Folder</Button>
             </DialogActions>
-            {/* <button onClick={fire}>Fire</button> */}
             <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
         </Dialog>
         

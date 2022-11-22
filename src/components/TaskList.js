@@ -48,9 +48,9 @@ function stringAvatar(name) {
 export default function TasksList(props) {
     const { user, open, isCreateTask, values, token, handleOpenSnackbar } = props
     const [ users, setUsers ] = React.useState('');
-    const [ checked, setChecked ] = React.useState([]);
+    const { checked, setChecked } = props
     const [ task, setTask ] = React.useState('')
-    const [ tasks, setTasks ] = React.useState([])
+    const [ tasks, setTasks ] = React.useState([]);
     const [ editTask, setEditTask ] = React.useState('');
     const [ editing, setEditing ] = React.useState(false);
     const [ openTaskForm, setOpenTaskForm ] = React.useState(false);
@@ -58,6 +58,7 @@ export default function TasksList(props) {
     
     const [ openCreate, setOpenCreate ] = React.useState(false);
     const [ taskIndex, setTaskIndex ] = React.useState('');
+    const [ checkedIndex, setCheckedIndex ] = React.useState([]);
 
     const typicalTask = [
         {title:'Submittal Drawings', tasklist: 2 },
@@ -88,13 +89,13 @@ export default function TasksList(props) {
         if (didMount.current) {
             getUsers();
             typicalTask.map((t) => {
-                var fullTask = taskTemplate
-                fullTask = {...taskTemplate, title : t.title, tasklist: t.tasklist}
-                setTasks(oldArray => [...oldArray, fullTask])
-            })
+                var fullTask = taskTemplate;
+                fullTask = {...taskTemplate, title : t.title, tasklist: t.tasklist};
+                setTasks(oldArray => [...oldArray, fullTask]);
+            });
         } else {
             didMount.current = true;
-        }
+        };
     },[open]);
 
     const getUsers = () => {
@@ -108,17 +109,22 @@ export default function TasksList(props) {
         });
     };
 
-
-    const handleChecked = (contact) => {
-        // make list of checked contacts
-        const isChecked = checked.find(({id}) => id === contact.id) // prevents duplicates
-        if(!isChecked){
+    const handleChecked = (t) => {
+        // make list of checked task
+        const index = tasks.indexOf(t, 0);
+        const isChecked = checkedIndex.find((i) => i === index); // prevents duplicates
+        
+        if(isChecked === undefined){
             // if not already in list add to list
-            setChecked(oldArray => [...oldArray, contact]);
+            setCheckedIndex(oldArray => [...oldArray, index]);
+            setChecked(oldArray => [...oldArray, t]);
         }else{
-            // remove from list
-            const newList = checked.filter(c => c.id !== contact.id);
-            setChecked(newList);
+            // remove from index list 
+            const newIndexList = checkedIndex.filter(i => i !== index);
+            setCheckedIndex(newIndexList);
+            // remove from checked list 
+            const newCheckedList = checked.filter((i) => i.title !== t.title);
+            setChecked(newCheckedList);
         };
     };
 
@@ -130,20 +136,20 @@ export default function TasksList(props) {
     };
 
     const handleUpdateTaskList = (t) => {
-        const newList = tasks
+        const newList = tasks;
         if(editing){
-            newList[taskIndex] = t
+            newList[taskIndex] = t;
         }else{
-            newList.push(t)
+            newList.push(t);
         };
-            setTasks(newList)
+            setTasks(newList);
             setOpenTaskForm(false);
     };
 
     const handleAddTaskToList = () =>{
         setEditing(false);
         setOpenTaskForm(true);
-    }
+    };
 
     return (
         
@@ -164,7 +170,7 @@ export default function TasksList(props) {
                         <Checkbox
                             edge="end"
                             onChange={() => handleChecked(t)}
-                            // checked={checked.find(({id}) => id === t.id)? true : false} 
+                            // checked={checkedIndex.find((i) => i === tasks.indexOf(t, 0))? true : false} 
                         />
                         }
                         disablePadding
@@ -199,15 +205,12 @@ export default function TasksList(props) {
             <AddTaskForm
                 task={task}
                 open={openTaskForm}
-                editTask={editTask}
                 setOpen={setOpenTaskForm}
                 editing={editing}
                 setEditing={setEditing}
                 user={user}
                 token={token}
                 handleUpdateTaskList={handleUpdateTaskList}
-                // createTask={createTask}
-                // updateTask={updateTask}
                 handleOpenSnackbar={handleOpenSnackbar}
             />
         </div>

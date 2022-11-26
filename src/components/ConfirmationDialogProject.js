@@ -10,7 +10,6 @@ import  Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import AddTaskSharpIcon from '@mui/icons-material/AddTaskSharp';
 import ErrorOutlineSharpIcon from '@mui/icons-material/ErrorOutlineSharp';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ReactCanvasConfetti from "react-canvas-confetti";
 
 const canvasStyles = {
@@ -21,7 +20,6 @@ const canvasStyles = {
     top: 0,
     left: 0
 };
-
 
 export default function ConfirmationDialogProject(props) {
     const { open, setOpen, confirmation, setConfirmation, openFolder } = props
@@ -158,8 +156,7 @@ export default function ConfirmationDialogProject(props) {
                             alignSelf: 'center',
                             justifyContent: 'center'
                         }}  
-                        icon={<MonetizationOnIcon sx={{fontSize: '100%'}}/>}
-                        label='YUDHA!!!'
+                        label='🤑 YUDHA!!!'
                         color="primary" 
                         variant="outlined" 
                     />

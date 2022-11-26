@@ -18,8 +18,9 @@ import TasksList from './TaskList';
 
 export default function VerificationDialogProject(props) {
     const { user, values, projectType, token, handleOpenSnackbar } = props;
-    const { open, setOpen } = props;
+    const { open, setOpen, getLastProject } = props;
     const { checked, setChecked } = props
+    const [ checkedIndex, setCheckedIndex ] = React.useState([]);
     const { submit } = props
     const { isCreateTask, setIsCreateTask } = props;
     const [ addTasks, setAddTasks ] = React.useState([]);
@@ -39,12 +40,17 @@ export default function VerificationDialogProject(props) {
     }, [open])
 
     const handleClose = () => {
+        //! might need to move this
+        setChecked([]);
+        setCheckedIndex([]);
+
         setOpen(false);
     };
 
     const handleSubmit = () => {
-        submit();
-        setOpen(false);
+        // getLastProject();
+        // submit();
+        // setOpen(false);
     };
 
     return (
@@ -92,6 +98,8 @@ export default function VerificationDialogProject(props) {
                         isCreateTask={isCreateTask}
                         checked={checked}
                         setChecked={setChecked}
+                        checkedIndex={checkedIndex}
+                        setCheckedIndex={setCheckedIndex}
                     />
                 </Stack>
             </DialogContent>

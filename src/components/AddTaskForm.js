@@ -1,4 +1,5 @@
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -22,6 +23,7 @@ export default function AddTaskForm(props) {
     const [ errors, setErrors ] = React.useState({});
 
     const initialFormValues = {
+        id: uuidv4(),
         created_by: user.id,
         assignee:'',
         tasklist: '',
@@ -40,6 +42,7 @@ export default function AddTaskForm(props) {
     };
 
     const editFormValues = {
+        id: task.id,
         created_by: task.created_by,
         assignee: task.assignee,
         tasklist: task.tasklist,

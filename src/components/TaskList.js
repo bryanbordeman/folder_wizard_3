@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import UserServices from '../services/User.services';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -12,9 +13,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
-import AddContactDialog from './AddContactDialog';
 import AddTaskForm from './AddTaskForm';
-
 
 function stringToColor(string) {
     let hash = 0;
@@ -44,21 +43,19 @@ function stringAvatar(name) {
     };
 };
 
-
 export default function TasksList(props) {
-    const { user, open, isCreateTask, values, token, handleOpenSnackbar } = props
+    const { user, open, isCreateTask, token, handleOpenSnackbar } = props
     const [ users, setUsers ] = React.useState('');
     const { checked, setChecked } = props
     const [ task, setTask ] = React.useState('')
     const [ tasks, setTasks ] = React.useState([]);
-    const [ editTask, setEditTask ] = React.useState('');
     const [ editing, setEditing ] = React.useState(false);
     const [ openTaskForm, setOpenTaskForm ] = React.useState(false);
     const didMount = React.useRef(false);
     
     const [ openCreate, setOpenCreate ] = React.useState(false);
     const [ taskIndex, setTaskIndex ] = React.useState('');
-    const [ checkedIndex, setCheckedIndex ] = React.useState([]);
+    const { checkedIndex, setCheckedIndex } = props;
 
     const typicalTask = [
         {title:'Submittal Drawings', tasklist: 2 },
@@ -67,12 +64,13 @@ export default function TasksList(props) {
         {title:'Schedule', tasklist: 2 },
     ]
     const taskTemplate = {
+        id: '', // temp id to make changes on the frontend as needed
         created_by: user.id,
         assignee: user.id,
         tasklist: '',
         title:'',
         notes:'Task generated from Folder Wizard',
-        due: new Date(new Date().getTime()+(7*24*60*60*1000)),
+        due: new Date(new Date().getTime()+(7*24*60*60*1000)), // add 7 days to current day,
         subtasks:[],
         project:'',
         quote:'',
@@ -90,7 +88,7 @@ export default function TasksList(props) {
             getUsers();
             typicalTask.map((t) => {
                 var fullTask = taskTemplate;
-                fullTask = {...taskTemplate, title : t.title, tasklist: t.tasklist};
+                fullTask = {...taskTemplate, id: uuidv4(), title : t.title, tasklist: t.tasklist};
                 setTasks(oldArray => [...oldArray, fullTask]);
             });
         } else {
@@ -108,9 +106,9 @@ export default function TasksList(props) {
             handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         });
     };
-
+    
     const handleChecked = (t) => {
-        // make list of checked task
+        //make list of checked task
         const index = tasks.indexOf(t, 0);
         const isChecked = checkedIndex.find((i) => i === index); // prevents duplicates
         
@@ -142,6 +140,14 @@ export default function TasksList(props) {
         }else{
             newList.push(t);
         };
+        // see if this task is checked
+        const isTaskChecked = checked.filter((tk) => tk.id === t.id).length > 0? true : false;
+        if(isTaskChecked){
+            // if checked update task
+            let newCheckedList = checked.filter((tk) => tk.id !== t.id);
+            newCheckedList.push(t);
+            setChecked(newCheckedList);
+        };
             setTasks(newList);
             setOpenTaskForm(false);
     };
@@ -152,7 +158,6 @@ export default function TasksList(props) {
     };
 
     return (
-        
         <div>
             {isCreateTask? 
             <List 
@@ -170,13 +175,14 @@ export default function TasksList(props) {
                         <Checkbox
                             edge="end"
                             onChange={() => handleChecked(t)}
+                            checked={checked.find((tk) => tk.id === t.id)? true : false}
                             // checked={checkedIndex.find((i) => i === tasks.indexOf(t, 0))? true : false} 
                         />
                         }
                         disablePadding
                     >
                         <ListItemButton
-                            onClick={() => {handleEdit(t)}}
+                            onClick={(e) => {handleEdit(t)}}
                         >
                         <ListItemAvatar>
                             <Avatar {...stringAvatar(`${taskUser.first_name} ${taskUser.last_name}`)}/>

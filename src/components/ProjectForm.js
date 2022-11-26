@@ -18,6 +18,7 @@ import CustomerPicker from './CustomerPicker';
 import ConfirmationDialogProject from './ConfirmationDialogProject';
 import VerificationDialogProject from './VerificationDialogProject';
 import LoadingBackdrop from './LoadingBackdrop';
+import TasksList from './TaskList';
 
 //! to do notes
 /*
@@ -119,7 +120,6 @@ export default function ProjectForm(props) {
         }
     },[confirmation, isSubmitted]);
     
-
     const retrieveNextProjectNumber = () => {
         ProjectDataService.getNextProjectNumber(token)
         .then(response => {
@@ -140,6 +140,20 @@ export default function ProjectForm(props) {
                 ...prevState,
                 number: nextNumber,
             }));
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
+
+    const getLastProject = () => {
+        ProjectDataService.getLastProject(token)
+        .then(response => {
+            checked.map((t) =>{
+                var fullTask = t;
+                fullTask = {...t, project : response.data.last_project_id};
+                createTask(fullTask);
+            })
         })
         .catch( e => {
             console.log(e);
@@ -579,8 +593,9 @@ export default function ProjectForm(props) {
                         size='large'
                     >Clear</Button>
                     <Button 
-                        onClick={handleValidation}
+                        // onClick={handleValidation}
                         // onClick={() => setOpenVerification(!openVerification)}
+                        onClick={() => setOpenConfirmation(!openConfirmation)}
                         variant='contained' 
                         size='large' 
                         color={`${isValid? 'secondary' : 'error'}`}
@@ -610,6 +625,7 @@ export default function ProjectForm(props) {
                 checked={checked}
                 setChecked={setChecked}
                 submit={handleSubmit}
+                getLastProject={getLastProject}
             />
             <LoadingBackdrop
                 open={typeof backdrop == "boolean"? backdrop : true}

@@ -87,7 +87,7 @@ export default function TasksList(props) {
         if (didMount.current) {
             getUsers();
             typicalTask.map((t) => {
-                var fullTask = taskTemplate;
+                let fullTask = taskTemplate;
                 fullTask = {...taskTemplate, id: uuidv4(), title : t.title, tasklist: t.tasklist};
                 setTasks(oldArray => [...oldArray, fullTask]);
             });

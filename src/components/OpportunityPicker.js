@@ -1,21 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState} from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import QuoteDataService from '../services/Quote.services';
 
 export default function OpportunityPicker(props) {
     const { token, clear, setClear } = props;
-    const [ value, setValue ] = React.useState(null);
-    const [ quotes, setQuotes ] = React.useState([{}])
-    const [ inputValue, setInputValue ] = React.useState('');
-
+    const [ value, setValue ] = useState(null);
+    const [ quotes, setQuotes ] = useState([{}])
+    const [ inputValue, setInputValue ] = useState('');
+    
     const { handleChangeQuote } = props
 
     React.useEffect(() => {
         retrieveQuotes()
     },[])
-
+  
     // useEffect(()=> {
+    //     //! NOT WORKING!!
     //     if(clear){
     //         setValue(null);
     //         setClear(false);

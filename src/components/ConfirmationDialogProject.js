@@ -22,25 +22,41 @@ const canvasStyles = {
 };
 
 export default function ConfirmationDialogProject(props) {
-    const { open, setOpen, confirmation, setConfirmation, openFolder } = props
+    const { open, setOpen, confirmation, handleClearInputs, openFolder } = props;
+    const [ complete, setComplete ] = useState('');
+    const didMount = useRef(false);
 
     useEffect(() => {
-        // fire Confetti
-        if(open && complete)
-        setTimeout(() => {
-            fire();
-        }, 500);
-    },[open])
-    
-    
+        if (didMount.current) {
+            if(open){
+                let confirmationList = Object.values(confirmation);
+                let result = true;
+                for (let i in confirmationList) {
+                    if (confirmationList[i] === false || confirmationList[i] === null) {
+                        result = false;
+                        break;
+                    }
+                }
+                setComplete(result)
+                if(result){
+                    setTimeout(() => {
+                        fire();
+                    }, 500)
+                };
+            }
+        } else {
+            didMount.current = true;
+        }
+    },[open]);
+
     const handleClose = () => {
+        handleClearInputs();
         setOpen(false);
     };
 
     //----------------------------Confetti-------------------------//
     const refAnimationInstance = useRef(null);
     // const { complete } = props
-    const complete = true;
 
     const getInstance = useCallback((instance) => {
         refAnimationInstance.current = instance;
@@ -85,7 +101,7 @@ export default function ConfirmationDialogProject(props) {
     }, [makeShot]);
 
     //----------------------------Confetti-------------------------//
-
+    
     return ( 
         <div>
         <Dialog
@@ -122,9 +138,6 @@ export default function ConfirmationDialogProject(props) {
                                 {confirmation.task ? 'Task created' : 'Task was not created'}
                             </Typography>
                     </Stack>
-                    {/* :
-                    ''
-                    } */}
                     <Stack direction="row" spacing={2} sx={{mb:3}}>
                         {confirmation.folder ?
                             <AddTaskSharpIcon fontSize='large' color= 'success'/>
@@ -136,58 +149,54 @@ export default function ConfirmationDialogProject(props) {
                     </Stack>
                 </Stack>
                 {complete? 
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                <Stack>
-                    <Typography sx={{fontWeight: 500}} color='secondary' align='center' variant="h5" gutterBottom>
-                    Another sale. Keep up the great work!
-                    </Typography>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <Stack>
+                            <Typography sx={{fontWeight: 500}} color='secondary' align='center' variant="h5" gutterBottom>
+                            Another sale. Keep up the great work!
+                            </Typography>
+                            <Chip 
+                                sx={{
+                                    fontWeight: '500',
+                                    marginTop: '20px',
+                                    fontSize: '4rem',
+                                    paddingTop:'50px',
+                                    paddingBottom:'50px',
+                                    display: 'flex',
+                                    alignSelf: 'center',
+                                    justifyContent: 'center'
+                                }}  
+                                label='🤑 YUDHA!!!'
+                                color="primary" 
+                                variant="outlined" 
+                            />
+                        </Stack>
+                    </div>
+                    : 
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
                     <Chip 
                         sx={{
                             fontWeight: '500',
                             marginTop: '20px',
-                            fontSize: '4rem',
-                            paddingTop:'50px',
-                            paddingBottom:'50px',
+                            fontSize: '2rem',
+                            paddingTop:'30px',
+                            paddingBottom:'30px',
                             display: 'flex',
                             alignSelf: 'center',
                             justifyContent: 'center'
                         }}  
-                        label='🤑 YUDHA!!!'
-                        color="primary" 
+                        label='💩 Something Went Wrong!! Please try again.'
+                        color="error" 
                         variant="outlined" 
                     />
-                </Stack>
-                {/* <Typography sx={{fontWeight: 500}} color='primary' align='center' variant="h1" gutterBottom>
-                YUDHA!!!
-                </Typography> */}
-                </div>
-                : 
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                <Chip 
-                    sx={{
-                        fontWeight: '500',
-                        marginTop: '20px',
-                        fontSize: '2rem',
-                        paddingTop:'30px',
-                        paddingBottom:'30px',
-                        display: 'flex',
-                        alignSelf: 'center',
-                        justifyContent: 'center'
-                    }}  
-                    icon={<ErrorOutlineSharpIcon sx={{fontSize: '100%'}}/>}
-                    label='Something Went Wrong!! Please try again.'
-                    color="error" 
-                    // variant="outlined" 
-                />
-                </div>
+                    </div>
                 }
             </DialogContent>
             <Divider
@@ -197,6 +206,7 @@ export default function ConfirmationDialogProject(props) {
                 <Button variant="contained" onClick={handleClose} >Create Another Quote</Button>
                 <Button variant="contained" color='secondary' onClick={openFolder}>Open Project Folder</Button>
             </DialogActions>
+            
             <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
         </Dialog>
         

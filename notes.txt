@@ -1,3 +1,4 @@
 - fix ManagerPicker. Warning
 - Fix email validation on updateContact 
 - on quotes need to fix if somethig goes wrong erase data 
+- project and quote names should accept numbers for PO number??

@@ -5,25 +5,20 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Transition from './DialogTransistion'
-import  Divider from '@mui/material/Divider';
+import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import AssigneePicker from './AssigneePicker';
-import { Stack, TextField,IconButton} from '@mui/material';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Stack,IconButton} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import TasksList from './TaskList';
 
 export default function VerificationDialogProject(props) {
     const { user, values, projectType, token, handleOpenSnackbar } = props;
-    const { open, setOpen, getLastProject } = props;
+    const { open, setOpen } = props;
     const { checked, setChecked } = props
     const [ checkedIndex, setCheckedIndex ] = React.useState([]);
     const { submit } = props
     const { isCreateTask, setIsCreateTask } = props;
-    const [ addTasks, setAddTasks ] = React.useState([]);
     const [ dialogTitle, setDialogTitle ] = React.useState('');
 
     React.useEffect(() => {
@@ -48,9 +43,8 @@ export default function VerificationDialogProject(props) {
     };
 
     const handleSubmit = () => {
-        // getLastProject();
-        // submit();
-        // setOpen(false);
+        submit();
+        setOpen(false);
     };
 
     return (

@@ -18,10 +18,14 @@ import CustomerPicker from './CustomerPicker';
 import ConfirmationDialogProject from './ConfirmationDialogProject';
 import VerificationDialogProject from './VerificationDialogProject';
 import LoadingBackdrop from './LoadingBackdrop';
-import TasksList from './TaskList';
+
 
 //! to do notes
 /*
+
+Need to make clear work on QuotePicker
+fix fire Confetti
+add PO number input
 
 
 */ 
@@ -30,16 +34,18 @@ export default function ProjectForm(props) {
     const [ projectType, setProjectType ] = useState(1); // project type
     const [ clear, setClear ] = useState(false);
     const [ contacts, setContacts ] = useState('');
+    const [ checkedTask, setCheckedTask ] = React.useState([]);
     const [ checked, setChecked ] = React.useState([]);
     const [ isCreateTask, setIsCreateTask ] = useState(true);
-    
+    // const [ complete, setComplete ] = useState(null);
     const [ backdrop, setBackdrop ] = useState(false);
     const [ isSubmitted, setIsSubmitted ] = useState(false);
     const [ quote , setQuote ] = useState('');
     const [ categoryCode, setCategoryCode ] = useState('');
     const [ typeCode , setTypeCode ] = useState('');
     const [ openVerification, setOpenVerification ] = useState(false);
-    const [ openConfirmation, setOpenConfirmation ] = React.useState(false)
+    const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
+    const [ isUpdateContact, setIsUpdateContact ] = useState(false);
     const didMount = useRef(false);
 
     const initialValues = {
@@ -119,6 +125,19 @@ export default function ProjectForm(props) {
             didMount.current = true;
         }
     },[confirmation, isSubmitted]);
+
+    useEffect(() => {
+        if (didMount.current) {
+            // if quote pk is updated and isUpdateContact is true
+            if (isUpdateContact) {
+                checked.map((c) => {
+                    updateContact(c.id, c)
+                });
+            }
+        } else {
+            didMount.current = true;
+        }
+    }, [isUpdateContact]);
     
     const retrieveNextProjectNumber = () => {
         ProjectDataService.getNextProjectNumber(token)
@@ -179,6 +198,36 @@ export default function ProjectForm(props) {
         }
     };
     
+    const getProjects = () => {
+        ProjectDataService.getAll(token)
+        .then(response => {
+            let updatedTaskList = []
+            if(isCreateTask){
+                checkedTask.map((t) => {
+                    var fullTask = {};
+                    fullTask = {...t, project : response.data[0].id};
+                    updatedTaskList.push(fullTask)
+                    // setCheckedTask(oldArray => [...oldArray, fullTask]);
+                });
+
+                updatedTaskList.map((t) => {
+                    createTask(t);
+                })
+            }
+            if(checked.length > 0){
+                let updatedList = []
+                checked.map((c) => {
+                    updatedList.push({...c, quotes: [...c.quotes, response.data[0].id]})
+                });
+                setChecked(updatedList);
+                setIsUpdateContact(true);
+            }
+        })
+        .catch( e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        })
+    };
 
     const createProject = () => {
         ProjectDataService.createProject(values, token)
@@ -187,8 +236,9 @@ export default function ProjectForm(props) {
                 ...prevState,
                 database: true,
             }));
+                // setComplete(true);
                 if(isCreateTask || checked.length > 0){
-                    //! need to add something here
+                    getProjects();
                 }
                 else {
                     createFolder();
@@ -201,6 +251,7 @@ export default function ProjectForm(props) {
                 ...prevState,
                 database: false,
             }));
+            // setComplete(false);
             setOpenConfirmation(true);
             // handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         })
@@ -231,6 +282,18 @@ export default function ProjectForm(props) {
         const folderName = `${values.number} ${values.name} ${categoryCode}-${typeCode}`
         const inputs = JSON.stringify({folderName: folderName, projectType: projectType}) //! might need to modify format for electron to accept
         window.api.createProjectFolder(inputs)
+        .then(data => {
+            setConfirmation((prevState) => ({
+                ...prevState,
+                folder: data,
+            }));
+            // if(data === false){
+            //     setComplete(false);
+            // }else{
+            //     setComplete(true);
+            // }
+            setOpenConfirmation(true); //! this is not correct. should be based on Confirmation list
+        });
     };
 
     const createTask = (task) => {
@@ -240,10 +303,11 @@ export default function ProjectForm(props) {
                     ...prevState,
                     task: true,
                 }));
+                // setComplete(true);
                 // console.log(confirmation.task)
                 setTimeout(() => {
                     createFolder();
-                }, 500);
+                }, 1000);
             })
             .catch(e => {
                 console.log(e);
@@ -251,6 +315,7 @@ export default function ProjectForm(props) {
                     ...prevState,
                     task: false,
                 }));
+                // setComplete(false);
                 setOpenConfirmation(true);
             });
     };
@@ -300,6 +365,9 @@ export default function ProjectForm(props) {
         setClear(true);
         setValues(initialValues);
         setChecked([]);
+        setCheckedTask([]);
+        setConfirmation(initialConfirmation);
+        setIsSubmitted(false);
         
     };
 
@@ -380,16 +448,23 @@ export default function ProjectForm(props) {
     };
 
     const handleSubmit = () => {
-        setOpenConfirmation(!openConfirmation)
+        setIsSubmitted(true);
+        // make database entry
+        createProject();
+        // make task if applicable 
+        // make folder
+        // setOpenConfirmation(!openConfirmation)
     };
 
     return ( 
         <Box sx={{mr:3, ml:3}}>
             <Stack spacing={2}>
             <OpportunityPicker
-                    token={token}
-                    handleOpenSnackbar={handleOpenSnackbar}
-                    handleChangeQuote={handleChangeQuote}
+                token={token}
+                handleOpenSnackbar={handleOpenSnackbar}
+                handleChangeQuote={handleChangeQuote}
+                clear={clear}
+                setClear={setClear}
             />
             <ProjectButtons
                 darkState={darkState}
@@ -398,22 +473,22 @@ export default function ProjectForm(props) {
             />
             <Divider/>
             <TextField
-                    autoFocus={false}
-                    margin="dense"
-                    id="name"
-                    name='name'
-                    label="Project Name"
-                    onChange={handleInputValue}
-                    onInput = {(e) =>{
-                        e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
-                    }}
-                    inputProps={{ maxLength: 27 }}
-                    value={values.name}
-                    type="text"
-                    fullWidth
-                    variant="outlined"
-                    helperText={errors.name === null ? '' : errors.name}
-                    error={errors.name? true : false}
+                autoFocus={false}
+                margin="dense"
+                id="name"
+                name='name'
+                label="Project Name"
+                onChange={handleInputValue}
+                onInput = {(e) =>{
+                    e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
+                }}
+                inputProps={{ maxLength: 27 }}
+                value={values.name}
+                type="text"
+                fullWidth
+                variant="outlined"
+                helperText={errors.name === null ? '' : errors.name}
+                error={errors.name? true : false}
                 />
                 <CategoryTypePickers
                     token={token}
@@ -562,7 +637,12 @@ export default function ProjectForm(props) {
                     clear={clear}
                     setClear={setClear}
                 />
-                <TextField
+                <Stack 
+                    direction="row"
+                    alignItems="center"
+                    spacing={2}
+                >
+                    <TextField
                         autoFocus={false}
                         margin="dense"
                         id="price"
@@ -579,6 +659,19 @@ export default function ProjectForm(props) {
                         helperText={errors.price === null ? '' : errors.price}
                         error={errors.price? true : false}
                     />
+                    <TextField
+                        autoFocus={false}
+                        margin="dense"
+                        id="po"
+                        name='po'
+                        label="PO or Contract Number"
+                        // onChange={handleInputValue}
+                        // value={values.price}
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                    />
+                </Stack>
                     <Divider/>
                 <Stack 
                     sx={{pb:4}}
@@ -593,17 +686,15 @@ export default function ProjectForm(props) {
                         size='large'
                     >Clear</Button>
                     <Button 
-                        // onClick={handleValidation}
+                        onClick={handleValidation}
+                        // onClick={handleSubmit}
                         // onClick={() => setOpenVerification(!openVerification)}
-                        onClick={() => setOpenConfirmation(!openConfirmation)}
+                        // onClick={() => setOpenConfirmation(!openConfirmation)}
                         variant='contained' 
                         size='large' 
                         color={`${isValid? 'secondary' : 'error'}`}
                     >Submit</Button>
                 </Stack>
-
-            
-
             </Stack>
             <ConfirmationDialogProject
                 open={openConfirmation}
@@ -611,6 +702,8 @@ export default function ProjectForm(props) {
                 confirmation={confirmation}
                 setConfirmation={setConfirmation}
                 openFolder={openFolder}
+                handleClearInputs={handleClearInputs}
+                // complete={complete}
             />
             <VerificationDialogProject
                 user={user}
@@ -622,8 +715,8 @@ export default function ProjectForm(props) {
                 isCreateTask={isCreateTask}
                 setIsCreateTask={setIsCreateTask}
                 values={values}
-                checked={checked}
-                setChecked={setChecked}
+                checked={checkedTask}
+                setChecked={setCheckedTask}
                 submit={handleSubmit}
                 getLastProject={getLastProject}
             />

@@ -66,6 +66,7 @@ export default function ProjectForm(props) {
         order_type: '',
         terms: '',
         price:'',
+        po_number: '',
         notes:''
     };
 
@@ -128,7 +129,7 @@ export default function ProjectForm(props) {
 
     useEffect(() => {
         if (didMount.current) {
-            // if quote pk is updated and isUpdateContact is true
+            // if project pk is updated and isUpdateContact is true
             if (isUpdateContact) {
                 checked.map((c) => {
                     updateContact(c.id, c)
@@ -202,22 +203,29 @@ export default function ProjectForm(props) {
         ProjectDataService.getAll(token)
         .then(response => {
             let updatedTaskList = []
-            if(isCreateTask){
+            if(isCreateTask && checkedTask.length > 0){
                 checkedTask.map((t) => {
                     var fullTask = {};
                     fullTask = {...t, project : response.data[0].id};
                     updatedTaskList.push(fullTask)
-                    // setCheckedTask(oldArray => [...oldArray, fullTask]);
                 });
 
                 updatedTaskList.map((t) => {
                     createTask(t);
                 })
+            } else {
+                setConfirmation((prevState) => ({
+                    ...prevState,
+                    task: true,
+                }));
+                setTimeout(() => {
+                    createFolder();
+                }, 1000);
             }
             if(checked.length > 0){
                 let updatedList = []
                 checked.map((c) => {
-                    updatedList.push({...c, quotes: [...c.quotes, response.data[0].id]})
+                    updatedList.push({...c, projects: [...c.projects, response.data[0].id]})
                 });
                 setChecked(updatedList);
                 setIsUpdateContact(true);
@@ -236,14 +244,7 @@ export default function ProjectForm(props) {
                 ...prevState,
                 database: true,
             }));
-                // setComplete(true);
-                if(isCreateTask || checked.length > 0){
-                    getProjects();
-                }
-                else {
-                    createFolder();
-                };
-            // handleOpenSnackbar('success', 'Project was created')
+            getProjects();
         })
         .catch( e => {
             console.log(e);
@@ -251,9 +252,7 @@ export default function ProjectForm(props) {
                 ...prevState,
                 database: false,
             }));
-            // setComplete(false);
             setOpenConfirmation(true);
-            // handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
         })
     };
 
@@ -279,20 +278,15 @@ export default function ProjectForm(props) {
 
     const createFolder = () => {
         // send object with folderName and projectType to electron. 
-        const folderName = `${values.number} ${values.name} ${categoryCode}-${typeCode}`
-        const inputs = JSON.stringify({folderName: folderName, projectType: projectType}) //! might need to modify format for electron to accept
+        const folderName = `${values.number} ${values.name} ${categoryCode}-${typeCode}`;
+        const inputs = JSON.stringify({folderName: folderName, projectType: projectType});
         window.api.createProjectFolder(inputs)
         .then(data => {
             setConfirmation((prevState) => ({
                 ...prevState,
                 folder: data,
             }));
-            // if(data === false){
-            //     setComplete(false);
-            // }else{
-            //     setComplete(true);
-            // }
-            setOpenConfirmation(true); //! this is not correct. should be based on Confirmation list
+            setOpenConfirmation(true); 
         });
     };
 
@@ -303,8 +297,6 @@ export default function ProjectForm(props) {
                     ...prevState,
                     task: true,
                 }));
-                // setComplete(true);
-                // console.log(confirmation.task)
                 setTimeout(() => {
                     createFolder();
                 }, 1000);
@@ -315,7 +307,6 @@ export default function ProjectForm(props) {
                     ...prevState,
                     task: false,
                 }));
-                // setComplete(false);
                 setOpenConfirmation(true);
             });
     };
@@ -449,11 +440,8 @@ export default function ProjectForm(props) {
 
     const handleSubmit = () => {
         setIsSubmitted(true);
-        // make database entry
         createProject();
-        // make task if applicable 
-        // make folder
-        // setOpenConfirmation(!openConfirmation)
+        
     };
 
     return ( 
@@ -662,11 +650,11 @@ export default function ProjectForm(props) {
                     <TextField
                         autoFocus={false}
                         margin="dense"
-                        id="po"
-                        name='po'
+                        id="po_number"
+                        name='po_number'
                         label="PO or Contract Number"
-                        // onChange={handleInputValue}
-                        // value={values.price}
+                        onChange={handleInputValue}
+                        value={values.po_number}
                         type="text"
                         fullWidth
                         variant="outlined"
@@ -703,7 +691,7 @@ export default function ProjectForm(props) {
                 setConfirmation={setConfirmation}
                 openFolder={openFolder}
                 handleClearInputs={handleClearInputs}
-                // complete={complete}
+                isCreateTask={isCreateTask}
             />
             <VerificationDialogProject
                 user={user}

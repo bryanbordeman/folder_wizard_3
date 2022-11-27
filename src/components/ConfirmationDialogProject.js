@@ -22,7 +22,7 @@ const canvasStyles = {
 };
 
 export default function ConfirmationDialogProject(props) {
-    const { open, setOpen, confirmation, handleClearInputs, openFolder } = props;
+    const { open, setOpen, confirmation, isCreateTask, handleClearInputs, openFolder } = props;
     const [ complete, setComplete ] = useState('');
     const didMount = useRef(false);
 
@@ -127,7 +127,7 @@ export default function ConfirmationDialogProject(props) {
                                 {confirmation.database ? 'Database record created' : 'Database record was not created'}
                             </Typography>
                     </Stack>
-                    {/* {isCreateTask ? */}
+                    {isCreateTask ?
                     <Stack direction="row" spacing={2} sx={{mb:3}}>
                         {confirmation.task ?
                             <AddTaskSharpIcon fontSize='large' color= 'success'/>
@@ -138,6 +138,7 @@ export default function ConfirmationDialogProject(props) {
                                 {confirmation.task ? 'Task created' : 'Task was not created'}
                             </Typography>
                     </Stack>
+                    : '' }
                     <Stack direction="row" spacing={2} sx={{mb:3}}>
                         {confirmation.folder ?
                             <AddTaskSharpIcon fontSize='large' color= 'success'/>

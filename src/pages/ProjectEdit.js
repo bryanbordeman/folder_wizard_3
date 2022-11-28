@@ -1,25 +1,28 @@
 import React from 'react';
+import ProjectForm from '../components/ProjectForm';
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
-import OpportunityFormEdit from '../components/OpportunityFormEdit';
 
-export default function OpportunityEdit(props) {
-    const { token, user, handleOpenSnackbar } = props
+export default function ProjectEdit(props) {
+    const { token, user, handleOpenSnackbar, darkState } = props
+
     return (  
         <div style={{marginTop: '5rem'}}>
             <Typography variant="h2" component="h2" sx={{mr:3, ml:3, mb:2}}>
-                <Box
+                <Box 
                 >
-                    Edit Opportunity
+                    Edit Project
                 </Box>
             </Typography>
-            <OpportunityFormEdit
+            <ProjectForm
                 token={token}
                 user={user}
                 handleOpenSnackbar={handleOpenSnackbar}
+                darkState={darkState}
+                editing={true}
             />
             <div style={{ position:'absolute', top:10, left:10}}>
                 <IconButton 
@@ -34,4 +37,5 @@ export default function OpportunityEdit(props) {
             </div>
         </div>
     );
-}
+};
+

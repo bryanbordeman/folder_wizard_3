@@ -9,7 +9,7 @@ import ProjectOrderType from '../services/ProjectOrderType.services';
 
 export default function BillingOrderTypePickers(props) {
     const { token } = props
-    const { values, setValues, errors, clear, setClear } = props;
+    const { values, setValues, errors, clear, setClear, project } = props;
     const [ billings, setBillings ] = useState([]);
     const [ billing, setBilling ] = useState('');
     const [ orders, setOrders] = useState([]);
@@ -22,6 +22,16 @@ export default function BillingOrderTypePickers(props) {
             setClear(false);
         };
     },[clear]);
+
+    useEffect(() => {
+        // set from ProjectPicker
+       if(project){
+        setTimeout(() => {
+            setBilling(project.billing_type.id);
+            setOrder(project.order_type.id);
+           }, 100); 
+       };
+   },[project])
 
     useEffect(() => {
         retrieveBillings();

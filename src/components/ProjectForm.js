@@ -10,6 +10,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import OpportunityPicker from './OpportunityPicker';
+import ProjectPicker from './ProjectPicker';
 import ProjectButtons from './ProjectButtons';
 import CategoryTypePickers from './CategoryTypePickers';
 import BillingOrderTypePickers from './BillingOrderTypePickers';
@@ -23,24 +24,26 @@ import LoadingBackdrop from './LoadingBackdrop';
 //! to do notes
 /*
 
-Need to make clear work on QuotePicker
-fix fire Confetti
-add PO number input
-
+- Need to make clear work on QuotePicker
+- make contacts update on ProjectEdit
+- change ProjectPicker when projecrType is changed
+- add update project function
+- 
 
 */ 
 export default function ProjectForm(props) {
     const { user, token, handleOpenSnackbar, darkState} = props;
+    const { editing } = props;
     const [ projectType, setProjectType ] = useState(1); // project type
     const [ clear, setClear ] = useState(false);
     const [ contacts, setContacts ] = useState('');
     const [ checkedTask, setCheckedTask ] = React.useState([]);
     const [ checked, setChecked ] = React.useState([]);
     const [ isCreateTask, setIsCreateTask ] = useState(true);
-    // const [ complete, setComplete ] = useState(null);
     const [ backdrop, setBackdrop ] = useState(false);
     const [ isSubmitted, setIsSubmitted ] = useState(false);
     const [ quote , setQuote ] = useState('');
+    const [ project , setProject ] = useState('');
     const [ categoryCode, setCategoryCode ] = useState('');
     const [ typeCode , setTypeCode ] = useState('');
     const [ openVerification, setOpenVerification ] = useState(false);
@@ -55,7 +58,7 @@ export default function ProjectForm(props) {
         project_category:'',
         project_type:'',
         address:'',
-        customers: '',
+        customer: '',
         prevailing_rate: false,
         union: false,
         certified_payroll: false,
@@ -79,7 +82,7 @@ export default function ProjectForm(props) {
         billing_type: '',
         order_type: '',
         terms: '',
-        customers:'',
+        customer:'',
         price:'',
     };
 
@@ -193,6 +196,27 @@ export default function ProjectForm(props) {
                 travel_job: quote.travel_job,
                 notes: quote.notes,
                 price: quote.price
+            }));
+        }else{
+            handleClearInputs();
+        }
+    };
+
+    const handleChangeProject= (project) => {
+        setProject(project);
+        if(project){
+            handleClearInputs();
+            setValues((prevState) => ({
+                ...prevState,
+                name: project.name,
+                project_category: project.project_category.id,
+                project_type: project.project_type.id,
+                prevailing_rate: project.prevailing_rate,
+                travel_job: project.travel_job,
+                terms: project.terms,
+                notes: project.notes,
+                price: project.price,
+                po_number: project.po_number
             }));
         }else{
             handleClearInputs();
@@ -359,7 +383,6 @@ export default function ProjectForm(props) {
         setCheckedTask([]);
         setConfirmation(initialConfirmation);
         setIsSubmitted(false);
-        
     };
 
     const handleValidation = () => {
@@ -447,13 +470,24 @@ export default function ProjectForm(props) {
     return ( 
         <Box sx={{mr:3, ml:3}}>
             <Stack spacing={2}>
-            <OpportunityPicker
+            {editing? 
+                <ProjectPicker
                 token={token}
                 handleOpenSnackbar={handleOpenSnackbar}
-                handleChangeQuote={handleChangeQuote}
+                handleChangeProject={handleChangeProject}
+                projectType={projectType}
                 clear={clear}
                 setClear={setClear}
-            />
+                /> 
+                :
+                <OpportunityPicker
+                    token={token}
+                    handleOpenSnackbar={handleOpenSnackbar}
+                    handleChangeQuote={handleChangeQuote}
+                    clear={clear}
+                    setClear={setClear}
+                />
+            }
             <ProjectButtons
                 darkState={darkState}
                 projectType={projectType}
@@ -483,6 +517,7 @@ export default function ProjectForm(props) {
                     user={user}
                     values={values}
                     quote={quote}
+                    project={project}
                     setValues={setValues}
                     errors={errors}
                     handleInputValue={handleInputValue}
@@ -563,6 +598,7 @@ export default function ProjectForm(props) {
                     handleOpenSnackbar={handleOpenSnackbar}
                     values={values}
                     quote={quote}
+                    project={project}
                     setValues={setValues}
                     clear={clear}
                     setClear={setClear}
@@ -576,7 +612,7 @@ export default function ProjectForm(props) {
                     handleOpenSnackbar={handleOpenSnackbar}
                     values={values}
                     errors={errors}
-                    // quote={quote} //! needs to only be one customer.
+                    quote={project} //! needs to only be one customer.
                     setValues={setValues}
                     clear={clear}
                     setClear={setClear}
@@ -620,6 +656,7 @@ export default function ProjectForm(props) {
                     user={user}
                     values={values}
                     setValues={setValues}
+                    project={project}
                     errors={errors}
                     handleInputValue={handleInputValue}
                     clear={clear}
@@ -680,8 +717,8 @@ export default function ProjectForm(props) {
                         // onClick={() => setOpenConfirmation(!openConfirmation)}
                         variant='contained' 
                         size='large' 
-                        color={`${isValid? 'secondary' : 'error'}`}
-                    >Submit</Button>
+                        color={editing? `${isValid? 'primary' : 'error'}` : `${isValid? 'secondary' : 'error'}`}
+                    >{editing? 'Update' : 'Submit'}</Button>
                 </Stack>
             </Stack>
             <ConfirmationDialogProject

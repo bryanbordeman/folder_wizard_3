@@ -10,21 +10,31 @@ import ProjectTypeServices from '../services/ProjectType.services';
 
 export default function CategoryTypePickers(props) {
     const { token } = props
-    const { values, setValues, errors, clear, setClear, quote, isDisabled } = props;
+    const { values, setValues, errors, clear, setClear, quote, project, isDisabled } = props;
     const [ categories, setCategories ] = useState([]);
     const [ types, setTypes ] = useState([]);
     const [ type, setType ] = useState('');
     const [ category, setCategory ] = useState('');
 
     useEffect(() => {
+        // set from OpportunityPicker
         if(quote){
             setTimeout(() => {
                 setType(quote.project_type.id);
                 setCategory(quote.project_category.id);
-            }, 100);
-            
+            }, 100); 
         };
     },[quote])
+
+    useEffect(() => {
+         // set from ProjectPicker
+        if(project){
+            setTimeout(() => {
+                setType(project.project_type.id);
+                setCategory(project.project_category.id);
+            }, 100); 
+        };
+    },[project])
 
     useEffect(()=> {
         if(clear){

@@ -92,6 +92,8 @@ function Home(props) {
                         <Button 
                             variant='outlined' 
                             color='primary' 
+                            component={Link} 
+                            to='/project/edit'
                         >Edit Project
                         </Button>
                     </Stack>

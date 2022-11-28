@@ -7,10 +7,10 @@ import Home from '../pages/Home';
 import Opportunity from '../pages/Opportunity';
 import OpportunityEdit from '../pages/OpportunityEdit';
 import Project from '../pages/Project';
+import ProjectEdit from '../pages/ProjectEdit';
 
 function MainRoutes(props) {
     const { user, token, login, logout, signup, loginErrors, darkState, handleOpenSnackbar } = props
-
     return (
         <div>
             <Routes>
@@ -62,6 +62,20 @@ function MainRoutes(props) {
                         <Navigate to="/login" />
                         :
                         <Project
+                            darkState={darkState}
+                            user={user}
+                            token={token}
+                            handleOpenSnackbar={handleOpenSnackbar}
+                        />
+                }/>
+                <Route 
+                    exact 
+                    path='/project/edit' 
+                    element={
+                        !user.username  ? 
+                        <Navigate to="/login" />
+                        :
+                        <ProjectEdit
                             darkState={darkState}
                             user={user}
                             token={token}

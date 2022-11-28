@@ -7,7 +7,7 @@ import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 
 export default function AddressPicker(props) {
-    const { token, values, setValues, handleOpenSnackbar, clear, setClear, quote, isDisabled } = props
+    const { token, values, setValues, handleOpenSnackbar, clear, setClear, quote, project, isDisabled } = props
     const [ address, setAddress ] = useState('');
     const [ addressId, setAddressId ] = useState('');
     const [ addressObj, setAddressObj ] = useState('');
@@ -26,6 +26,7 @@ export default function AddressPicker(props) {
     },[clear])
 
     useEffect(() => {
+        // set from OpportunityPicker
         if(quote){
             if(quote.address !== null && quote.address !== undefined){
                 const label = `${quote.address.address}, ${quote.address.city}, ${quote.address.state}, ${quote.address.postal_code}`
@@ -35,6 +36,18 @@ export default function AddressPicker(props) {
             setAddress('')
         };
     },[quote])
+
+    useEffect(() => {
+        // set from ProjectPicker
+        if(project){
+            if(project.address !== null && project.address !== undefined){
+                const label = `${project.address.address}, ${project.address.city}, ${project.address.state}, ${project.address.postal_code}`
+                setAddress({label: label, value: project.address})
+            }
+        }else{
+            setAddress('')
+        };
+    },[project])
 
     useEffect(() => {
         setValues({...values, address: addressId})

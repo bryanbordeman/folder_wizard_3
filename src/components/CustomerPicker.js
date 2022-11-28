@@ -79,10 +79,15 @@ export default function CustomerPicker(props) {
 
     useEffect(() => {
         // if editing quote load data
-        if(quote && quote.customers){
+        if(quote && quote.customers && !project){
             quote.customers.map((customer) => {
                 setCustomers(oldArray => [...oldArray, customer]);
             })
+        };
+
+        // not really quote. This is a project
+        if(quote && quote.customer && project){
+            setCustomers([quote.customer]);
         };
     },[quote])
 
@@ -94,7 +99,7 @@ export default function CustomerPicker(props) {
         })
         if(project){
             // if project only make one customer
-            setValues({...values, customers: tempList.at(-1)})
+            setValues({...values, customer: tempList.at(-1)})
         }else{
             setValues({...values, customers: tempList})
         }
@@ -136,6 +141,7 @@ export default function CustomerPicker(props) {
                 // console.log(customerObj)
                 if(project){
                     setCustomers([customerObj]);
+                    setChecked([]);
                 }else{
                     setCustomers(oldArray => [...oldArray, customerObj]);
                 }

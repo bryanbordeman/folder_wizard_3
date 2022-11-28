@@ -6,8 +6,9 @@ import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
 
-export default function Opportunity(props) {
+export default function Project(props) {
     const { token, user, handleOpenSnackbar, darkState } = props
+
     return (  
         <div style={{marginTop: '5rem'}}>
             <Typography variant="h2" component="h2" sx={{mr:3, ml:3, mb:2}}>
@@ -21,6 +22,7 @@ export default function Opportunity(props) {
                 user={user}
                 handleOpenSnackbar={handleOpenSnackbar}
                 darkState={darkState}
+                editing={false}
             />
             <div style={{ position:'absolute', top:10, left:10}}>
                 <IconButton 

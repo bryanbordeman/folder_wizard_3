@@ -26,7 +26,7 @@ import LoadingBackdrop from './LoadingBackdrop';
 
 - Need to make clear work on QuotePicker
 - make contacts update on ProjectEdit
-- change ProjectPicker when projecrType is changed
+- Add create service and hse in data base
 - add update project function
 - 
 
@@ -49,7 +49,16 @@ export default function ProjectForm(props) {
     const [ openVerification, setOpenVerification ] = useState(false);
     const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
     const [ isUpdateContact, setIsUpdateContact ] = useState(false);
+    const [ isDisabled, setIsDisabled ] = useState(true);
     const didMount = useRef(false);
+
+    useEffect(() => {
+        if(project && editing){
+            setIsDisabled(false);
+        }else{
+            setIsDisabled(true);
+        }
+    },[project])
 
     const initialValues = {
         is_active: true,
@@ -496,6 +505,7 @@ export default function ProjectForm(props) {
             <Divider/>
             <TextField
                 autoFocus={false}
+                disabled={isDisabled}
                 margin="dense"
                 id="name"
                 name='name'
@@ -523,6 +533,7 @@ export default function ProjectForm(props) {
                     handleInputValue={handleInputValue}
                     clear={clear}
                     setClear={setClear}
+                    isDisabled={isDisabled}
                 />
                 <Divider/>
                 <Stack 
@@ -532,6 +543,7 @@ export default function ProjectForm(props) {
                 >
                     <FormControlLabel
                         sx={{width: '33%'}}
+                        disabled={isDisabled}
                         onChange={() => {setValues({...values, prevailing_rate: !values.prevailing_rate})}}
                         control={<Switch checked={values.prevailing_rate} color="primary" />}
                         id="prevailing_rate"
@@ -541,6 +553,7 @@ export default function ProjectForm(props) {
                     />
                     <FormControlLabel
                         sx={{width: '33%'}}
+                        disabled={isDisabled}
                         onChange={() => {setValues({...values, certified_payroll: !values.certified_payroll})}}
                         control={<Switch checked={values.certified_payroll} color="primary" />}
                         id="certified_payroll"
@@ -550,6 +563,7 @@ export default function ProjectForm(props) {
                     />
                     <FormControlLabel
                         sx={{width: '33%'}}
+                        disabled={isDisabled}
                         onChange={() => {setValues({...values, union: !values.union})}}
                         control={<Switch checked={values.union} color="primary" />}
                         id="union"
@@ -565,6 +579,7 @@ export default function ProjectForm(props) {
                 >
                     <FormControlLabel
                         sx={{width: '33%'}}
+                        disabled={isDisabled}
                         onChange={() => {setValues({...values, travel_job: !values.travel_job})}}
                         control={<Switch checked={values.travel_job} color="primary" />}
                         id="travel_job"
@@ -574,6 +589,7 @@ export default function ProjectForm(props) {
                     />
                     <FormControlLabel
                         sx={{width: '33%'}}
+                        disabled={isDisabled}
                         onChange={() => {setValues({...values, material_only: !values.material_only})}}
                         control={<Switch checked={values.material_only} color="primary" />}
                         id="material_only"
@@ -583,6 +599,7 @@ export default function ProjectForm(props) {
                     />
                     <FormControlLabel
                         sx={{width: '33%'}}
+                        disabled={isDisabled}
                         onChange={() => {setValues({...values, tax_exempt: !values.tax_exempt})}}
                         control={<Switch checked={values.tax_exempt} color="primary" />}
                         id="tax_exempt"
@@ -602,6 +619,7 @@ export default function ProjectForm(props) {
                     setValues={setValues}
                     clear={clear}
                     setClear={setClear}
+                    isDisabled={isDisabled}
                 />
                 <CustomerPicker
                     checked={checked}
@@ -618,6 +636,7 @@ export default function ProjectForm(props) {
                     setClear={setClear}
                     updateContact={updateContact}
                     project={true}
+                    isDisabled={isDisabled}
                 />
                 <Stack 
                     direction="row"
@@ -626,6 +645,7 @@ export default function ProjectForm(props) {
                 >
                     <TextField
                         autoFocus={false}
+                        disabled={isDisabled}
                         id="terms"
                         name='terms'
                         label="Terms"
@@ -640,6 +660,7 @@ export default function ProjectForm(props) {
                     />
                     <TextField
                         autoFocus={false}
+                        disabled={isDisabled}
                         id="notes"
                         name='notes'
                         label="Notes"
@@ -661,6 +682,7 @@ export default function ProjectForm(props) {
                     handleInputValue={handleInputValue}
                     clear={clear}
                     setClear={setClear}
+                    isDisabled={isDisabled}
                 />
                 <Stack 
                     direction="row"
@@ -669,6 +691,7 @@ export default function ProjectForm(props) {
                 >
                     <TextField
                         autoFocus={false}
+                        disabled={isDisabled}
                         margin="dense"
                         id="price"
                         name='price'
@@ -686,6 +709,7 @@ export default function ProjectForm(props) {
                     />
                     <TextField
                         autoFocus={false}
+                        disabled={isDisabled}
                         margin="dense"
                         id="po_number"
                         name='po_number'
@@ -707,6 +731,7 @@ export default function ProjectForm(props) {
                 >
                     <Button 
                         onClick={handleClearInputs}
+                        disabled={isDisabled}
                         variant='outlined' 
                         size='large'
                     >Clear</Button>
@@ -715,6 +740,7 @@ export default function ProjectForm(props) {
                         // onClick={handleSubmit}
                         // onClick={() => setOpenVerification(!openVerification)}
                         // onClick={() => setOpenConfirmation(!openConfirmation)}
+                        disabled={isDisabled}
                         variant='contained' 
                         size='large' 
                         color={editing? `${isValid? 'primary' : 'error'}` : `${isValid? 'secondary' : 'error'}`}

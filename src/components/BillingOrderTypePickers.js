@@ -9,7 +9,7 @@ import ProjectOrderType from '../services/ProjectOrderType.services';
 
 export default function BillingOrderTypePickers(props) {
     const { token } = props
-    const { values, setValues, errors, clear, setClear, project } = props;
+    const { values, setValues, errors, clear, setClear, project, isDisabled } = props;
     const [ billings, setBillings ] = useState([]);
     const [ billing, setBilling ] = useState('');
     const [ orders, setOrders] = useState([]);
@@ -81,6 +81,7 @@ export default function BillingOrderTypePickers(props) {
                 </InputLabel>
                 <Select
                     fullWidth
+                    disabled={isDisabled}
                     labelId="billing_type"
                     id="billing_type"
                     defaultValue={''}
@@ -113,6 +114,7 @@ export default function BillingOrderTypePickers(props) {
                 </InputLabel>
                 <Select
                     fullWidth
+                    disabled={isDisabled}
                     labelId="billing_type"
                     id="billing_type"
                     defaultValue={''}

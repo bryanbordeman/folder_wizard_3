@@ -8,12 +8,25 @@ export default function ProjectPicker(props) {
     const [ value, setValue ] = useState(null);
     const [ quotes, setQuotes ] = useState([{}])
     const [ inputValue, setInputValue ] = useState('');
+    const [ typeString, setTypeString ] = useState('');
     
     const { handleChangeProject, projectType } = props
 
     React.useEffect(() => {
-        retrieveProjects()
-    },[])
+        switch(projectType) {
+            case 2:
+                setTypeString('Service')
+                retrieveServices()
+                break;
+            case 3:
+                setTypeString('HSE')
+                retrieveHSEs()
+                break;
+            default:
+                setTypeString('Project')
+                retrieveProjects()
+        }
+    },[projectType])
   
     // useEffect(()=> {
     //     //! NOT WORKING!!
@@ -25,6 +38,26 @@ export default function ProjectPicker(props) {
 
     const retrieveProjects = () => {
         ProjectDataService.getAll(token)
+        .then(response => {
+            setQuotes(response.data);
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
+
+    const retrieveServices = () => {
+        ProjectDataService.getAllServices(token)
+        .then(response => {
+            setQuotes(response.data);
+        })
+        .catch( e => {
+            console.log(e);
+        })
+    };
+
+    const retrieveHSEs = () => {
+        ProjectDataService.getAllHSEs(token)
         .then(response => {
             setQuotes(response.data);
         })
@@ -65,7 +98,7 @@ export default function ProjectPicker(props) {
                                     {...params} 
                                     id="project"
                                     name='project'
-                                    label="Search Projects" 
+                                    label={`Search ${typeString}'s`}
                                     variant="standard"
                                     />}
         />

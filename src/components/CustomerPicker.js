@@ -261,6 +261,7 @@ export default function CustomerPicker(props) {
                 setCustomers={setCustomers}
                 customers={customers}
                 quote={quote}
+                project={project}
                 updateContact={updateContact}
                 contacts={contacts}
                 setContacts={setContacts}

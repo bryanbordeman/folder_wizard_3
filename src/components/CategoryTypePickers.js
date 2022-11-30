@@ -4,7 +4,6 @@ import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
 import { FormControl, Stack } from '@mui/material';
-import CategoryList from '../json/projectCategoryList.json'
 import ProjectCategoryServices from '../services/ProjectCategory.services';
 import ProjectTypeServices from '../services/ProjectType.services';
 

@@ -25,13 +25,13 @@ export default function BillingOrderTypePickers(props) {
 
     useEffect(() => {
         // set from ProjectPicker
-       if(project){
-        setTimeout(() => {
-            setBilling(project.billing_type.id);
-            setOrder(project.order_type.id);
-           }, 100); 
-       };
-   },[project])
+        if(project){
+            setTimeout(() => {
+                setBilling(project.billing_type.id);
+                setOrder(project.order_type.id);
+            }, 100); 
+        };
+    },[project])
 
     useEffect(() => {
         retrieveBillings();

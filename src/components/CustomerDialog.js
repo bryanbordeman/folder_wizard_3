@@ -21,7 +21,7 @@ import Chip from '@mui/material/Chip';
 
 
 export default function CustomerDialog(props) {
-    const { customerData , setCustomerData, open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote } = props;
+    const { customerData , setCustomerData, open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote, project } = props;
     const { updateContact, checked, setChecked, setEditContacts, difference } = props;
     const { contacts, setContacts } = props;
     const [ customer, setCustomer ] = useState({});
@@ -91,6 +91,15 @@ export default function CustomerDialog(props) {
                 const editContacts = response.data
                 editContacts.map((c) => {
                     if(c.quotes.includes(quote.id)){
+                        setChecked(oldArray => [...oldArray, c]);
+                        setEditContacts(oldArray => [...oldArray, c]);
+                    }
+                })
+            }
+            if(project){
+                const editContacts = response.data
+                editContacts.map((c) => {
+                    if(c.projects.includes(quote.id)){
                         setChecked(oldArray => [...oldArray, c]);
                         setEditContacts(oldArray => [...oldArray, c]);
                     }

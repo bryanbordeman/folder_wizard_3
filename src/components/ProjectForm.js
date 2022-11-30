@@ -19,6 +19,7 @@ import CustomerPicker from './CustomerPicker';
 import ConfirmationDialogProject from './ConfirmationDialogProject';
 import VerificationDialogProject from './VerificationDialogProject';
 import LoadingBackdrop from './LoadingBackdrop';
+import { useNavigate } from 'react-router-dom';
 
 
 //! to do notes
@@ -27,9 +28,6 @@ import LoadingBackdrop from './LoadingBackdrop';
 - Need to make clear work on QuotePicker
 - make contacts update on ProjectEdit
 - Add create service and hse in data base
-- add update project function
-- 
-
 */ 
 export default function ProjectForm(props) {
     const { user, token, handleOpenSnackbar, darkState} = props;
@@ -37,6 +35,8 @@ export default function ProjectForm(props) {
     const [ projectType, setProjectType ] = useState(1); // project type
     const [ clear, setClear ] = useState(false);
     const [ contacts, setContacts ] = useState('');
+    const [ editContacts, setEditContacts ] = useState([]);
+    const [ difference, setDifference ] = useState([]);
     const [ checkedTask, setCheckedTask ] = React.useState([]);
     const [ checked, setChecked ] = React.useState([]);
     const [ isCreateTask, setIsCreateTask ] = useState(true);
@@ -51,6 +51,7 @@ export default function ProjectForm(props) {
     const [ isUpdateContact, setIsUpdateContact ] = useState(false);
     const [ isDisabled, setIsDisabled ] = useState(true);
     const didMount = useRef(false);
+    let navigate = useNavigate();
 
     useEffect(() => {
         if(project && editing){
@@ -107,7 +108,9 @@ export default function ProjectForm(props) {
     const [ confirmation, setConfirmation ] = useState(initialConfirmation);
 
     useEffect(() => {
-        retrieveNextProjectNumber();
+        if(!editing){
+            retrieveNextProjectNumber();
+        }
     },[projectType, clear]);
 
     useEffect(() =>{
@@ -131,6 +134,15 @@ export default function ProjectForm(props) {
 
     useEffect(() => {
         if (didMount.current) {
+            setProject('')
+            handleClearInputs();
+        } else {
+            didMount.current = true;
+        }
+    },[projectType]);
+
+    useEffect(() => {
+        if (didMount.current) {
             if(isSubmitted){
                 setBackdrop(isNull(confirmation))
             }
@@ -151,6 +163,20 @@ export default function ProjectForm(props) {
             didMount.current = true;
         }
     }, [isUpdateContact]);
+
+    useEffect(() => {
+        // add and remove contacts here for edit
+        if (didMount.current) {
+            if(quote){
+                setDifference(checked
+                    .filter(x => !editContacts.includes(x))
+                    .concat(editContacts.filter(x => !checked.includes(x)))
+                )
+            }
+        } else {
+            didMount.current = true;
+        }
+    },[checked]);
     
     const retrieveNextProjectNumber = () => {
         ProjectDataService.getNextProjectNumber(token)
@@ -217,11 +243,20 @@ export default function ProjectForm(props) {
             handleClearInputs();
             setValues((prevState) => ({
                 ...prevState,
+                number: project.number,
                 name: project.name,
                 project_category: project.project_category.id,
                 project_type: project.project_type.id,
+                address: project.address? project.address.id : '',
+                customer: project.customer.id,
                 prevailing_rate: project.prevailing_rate,
+                union: project.union,
+                certified_payroll: project.certified_payroll,
+                material_only: project.material_only,
                 travel_job: project.travel_job,
+                tax_exempt: project.tax_exempt,
+                billing_type: project.billing_type.id,
+                order_type: project.order_type.id,
                 terms: project.terms,
                 notes: project.notes,
                 price: project.price,
@@ -287,6 +322,52 @@ export default function ProjectForm(props) {
             }));
             setOpenConfirmation(true);
         })
+    };
+
+    const updateProject = () => {
+        switch(projectType) {
+            case 2:
+                ProjectDataService.updateService(project.id, values, token)
+                    .then(response => {
+                        handleOpenSnackbar('info', 'Service was updated');
+                        setProject('');
+                        handleClearInputs();
+                        navigate('/');
+
+                    })
+                    .catch( e => {
+                        console.log(e);
+                        handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+                    });
+                break;
+            case 3:
+                ProjectDataService.updateHSE(project.id, values, token)
+                    .then(response => {
+                        handleOpenSnackbar('info', 'HSE was updated');
+                        setProject('');
+                        handleClearInputs();
+                        navigate('/');
+
+                    })
+                    .catch( e => {
+                        console.log(e);
+                        handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+                    });
+                break;
+            default:
+                ProjectDataService.updateProject(project.id, values, token)
+                    .then(response => {
+                        handleOpenSnackbar('info', 'Project was updated');
+                        setProject('');
+                        handleClearInputs();
+                        navigate('/');
+
+                    })
+                    .catch( e => {
+                        console.log(e);
+                        handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+                    });
+            };
     };
 
     const retrieveCategory = () => {
@@ -637,6 +718,8 @@ export default function ProjectForm(props) {
                     updateContact={updateContact}
                     project={true}
                     isDisabled={isDisabled}
+                    difference={difference}
+                    setEditContacts={setEditContacts}
                 />
                 <Stack 
                     direction="row"
@@ -736,7 +819,7 @@ export default function ProjectForm(props) {
                         size='large'
                     >Clear</Button>
                     <Button 
-                        onClick={handleValidation}
+                        onClick={editing? updateProject : handleValidation}
                         // onClick={handleSubmit}
                         // onClick={() => setOpenVerification(!openVerification)}
                         // onClick={() => setOpenConfirmation(!openConfirmation)}

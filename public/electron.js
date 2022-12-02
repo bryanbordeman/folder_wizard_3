@@ -37,7 +37,7 @@ function createWindow() {
     // on macOS
     const reactDevToolsPath = path.join(
         os.homedir(),
-        '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.25.0_1'
+        '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.27.0_0'
     )
     
     app.whenReady().then(async () => {
@@ -112,6 +112,34 @@ function createWindow() {
             env: process.env,
         }
         let pyshell = new PythonShell('rename_opp_folder.py', options);
+    
+        return new Promise((resolve,reject) =>{
+            pyshell.on('message', (message) => {
+                console.log(message); // prints to node terminal
+                currentDirectory = message
+                })
+                
+            pyshell.end((err, code) => {
+                if (err) {
+                    console.log(err)
+                };
+                // console.log(code);
+                if (code === 0){
+                    resolve(true)
+                }else{
+                    resolve(false)
+                }
+            });
+        })
+    });
+
+    ipcMain.handle('renameProjectFolder', (event, args) => {
+        var options = {
+            scriptPath : './engine/',
+            args : args,
+            env: process.env,
+        }
+        let pyshell = new PythonShell('rename_project_folder.py', options);
     
         return new Promise((resolve,reject) =>{
             pyshell.on('message', (message) => {

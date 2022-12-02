@@ -9,6 +9,7 @@ import Logo from '../assets/folder_wizard_logo_3.png';
 import LogoLight from '../assets/folder_wizard_logo_light_3.png';
 import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
+import BallotTwoToneIcon from '@mui/icons-material/BallotTwoTone';
 
 function Home(props) {
     const { darkState, logout } = props
@@ -28,17 +29,12 @@ function Home(props) {
             <Stack direction='row' spacing={4} >
                 <Card sx={{ width: '100%', textAlign: 'center', border: 1, borderRadius:2, borderColor: "#1BA2F6 !important" }} elevation={0}>
                     <CardContent>
-                        <Typography variant="h4" gutterBottom component="div">
-                            OPPORTUNITY
-                        </Typography>
-                        {/* <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                        adjective
-                        </Typography> */}
-                        {/* <Link to='/opportunity'> */}
+                            <Typography variant="h4" gutterBottom component="div">
+                                OPPORTUNITY
+                            </Typography>
                         <Typography variant="body2">
                             Create or edit quotes
                         </Typography>
-                        {/* </Link> */}
                     </CardContent>
                     <Stack
                         sx={{mt:1, mb:2}}
@@ -48,19 +44,32 @@ function Home(props) {
                         spacing={2}
                     >
                         <Button 
+                            size='large'
                             variant='contained' 
                             color='secondary' 
                             component={Link} 
                             to='/opportunity'
                         >Create Quote
                         </Button>
+                        <Stack direction='row' spacing={2} >
                         <Button 
+                            size='small'
                             variant='outlined' 
                             color='primary' 
                             component={Link} 
                             to='/opportunity/edit'
                         >Edit Quote
                         </Button>
+                        <Button 
+                            size='small'
+                            startIcon={<BallotTwoToneIcon />}
+                            variant='outlined' 
+                            color='warning' 
+                            // component={Link} 
+                            // to='/opportunity/edit'
+                        >Quote Log
+                        </Button>
+                        </Stack>
                     </Stack>
                 </Card>
                 <Card sx={{ width: '100%', textAlign: 'center', border: 1, borderRadius:2, borderColor: "#1BA2F6 !important" }} elevation={0}>
@@ -68,9 +77,6 @@ function Home(props) {
                         <Typography variant="h4" gutterBottom component="div">
                             PROJECT
                         </Typography>
-                        {/* <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                        adjective
-                        </Typography> */}
                         <Typography variant="body2">
                             Create or edit projects
                         </Typography>
@@ -83,26 +89,43 @@ function Home(props) {
                         spacing={2}
                     >
                         <Button 
+                            size='large'
                             variant='contained' 
                             color='secondary' 
                             component={Link} 
                             to='/project'
                         >Create Project
                         </Button>
+                        <Stack direction='row' spacing={2} >
                         <Button 
+                            size='small'
                             variant='outlined' 
                             color='primary' 
                             component={Link} 
                             to='/project/edit'
                         >Edit Project
                         </Button>
+                        <Button 
+                            size='small'
+                            startIcon={<BallotTwoToneIcon />}
+                            variant='outlined' 
+                            color='warning' 
+                            // component={Link} 
+                            // to='/opportunity/edit'
+                        >Project Log
+                        </Button>
+                        </Stack>
                     </Stack>
-
-
-
-
                 </Card>
             </Stack>
+            {/* <Card sx={{ width: '100%', textAlign: 'center', border: 1, borderRadius:2, borderColor: "#1BA2F6 !important" }} elevation={0}>
+                <CardContent>
+                    2022 Quotes to Project Conversion Rate 
+                </CardContent>
+                <CardContent>
+                    Leader Board 
+                </CardContent>
+            </Card> */}
         </Stack>
         <div style={{ position:'absolute', top:10, left:10}}>
             <IconButton 

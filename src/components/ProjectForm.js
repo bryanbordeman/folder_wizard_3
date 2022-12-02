@@ -49,16 +49,20 @@ export default function ProjectForm(props) {
     const [ openVerification, setOpenVerification ] = useState(false);
     const [ openConfirmation, setOpenConfirmation ] = React.useState(false);
     const [ isUpdateContact, setIsUpdateContact ] = useState(false);
-    const [ isDisabled, setIsDisabled ] = useState(true);
+    const [ isDisabled, setIsDisabled ] = useState(false);
     const didMount = useRef(false);
     let navigate = useNavigate();
 
     useEffect(() => {
         if(project && editing){
             setIsDisabled(false);
+        }
+        else if (!editing){
+            setIsDisabled(false);
         }else{
             setIsDisabled(true);
         }
+        
     },[project])
 
     const initialValues = {
@@ -368,6 +372,12 @@ export default function ProjectForm(props) {
                         handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
                     });
             };
+            const existingDir = `${project.number} ${project.name} ${project.project_category.code}-${project.project_type.code}`
+            const newDir = `${project.number} ${values.name} ${categoryCode}-${typeCode}`
+            // if name, category, or type changed update folder name.
+            if (existingDir !== newDir){
+                renameFolder(existingDir, newDir)
+            }
     };
 
     const retrieveCategory = () => {
@@ -402,6 +412,16 @@ export default function ProjectForm(props) {
             }));
             setOpenConfirmation(true); 
         });
+    };
+
+    const renameFolder = (existingDir, newDir) => {
+        // send data to electron for renaming folder
+        const inputs = [existingDir, newDir, projectType]
+        window.api.renameProjectFolder(inputs)
+        .then(data => {
+
+        });
+
     };
 
     const createTask = (task) => {

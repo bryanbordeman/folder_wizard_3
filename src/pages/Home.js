@@ -65,8 +65,8 @@ function Home(props) {
                             startIcon={<BallotTwoToneIcon />}
                             variant='outlined' 
                             color='warning' 
-                            // component={Link} 
-                            // to='/opportunity/edit'
+                            component={Link} 
+                            to='/quotelog'
                         >Quote Log
                         </Button>
                         </Stack>

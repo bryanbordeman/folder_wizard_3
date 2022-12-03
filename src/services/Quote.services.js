@@ -6,6 +6,10 @@ class QuoteDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/quotes/`);
     };
+    getAllArchive(token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/quotes/archive`);
+    };
     getNextQuoteNumber(token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/next/quote/`);

@@ -37,9 +37,10 @@ function createWindow() {
     // on macOS
     const reactDevToolsPath = path.join(
         os.homedir(),
-        '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.27.0_0'
+        '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.25.0_0'
     )
-    
+
+
     app.whenReady().then(async () => {
         await session.defaultSession.loadExtension(reactDevToolsPath);
     })
@@ -48,6 +49,7 @@ function createWindow() {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(createWindow);
+    
 
     ipcMain.handle('createOppFolder', (event, args) => {
         var options = {

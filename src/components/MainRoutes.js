@@ -8,6 +8,7 @@ import Opportunity from '../pages/Opportunity';
 import OpportunityEdit from '../pages/OpportunityEdit';
 import Project from '../pages/Project';
 import ProjectEdit from '../pages/ProjectEdit';
+import QuoteLog from '../pages/QuoteLog';
 
 function MainRoutes(props) {
     const { user, token, login, logout, signup, loginErrors, darkState, handleOpenSnackbar } = props
@@ -54,6 +55,20 @@ function MainRoutes(props) {
                             handleOpenSnackbar={handleOpenSnackbar}
                         />
                 }/>
+                <Route 
+                    exact 
+                    path='/quotelog' 
+                    element={
+                        !user.username  ? 
+                        <Navigate to="/login" />
+                        :
+                        <QuoteLog
+                            user={user}
+                            token={token}
+                            handleOpenSnackbar={handleOpenSnackbar}
+                        />
+                }/>
+                
                 <Route 
                     exact 
                     path='/project' 

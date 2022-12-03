@@ -361,7 +361,7 @@ export default function ProjectForm(props) {
             default:
                 ProjectDataService.updateProject(project.id, values, token)
                     .then(response => {
-                        handleOpenSnackbar('info', 'Project was updated');
+                        handleOpenSnackbar('info', 'Project Database was updated');
                         setProject('');
                         handleClearInputs();
                         navigate('/');
@@ -419,6 +419,16 @@ export default function ProjectForm(props) {
         const inputs = [existingDir, newDir, projectType]
         window.api.renameProjectFolder(inputs)
         .then(data => {
+            if (data){
+                setTimeout(() => {
+                    handleOpenSnackbar('info', 'Project folder was renamed');
+                }, 500);
+                
+            }else{
+                setTimeout(() => {
+                    handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+                }, 500);
+            }
 
         });
 

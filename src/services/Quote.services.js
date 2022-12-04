@@ -6,9 +6,13 @@ class QuoteDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/quotes/`);
     };
-    getAllArchive(token){
+    getAllYear(year,token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
-        return axios.get(`${SERVER}/api/quotes/archive`);
+        return axios.get(`${SERVER}/api/quotes/${year}`);
+    };
+    getAllArchive(year,token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/quotes/archive/${year}`);
     };
     getNextQuoteNumber(token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;

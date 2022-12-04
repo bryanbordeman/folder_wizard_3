@@ -21,7 +21,6 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import QuoteDataService from '../services/Quote.services';
 
@@ -29,38 +28,9 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TextField from '@mui/material/TextField';
-import YearPicker from '@mui/x-date-pickers/YearPicker';
 import ArchiveSwitch from './ArchiveSwitch';
-
-// number, name, due, project_category, project_type, Manager
-// filter active quotes
-
-
-function createData(name, calories, fat, carbs, protein) {
-    return {
-            name,
-            calories,
-            fat,
-            carbs,
-            protein,
-        };
-    }
-
-    const rows = [
-        createData('Cupcake', 305, 3.7, 67, 4.3),
-        createData('Donut', 452, 25.0, 51, 4.9),
-        createData('Eclair', 262, 16.0, 24, 6.0),
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-        createData('Gingerbread', 356, 16.0, 49, 3.9),
-        createData('Honeycomb', 408, 3.2, 87, 6.5),
-        createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-        createData('Jelly Bean', 375, 0.0, 94, 0.0),
-        createData('KitKat', 518, 26.0, 65, 7.0),
-        createData('Lollipop', 392, 0.2, 98, 0.0),
-        createData('Marshmallow', 318, 0, 81, 2.0),
-        createData('Nougat', 360, 19.0, 9, 37.0),
-        createData('Oreo', 437, 18.0, 63, 4.0),
-    ];
+import moment from 'moment';
+import { Stack } from '@mui/system';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -92,36 +62,43 @@ function stableSort(array, comparator) {
     return stabilizedThis.map((el) => el[0]);
 };
 
+
     const headCells = [
+        {
+            id: 'number',
+            numeric: false,
+            disablePadding: true,
+            label: 'Quote Number',
+        },
         {
             id: 'name',
             numeric: false,
-            disablePadding: true,
-            label: 'Dessert (100g serving)',
+            disablePadding: false,
+            label: 'Name',
         },
         {
-            id: 'calories',
+            id: 'due',
             numeric: true,
             disablePadding: false,
-            label: 'Calories',
+            label: 'Due Date',
         },
         {
-            id: 'fat',
-            numeric: true,
+            id: 'project_category',
+            numeric: false,
             disablePadding: false,
-            label: 'Fat (g)',
+            label: 'Category',
         },
         {
-            id: 'carbs',
-            numeric: true,
+            id: 'project_type',
+            numeric: false,
             disablePadding: false,
-            label: 'Carbs (g)',
+            label: 'Type',
         },
         {
-            id: 'protein',
-            numeric: true,
+            id: 'manager',
+            numeric: false,
             disablePadding: false,
-            label: 'Protein (g)',
+            label: 'Manager',
         },
     ];
 
@@ -137,7 +114,7 @@ function EnhancedTableHead(props) {
         <TableHead>
             <TableRow>
                 <TableCell padding="checkbox">
-                <Checkbox
+                {/* <Checkbox
                     color="primary"
                     indeterminate={numSelected > 0 && numSelected < rowCount}
                     checked={rowCount > 0 && numSelected === rowCount}
@@ -145,12 +122,13 @@ function EnhancedTableHead(props) {
                     inputProps={{
                     'aria-label': 'select all desserts',
                     }}
-                />
+                /> */}
                 </TableCell>
                 {headCells.map((headCell) => (
                 <TableCell
+                    sx={{whiteSpace: 'nowrap'}}
                     key={headCell.id}
-                    align={headCell.numeric ? 'right' : 'left'}
+                    align={'left'}
                     padding={headCell.disablePadding ? 'none' : 'normal'}
                     sortDirection={orderBy === headCell.id ? order : false}
                 >
@@ -213,14 +191,45 @@ function EnhancedTableToolbar(props) {
                 id="tableTitle"
                 component="div"
                 >
-                Active Quotes
+                {archive? 'Archived' : 'Active'} Quotes
             </Typography>
         )}
         {numSelected > 0 ? (
             <Tooltip title="Archive">
-            <IconButton>
-                <ArchiveIcon />
-            </IconButton>
+                    {archive? 
+                    <Stack direction="row" spacing={1}>
+                        <Typography
+                            sx={{mt: 0.75}}
+                            color="inherit"
+                            variant="subtitle1"
+                            component="div"
+                        >
+                            Unarchive
+                        </Typography>
+                        <IconButton
+                            onClick={() => {console.log(numSelected)}}
+                        >
+                            <UnarchiveIcon/>
+                        </IconButton>
+                    </Stack>
+                    : 
+                    <Stack direction="row" spacing={1}>
+                        <Typography
+                            sx={{mt: 0.75}}
+                            color="inherit"
+                            variant="subtitle1"
+                            component="div"
+                        >
+                            Archive
+                        </Typography>
+                        <IconButton
+                            onClick={() => {console.log(numSelected)}}
+                        >
+                            <ArchiveIcon/>
+                        </IconButton>
+
+                    </Stack>
+                    }
             </Tooltip>
         ) : (
             <ArchiveSwitch
@@ -239,6 +248,7 @@ function EnhancedTableToolbar(props) {
 export default function QuoteLogTable(props) {
     const { token, user, handleOpenSnackbar } = props;
     const [ quotes, setQuotes ] = React.useState([]); 
+    const [ rows, setRows ] = React.useState([]);
     const [ year, setYear ] = React.useState(new Date())
     const [ archive, setArchive ] = React.useState(false);
 
@@ -248,10 +258,35 @@ export default function QuoteLogTable(props) {
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const didMount = React.useRef(false);
     
+    React.useEffect(() => {
+        if (didMount.current) {
+            if (archive){
+                setRows([]);
+                retrieveArchiveQuotes(year.getFullYear())
+            }else{
+                setRows([]);
+                retrieveQuotes(year.getFullYear())
+            }
+        } else {
+            didMount.current = true;
+        };
+    },[year, archive])
 
-    const retrieveQuotes = () => {
-        QuoteDataService.getAll(token)
+    React.useEffect(() => {
+        if (didMount.current) {
+            quotes.map((q) => {
+                let temp ={id: q.id, number: q.number, name: q.name, due: q.due, project_category: q.project_category.name, project_type: q.project_type.name, manager: `${q.manager.first_name} ${q.manager.last_name}`};
+                setRows(oldArray => [...oldArray, temp]);
+            })
+        } else {
+            didMount.current = true;
+        };
+    },[quotes]);
+
+    const retrieveQuotes = (year) => {
+        QuoteDataService.getAllYear(year, token)
         .then(response => {
             setQuotes(response.data);
         })
@@ -260,8 +295,8 @@ export default function QuoteLogTable(props) {
         })
     };
 
-    const retrieveArchiveQuotes = () => {
-        QuoteDataService.getAllArchive(token)
+    const retrieveArchiveQuotes = (year) => {
+        QuoteDataService.getAllArchive(year, token)
         .then(response => {
             setQuotes(response.data);
         })
@@ -269,6 +304,7 @@ export default function QuoteLogTable(props) {
             console.log(e);
         })
     };
+
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -348,7 +384,7 @@ export default function QuoteLogTable(props) {
                 />
                 <TableContainer>
                 <Table
-                    // sx={{ minWidth: 750 }}
+                    sx={{ width: '100%'}}
                     aria-labelledby="tableTitle"
                     size={dense ? 'small' : 'medium'}
                 >
@@ -371,35 +407,37 @@ export default function QuoteLogTable(props) {
 
                         return (
                             <TableRow
-                            hover
-                            onClick={(event) => handleClick(event, row.name)}
-                            role="checkbox"
-                            aria-checked={isItemSelected}
-                            tabIndex={-1}
-                            key={row.name}
-                            selected={isItemSelected}
+                                hover
+                                onClick={(event) => handleClick(event, row.name)}
+                                role="checkbox"
+                                aria-checked={isItemSelected}
+                                tabIndex={-1}
+                                key={row.id}
+                                selected={isItemSelected}
                             >
-                            <TableCell padding="checkbox">
-                                <Checkbox
-                                color="primary"
-                                checked={isItemSelected}
-                                inputProps={{
-                                    'aria-labelledby': labelId,
-                                }}
-                                />
-                            </TableCell>
-                            <TableCell
-                                component="th"
-                                id={labelId}
-                                scope="row"
-                                padding="none"
-                            >
-                                {row.name}
-                            </TableCell>
-                            <TableCell align="right">{row.calories}</TableCell>
-                            <TableCell align="right">{row.fat}</TableCell>
-                            <TableCell align="right">{row.carbs}</TableCell>
-                            <TableCell align="right">{row.protein}</TableCell>
+                                <TableCell padding="checkbox">
+                                    <Checkbox
+                                    color="primary"
+                                    checked={isItemSelected}
+                                    inputProps={{
+                                        'aria-labelledby': labelId,
+                                    }}
+                                    />
+                                </TableCell>
+                                <TableCell
+                                    sx={{whiteSpace: 'nowrap'}}
+                                    component="th"
+                                    id={labelId}
+                                    scope="row"
+                                    padding="none"
+                                >
+                                    {row.number}
+                                </TableCell>
+                                <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{row.name}</TableCell>
+                                <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{moment(row.due).format("MMM Do YY")}</TableCell>
+                                <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{row.project_category}</TableCell>
+                                <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{row.project_type}</TableCell>
+                                <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{row.manager}</TableCell>
                             </TableRow>
                         );
                         })}
@@ -409,7 +447,7 @@ export default function QuoteLogTable(props) {
                             height: (dense ? 33 : 53) * emptyRows,
                         }}
                         >
-                        <TableCell colSpan={6} />
+                        <TableCell colSpan={7} />
                         </TableRow>
                     )}
                     </TableBody>

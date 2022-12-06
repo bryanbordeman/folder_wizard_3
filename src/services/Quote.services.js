@@ -14,6 +14,10 @@ class QuoteDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/quotes/archive/${year}`);
     };
+    toggleArchive(id, token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.put(`${SERVER}/api/quote/${id}/togglearchive/`);
+    };
     getNextQuoteNumber(token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/next/quote/`);

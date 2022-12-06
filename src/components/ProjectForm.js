@@ -549,7 +549,7 @@ export default function ProjectForm(props) {
                 setErrors({...errors, order_type: null});
             }, 3000);
         }
-        else if(values.customers === undefined){
+        else if(values.customer === undefined){
             setErrors({...errors, customers: 'Required field'});
             formIsValid = false;
             setTimeout(() => {

@@ -31,6 +31,7 @@ import TextField from '@mui/material/TextField';
 import ArchiveSwitch from './ArchiveSwitch';
 import moment from 'moment';
 import { Stack } from '@mui/system';
+import QuoteLogMenu from './QuoteLogMenu';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -162,7 +163,7 @@ function EnhancedTableHead(props) {
 
 function EnhancedTableToolbar(props) {
     const { numSelected } = props;
-    const { archive, setArchive } = props
+    const { archive, setArchive, toggleArchive } = props
 
     return (
         <Toolbar
@@ -207,7 +208,7 @@ function EnhancedTableToolbar(props) {
                             Unarchive
                         </Typography>
                         <IconButton
-                            onClick={() => {console.log(numSelected)}}
+                            onClick={toggleArchive}
                         >
                             <UnarchiveIcon/>
                         </IconButton>
@@ -223,7 +224,7 @@ function EnhancedTableToolbar(props) {
                             Archive
                         </Typography>
                         <IconButton
-                            onClick={() => {console.log(numSelected)}}
+                            onClick={toggleArchive}
                         >
                             <ArchiveIcon/>
                         </IconButton>
@@ -251,14 +252,19 @@ export default function QuoteLogTable(props) {
     const [ rows, setRows ] = React.useState([]);
     const [ year, setYear ] = React.useState(new Date())
     const [ archive, setArchive ] = React.useState(false);
-
-    const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('calories');
-    const [selected, setSelected] = React.useState([]);
-    const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [ toggled, setToggled ] = React.useState([]);
+    const [ order, setOrder ] = React.useState('asc');
+    const [ orderBy, setOrderBy ] = React.useState('calories');
+    const [ selected, setSelected ] = React.useState([]);
+    const [ page, setPage ] = React.useState(0);
+    const [ dense, setDense ] = React.useState(false);
+    const [ rowsPerPage, setRowsPerPage ] = React.useState(5);
     const didMount = React.useRef(false);
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const openMenu = Boolean(anchorEl);
+    const [mouseX, setMouseX] = React.useState(0);
+    const [mouseY, setMouseY] = React.useState(0);
     
     React.useEffect(() => {
         if (didMount.current) {
@@ -272,7 +278,7 @@ export default function QuoteLogTable(props) {
         } else {
             didMount.current = true;
         };
-    },[year, archive])
+    },[year, archive, quotes])
 
     React.useEffect(() => {
         if (didMount.current) {
@@ -305,6 +311,20 @@ export default function QuoteLogTable(props) {
         })
     };
 
+    const toggleArchive = () => {
+        toggled.map((t) => {
+            QuoteDataService.toggleArchive(t, token)
+                .then(response => {
+                    // console.log(response.data);
+                })
+                .catch( e => {
+                    console.log(e);
+                })
+            })
+        setToggled([]);
+        setSelected([]);
+    };
+
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -321,7 +341,13 @@ export default function QuoteLogTable(props) {
         setSelected([]);
     };
 
-    const handleClick = (event, name) => {
+    const handleClick = (event, name, id) => {
+        if(toggled.find((f) => f == id)){
+            let temp = toggled.filter((f) => f !== id);
+            setToggled(temp)
+        }else{
+            setToggled(oldArray => [...oldArray, id]);
+        }
         const selectedIndex = selected.indexOf(name);
         let newSelected = [];
 
@@ -360,6 +386,23 @@ export default function QuoteLogTable(props) {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
+    const handleClickMenu = (event, id) => {
+        console.log(id)
+        if (event.target.type === 'checkbox') {
+            // prevent menu from popping up if checkbox is selected
+            console.log("checkbox select");
+        } else {
+            if(!archive){
+                setAnchorEl(event.currentTarget);
+                setMouseX(event.clientX);
+                setMouseY(event.clientY);
+            }
+        }
+    };
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
+
     return (
         <Box sx={{ width: '100%', m:4, maxWidth: '92%'}}>
             <Box sx={{marginBottom: 4}}>
@@ -381,6 +424,7 @@ export default function QuoteLogTable(props) {
                     numSelected={selected.length}
                     archive={archive}
                     setArchive={setArchive} 
+                    toggleArchive={toggleArchive}
                 />
                 <TableContainer>
                 <Table
@@ -395,6 +439,7 @@ export default function QuoteLogTable(props) {
                         onSelectAllClick={handleSelectAllClick}
                         onRequestSort={handleRequestSort}
                         rowCount={rows.length}
+                        
                     />
                     <TableBody>
                     {/* if you don't need to support IE11, you can replace the `stableSort` call with:
@@ -408,7 +453,7 @@ export default function QuoteLogTable(props) {
                         return (
                             <TableRow
                                 hover
-                                onClick={(event) => handleClick(event, row.name)}
+                                onClick={(e) => handleClickMenu(e, row.id)}
                                 role="checkbox"
                                 aria-checked={isItemSelected}
                                 tabIndex={-1}
@@ -422,6 +467,7 @@ export default function QuoteLogTable(props) {
                                     inputProps={{
                                         'aria-labelledby': labelId,
                                     }}
+                                    onClick={(event) => {handleClick(event, row.name, row.id)}}
                                     />
                                 </TableCell>
                                 <TableCell
@@ -466,6 +512,14 @@ export default function QuoteLogTable(props) {
             <FormControlLabel
                 control={<Switch checked={dense} onChange={handleChangeDense} />}
                 label="Dense padding"
+            />
+            <QuoteLogMenu
+                anchorEl={anchorEl}
+                open={openMenu} 
+                handleClick={handleClickMenu}
+                handleClose={handleCloseMenu}
+                mouseX={mouseX}
+                mouseY={mouseY}
             />
         </Box>
     );

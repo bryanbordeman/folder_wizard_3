@@ -16,7 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Stack, IconButton } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import MuiPhoneNumber from 'material-ui-phone-number';
-import Typography from '@mui/material/Typography'
+import Typography from '@mui/material/Typography';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';

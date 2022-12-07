@@ -12,11 +12,14 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CloseIcon from '@mui/icons-material/Close';
-import Transition from './DialogTransistion'
+import Transition from './DialogTransistion';
+import Typography from '@mui/material/Typography'
+import TaskDataService from '../services/Task.services'
 
 export default function AddTaskForm(props) {
     const { user, token, handleUpdateTaskList } = props;
     const { handleOpenSnackbar } = props;
+    const { quote } = props
     const { open, setOpen } = props;
     const { editing, task, setEditing } = props;
     const [ isValid, setIsValid ] = React.useState(true);
@@ -41,31 +44,73 @@ export default function AddTaskForm(props) {
         updated: new Date()
     };
 
-    const editFormValues = {
-        id: task.id,
-        created_by: task.created_by,
-        assignee: task.assignee,
-        tasklist: task.tasklist,
-        title: task.title,
-        notes: task.notes,
-        due: editing && task.due !== undefined? task.due : new Date(),
-        subtasks:task.subtasks,
-        project:task.project? task.project : '',
-        quote:task.quote? task.quote : '',
-        created: new Date(),
-        is_complete: task.is_complete,
-        is_deleted: false,
-        is_read: false,
-        completed: new Date(),
-        updated: new Date()
-
-    };
-
     const [ values, setValues ] = React.useState(initialFormValues);
 
+    // const editFormValues = {
+    //     id: task.id,
+    //     created_by: task.created_by,
+    //     assignee: task.assignee,
+    //     tasklist: task.tasklist,
+    //     title: task.title,
+    //     notes: task.notes,
+    //     due: editing && task.due !== undefined? task.due : new Date(),
+    //     subtasks:task.subtasks,
+    //     project:task.project? task.project : '',
+    //     quote:task.quote? task.quote : '',
+    //     created: new Date(),
+    //     is_complete: task.is_complete,
+    //     is_deleted: false,
+    //     is_read: false,
+    //     completed: new Date(),
+    //     updated: new Date()
+    // };
+
+    // React.useLayoutEffect(() => {
+    //     setValues(editing && !quote ? editFormValues : initialFormValues);
+    // },[open]);
+
     React.useLayoutEffect(() => {
-        setValues(editing ? editFormValues : initialFormValues);
+        if(quote){
+            setValues((prevState) => ({
+                ...prevState,
+                quote: quote.id,
+            }));
+        }else{
+            if(task){
+            const editFormValues = {
+                id: task.id,
+                created_by: task.created_by,
+                assignee: task.assignee,
+                tasklist: task.tasklist,
+                title: task.title,
+                notes: task.notes,
+                due: editing && task.due !== undefined? task.due : new Date(),
+                subtasks:task.subtasks,
+                project:task.project? task.project : '',
+                quote:task.quote? task.quote : '',
+                created: new Date(),
+                is_complete: task.is_complete,
+                is_deleted: false,
+                is_read: false,
+                completed: new Date(),
+                updated: new Date()
+            };
+            setValues(editing && !quote ? editFormValues : initialFormValues);
+        }
+        }
     },[open]);
+
+    const createTask = (task) => {
+        TaskDataService.createTask(task, token)
+            .then(response => {
+                handleOpenSnackbar('success', 'Task was created');
+            })
+            .catch(e => {
+                console.log(e);
+                handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+            });
+        handleClose();
+    };
     
     const handleInputValue = (e) => {
         const { name, value } = e.target;
@@ -152,12 +197,18 @@ export default function AddTaskForm(props) {
         setTimeout(() => {
             setIsValid(true);
         }, 3000);
-    return formIsValid ? handleUpdateTaskList(values) : null
+    if(quote){
+        return formIsValid ? createTask(values) : null
+    }else{
+        return formIsValid ? handleUpdateTaskList(values) : null
+    }
     };
 
     const handleClose = () => {
         setOpen(!open);
-        setEditing(false);
+        if(!quote){
+            setEditing(false);
+        }
     };
 
     return (
@@ -171,9 +222,16 @@ export default function AddTaskForm(props) {
             >
                 <DialogTitle>
                     <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                        <div>
-                            {`${editing ? 'Edit' : 'Add'} Task`}
-                        </div>
+                        <Stack>
+                            <Typography variant="h4">
+                                {`${editing ? 'Edit' : 'Add'} Task`}
+                            </Typography>
+                            {quote?
+                            <Typography variant="subtitle1">
+                                {`${quote.number} ${quote.name}`}
+                            </Typography>
+                            :''}
+                        </Stack>
                         <div>
                         <IconButton 
                             edge="end" 
@@ -185,6 +243,7 @@ export default function AddTaskForm(props) {
                         </div> 
                     </div>
                 </DialogTitle>
+
                 <Divider/>
                 <DialogContent>
                     <Stack direction="column" spacing={2}>

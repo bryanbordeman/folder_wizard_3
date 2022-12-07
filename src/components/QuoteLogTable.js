@@ -253,6 +253,7 @@ export default function QuoteLogTable(props) {
     const [ year, setYear ] = React.useState(new Date())
     const [ archive, setArchive ] = React.useState(false);
     const [ toggled, setToggled ] = React.useState([]);
+    const [ editQuote, setEditQuote ] = React.useState('');
     const [ order, setOrder ] = React.useState('asc');
     const [ orderBy, setOrderBy ] = React.useState('calories');
     const [ selected, setSelected ] = React.useState([]);
@@ -387,7 +388,8 @@ export default function QuoteLogTable(props) {
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const handleClickMenu = (event, id) => {
-        console.log(id)
+        setEditQuote(quotes.find((q) => q.id === id))
+        
         if (event.target.type === 'checkbox') {
             // prevent menu from popping up if checkbox is selected
             console.log("checkbox select");
@@ -520,6 +522,10 @@ export default function QuoteLogTable(props) {
                 handleClose={handleCloseMenu}
                 mouseX={mouseX}
                 mouseY={mouseY}
+                token={token}
+                user={user}
+                handleOpenSnackbar={handleOpenSnackbar}
+                quote={editQuote}
             />
         </Box>
     );

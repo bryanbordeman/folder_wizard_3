@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
-import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
 import Divider from '@mui/material/Divider';
 import ArchiveIcon from '@mui/icons-material/Archive';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteIcon from '@mui/icons-material/Delete';
+import OpportunityDialog from './OpportunityDialog';
+import AddTaskForm from './AddTaskForm';
 
 const StyledMenu = styled((props) => (
     <Menu
@@ -55,9 +53,22 @@ const StyledMenu = styled((props) => (
 
 export default function QuoteLogMenu(props) {
     const {anchorEl}= props
-    const {open} = props
+    const {open , quote } = props
+    const { token, user, handleOpenSnackbar } = props
     const {handleClick, handleClose } = props
     const { mouseX, mouseY} = props
+    const [ openEdit, setOpenEdit ] = React.useState(false);
+    const [ openTask, setOpenTask] = React.useState(false);
+
+    const handleEdit = () => {
+        setOpenEdit(!openEdit);
+        handleClose();
+    }
+
+    const handleTask = () => {
+        setOpenTask(!openTask);
+        handleClose();
+    }
 
     return (
         <div>
@@ -77,11 +88,11 @@ export default function QuoteLogMenu(props) {
                 open={open}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleClose} disableRipple>
+                <MenuItem onClick={handleEdit} disableRipple>
                     <EditIcon />
                     Edit
                 </MenuItem>
-                <MenuItem onClick={handleClose} disableRipple>
+                <MenuItem onClick={handleTask} disableRipple>
                     <AddTaskIcon />
                     Create Task
                 </MenuItem>
@@ -95,6 +106,23 @@ export default function QuoteLogMenu(props) {
                     Delete
                 </MenuItem>
             </StyledMenu>
+            <OpportunityDialog
+                open={openEdit}
+                setOpen={setOpenEdit}
+                token={token}
+                user={user}
+                handleOpenSnackbar={handleOpenSnackbar}
+                quote={quote}
+            />
+            <AddTaskForm
+                open={openTask}
+                editing={false}
+                setOpen={setOpenTask}
+                user={user}
+                token={token}
+                handleOpenSnackbar={handleOpenSnackbar}
+                quote={quote}
+            />
         </div>
     );
     }

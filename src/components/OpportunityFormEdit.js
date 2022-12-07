@@ -20,6 +20,10 @@ import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import InputAdornment from '@mui/material/InputAdornment';
 
+
+//! Notes:
+// lots of errors when opened from QuoteLogDialog
+
 export default function OpportunityFormEdit(props) {
 
     const { token, user, handleOpenSnackbar } = props;
@@ -28,6 +32,7 @@ export default function OpportunityFormEdit(props) {
     const [ editContacts, setEditContacts ] = useState([]);
     const [ difference, setDifference ] = useState([]);
     const [ quote , setQuote ] = useState('');
+    const { editQuote, setOpenDialog } = props
     const [ isValid, setIsValid ] = useState(true);
     const [ clear, setClear ] = useState(false);
     const [ isDisabled, setIsDisabled ] = useState(true);
@@ -37,12 +42,18 @@ export default function OpportunityFormEdit(props) {
     const didMount = useRef(false);
 
     useEffect(() => {
-        if(quote){
+        if(editQuote){
+            handleChangeQuote(editQuote);
+        };
+    },[]);
+    
+    useEffect(() => {
+        if(quote || editQuote){
             setIsDisabled(false);
         }else{
             setIsDisabled(true);
         }
-    },[quote])
+    },[quote]);
 
     useEffect(() => {
         // add and remove contacts here for edit
@@ -105,6 +116,7 @@ export default function OpportunityFormEdit(props) {
             setValues(quote);
             setValues((prevState) => ({
                 ...prevState,
+                address: editQuote && editQuote.address ? quote.address.id : quote.address,
                 project_category: quote.project_category.id,
                 project_type: quote.project_type.id,
             }));
@@ -161,8 +173,11 @@ export default function OpportunityFormEdit(props) {
             handleOpenSnackbar('info', 'Quote was updated');
             setQuote('');
             handleClearInputs();
-            navigate('/');
-
+            if(editQuote){
+                setOpenDialog(false);
+            }else{
+                navigate('/');
+            }
         })
         .catch( e => {
             console.log(e);
@@ -268,12 +283,13 @@ export default function OpportunityFormEdit(props) {
 
     return ( 
         <Box sx={{mr:3, ml:3}}>
-            
+                {editQuote? '' :
                 <OpportunityPicker
                     token={token}
                     handleOpenSnackbar={handleOpenSnackbar}
                     handleChangeQuote={handleChangeQuote}
                 />
+                }
                 <Stack 
                     sx={{mt:4}}
                     spacing={2}
@@ -283,38 +299,38 @@ export default function OpportunityFormEdit(props) {
                     spacing={2}
                 >
                     <Box>
-                    <TextField
-                    autoFocus={false}
-                    disabled={isDisabled}
-                    margin="dense"
-                    id="revision"
-                    name='revision'
-                    label="Revision"
-                    onChange={handleInputValue}
-                    // inputProps={{ maxLength: 3 }}
-                    value={values.revision}
-                    type="number"
-                    fullWidth
-                    variant="outlined"
-                    />
+                        <TextField
+                            autoFocus={false}
+                            disabled={isDisabled}
+                            margin="dense"
+                            id="revision"
+                            name='revision'
+                            label="Revision"
+                            onChange={handleInputValue}
+                            // inputProps={{ maxLength: 3 }}
+                            value={values.revision}
+                            type="number"
+                            fullWidth
+                            variant="outlined"
+                        />
                     </Box>
                     <Box sx={{width:'100%'}}>
-                    <TextField
-                        autoFocus={false}
-                        disabled={isDisabled}
-                        margin="dense"
-                        id="price"
-                        name='price'
-                        label="Price"
-                        onChange={handleInputValue}
-                        InputProps={{
-                            startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                        }}
-                        value={values.price}
-                        type="number"
-                        fullWidth
-                        variant="outlined"
-                    />
+                        <TextField
+                            autoFocus={false}
+                            disabled={isDisabled}
+                            margin="dense"
+                            id="price"
+                            name='price'
+                            label="Price"
+                            onChange={handleInputValue}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                            }}
+                            value={values.price}
+                            type="number"
+                            fullWidth
+                            variant="outlined"
+                        />
                     </Box>
                 </Stack>
                 <TextField
@@ -325,9 +341,6 @@ export default function OpportunityFormEdit(props) {
                     name='name'
                     label="Project Name"
                     onChange={handleInputValue}
-                    onInput = {(e) =>{
-                        e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g,"")
-                    }}
                     inputProps={{ maxLength: 27 }}
                     value={values.name}
                     type="text"

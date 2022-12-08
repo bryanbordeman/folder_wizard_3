@@ -1,4 +1,5 @@
 import * as React from 'react';
+import QuoteDataService from '../services/Quote.services';
 import { styled, alpha } from '@mui/material/styles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,6 +10,7 @@ import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteIcon from '@mui/icons-material/Delete';
 import OpportunityDialog from './OpportunityDialog';
 import AddTaskForm from './AddTaskForm';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 const StyledMenu = styled((props) => (
     <Menu
@@ -55,10 +57,12 @@ export default function QuoteLogMenu(props) {
     const {anchorEl}= props
     const {open , quote } = props
     const { token, user, handleOpenSnackbar } = props
-    const {handleClick, handleClose } = props
+    const {handleClick, handleClose, archiveQuote } = props
     const { mouseX, mouseY} = props
     const [ openEdit, setOpenEdit ] = React.useState(false);
     const [ openTask, setOpenTask] = React.useState(false);
+    const [ openDelete, setOpenDelete] = React.useState(false);
+    const [ deleteMessage, setDeleteMessage ] = React.useState({title: '', content:''});
 
     const handleEdit = () => {
         setOpenEdit(!openEdit);
@@ -69,6 +73,28 @@ export default function QuoteLogMenu(props) {
         setOpenTask(!openTask);
         handleClose();
     }
+
+    const handleQuote = () => {
+        archiveQuote(quote.id);
+        handleClose();
+    };
+    
+    const handleDeleteCompany = () => {
+        setDeleteMessage({title: 'Permanently delete quote?', content: `${quote.number} ${quote.name}`})
+        setOpenDelete(true)
+        handleClose();
+    };
+
+    const deleteQuote = () => {
+        QuoteDataService.deleteQuote(quote.id, token)
+        .then(response => {
+            handleOpenSnackbar('warning', 'Quote was deleted')
+        })
+        .catch(e => {
+            console.log(e);
+            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+        });
+    };
 
     return (
         <div>
@@ -96,12 +122,12 @@ export default function QuoteLogMenu(props) {
                     <AddTaskIcon />
                     Create Task
                 </MenuItem>
-                <MenuItem onClick={handleClose} disableRipple>
+                <MenuItem onClick={handleQuote} disableRipple>
                     <ArchiveIcon />
                     Archive
                 </MenuItem>
                 <Divider sx={{ my: 0.5 }} />
-                <MenuItem onClick={handleClose} disableRipple>
+                <MenuItem onClick={handleDeleteCompany} disableRipple>
                     <DeleteIcon />
                     Delete
                 </MenuItem>
@@ -122,6 +148,12 @@ export default function QuoteLogMenu(props) {
                 token={token}
                 handleOpenSnackbar={handleOpenSnackbar}
                 quote={quote}
+            />
+            <DeleteConfirmationModal
+                openDelete={openDelete}
+                setOpenDelete={setOpenDelete}
+                message={deleteMessage}
+                deleteAction={deleteQuote}
             />
         </div>
     );

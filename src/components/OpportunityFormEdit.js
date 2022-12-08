@@ -110,6 +110,7 @@ export default function OpportunityFormEdit(props) {
     const [ errors, setErrors ] = useState(initialErrors);
 
     const handleChangeQuote = (quote) => {
+        quote['address'] = quote.address //! need to fix this
         setQuote(quote);
         if(quote){
             handleClearInputs();

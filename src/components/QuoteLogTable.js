@@ -326,6 +326,15 @@ export default function QuoteLogTable(props) {
         setSelected([]);
     };
 
+    const archiveQuote = (id) => {
+        QuoteDataService.toggleArchive(id, token)
+            .then(response => {
+                // console.log(response.data);
+            })
+            .catch( e => {
+                console.log(e);
+            })
+    };
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -526,6 +535,7 @@ export default function QuoteLogTable(props) {
                 user={user}
                 handleOpenSnackbar={handleOpenSnackbar}
                 quote={editQuote}
+                archiveQuote={archiveQuote}
             />
         </Box>
     );

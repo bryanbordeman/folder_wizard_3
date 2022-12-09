@@ -26,7 +26,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 export default function OpportunityFormEdit(props) {
 
-    const { token, user, handleOpenSnackbar } = props;
+    const { token, user, handleOpenSnackbar, open } = props;
     const [ checked, setChecked ] = React.useState([]);
     const [ contacts, setContacts ] = useState('');
     const [ editContacts, setEditContacts ] = useState([]);
@@ -110,7 +110,7 @@ export default function OpportunityFormEdit(props) {
     const [ errors, setErrors ] = useState(initialErrors);
 
     const handleChangeQuote = (quote) => {
-        quote['address'] = quote.address //! need to fix this
+        // quote['address'] = '' //! need to fix this
         setQuote(quote);
         if(quote){
             handleClearInputs();

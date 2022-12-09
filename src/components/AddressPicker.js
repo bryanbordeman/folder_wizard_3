@@ -27,26 +27,30 @@ export default function AddressPicker(props) {
 
     useEffect(() => {
         // set from OpportunityPicker
-        if(quote){
-            if(quote.address !== null && quote.address !== undefined){
-                const label = `${quote.address.address}, ${quote.address.city}, ${quote.address.state}, ${quote.address.postal_code}`
-                setAddress({label: label, value: quote.address})
-            }
-        }else{
-            setAddress('')
-        };
+        setTimeout(() => {
+            if(quote){
+                if(quote.address !== null && quote.address !== undefined && quote.address){
+                    const label = `${quote.address.address}, ${quote.address.city}, ${quote.address.state}, ${quote.address.postal_code}`
+                    setAddress({label: label, value: quote.address})
+                }
+            }else{
+                setAddress('')
+            };
+        }, 1000);
     },[quote])
 
     useEffect(() => {
         // set from ProjectPicker
-        if(project){
-            if(project.address !== null && project.address !== undefined){
-                const label = `${project.address.address}, ${project.address.city}, ${project.address.state}, ${project.address.postal_code}`
-                setAddress({label: label, value: project.address})
-            }
-        }else{
-            setAddress('')
-        };
+        setTimeout(() => {
+            if(project){
+                if(project.address !== null && project.address !== undefined){
+                    const label = `${project.address.address}, ${project.address.city}, ${project.address.state}, ${project.address.postal_code}`
+                    setAddress({label: label, value: project.address})
+                }
+            }else{
+                setAddress('')
+            };
+        }, 1000);
     },[project])
 
     useEffect(() => {

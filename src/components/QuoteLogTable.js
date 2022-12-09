@@ -33,6 +33,9 @@ import moment from 'moment';
 import { Stack } from '@mui/system';
 import QuoteLogMenu from './QuoteLogMenu';
 
+//! notes
+// update table after edit.
+
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -269,6 +272,7 @@ export default function QuoteLogTable(props) {
     
     React.useEffect(() => {
         if (didMount.current) {
+            console.log('redering')
             if (archive){
                 setRows([]);
                 retrieveArchiveQuotes(year.getFullYear())
@@ -279,7 +283,7 @@ export default function QuoteLogTable(props) {
         } else {
             didMount.current = true;
         };
-    },[year, archive, quotes])
+    },[year, archive])
 
     React.useEffect(() => {
         if (didMount.current) {
@@ -316,7 +320,13 @@ export default function QuoteLogTable(props) {
         toggled.map((t) => {
             QuoteDataService.toggleArchive(t, token)
                 .then(response => {
-                    // console.log(response.data);
+                    if (archive){
+                        setRows([]);
+                        retrieveArchiveQuotes(year.getFullYear())
+                    }else{
+                        setRows([]);
+                        retrieveQuotes(year.getFullYear())
+                    }
                 })
                 .catch( e => {
                     console.log(e);
@@ -329,7 +339,8 @@ export default function QuoteLogTable(props) {
     const archiveQuote = (id) => {
         QuoteDataService.toggleArchive(id, token)
             .then(response => {
-                // console.log(response.data);
+                setRows([]);
+                retrieveQuotes(year.getFullYear())
             })
             .catch( e => {
                 console.log(e);

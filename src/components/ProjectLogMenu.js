@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
 import AddTaskForm from './AddTaskForm';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import ProjectPreviewDialog from './ProjectPreviewDialog';
 
 const StyledMenu = styled((props) => (
     <Menu
@@ -62,10 +63,16 @@ export default function ProjectLogMenu(props) {
     const { openEdit, setOpenEdit } = props
     const [ openTask, setOpenTask] = React.useState(false);
     const [ openDelete, setOpenDelete] = React.useState(false);
+    const [ openPreview, setOpenPreview] = React.useState(false);
     const [ deleteMessage, setDeleteMessage ] = React.useState({title: '', content:''});
 
     const handleEdit = () => {
         setOpenEdit(!openEdit);
+        handleClose();
+    };
+
+    const handlePreview = () => {
+        setOpenPreview(!openPreview);
         handleClose();
     };
 
@@ -80,20 +87,53 @@ export default function ProjectLogMenu(props) {
     };
     
     const handleDeleteProject = () => {
-        setDeleteMessage({title: 'Permanently delete project?', content: `${project.number} ${project.name}`})
+        switch(projectType) {
+            case 2:
+                setDeleteMessage({title: 'Permanently delete service?', content: `${project.number} ${project.name}`})
+                break;
+            case 3:
+                setDeleteMessage({title: 'Permanently delete HSE?', content: `${project.number} ${project.name}`})
+                break;
+            default:
+                setDeleteMessage({title: 'Permanently delete project?', content: `${project.number} ${project.name}`})
+        }
+        
         setOpenDelete(true)
         handleClose();
     };
 
     const deleteProject = () => {
-        ProjectDataServices.deleteProject(project.id, token)
-        .then(response => {
-            handleOpenSnackbar('warning', 'Project was deleted')
-        })
-        .catch(e => {
-            console.log(e);
-            handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
-        });
+        switch(projectType) {
+            case 2:
+                ProjectDataServices.deleteService(project.id, token)
+                    .then(response => {
+                        handleOpenSnackbar('warning', 'Service was deleted')
+                    })
+                    .catch(e => {
+                        console.log(e);
+                        handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+                    });
+                break;
+            case 3:
+                ProjectDataServices.deleteHSE(project.id, token)
+                    .then(response => {
+                        handleOpenSnackbar('warning', 'HSE was deleted')
+                    })
+                    .catch(e => {
+                        console.log(e);
+                        handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+                    });
+                break;
+            default:
+                ProjectDataServices.deleteProject(project.id, token)
+                    .then(response => {
+                        handleOpenSnackbar('warning', 'Project was deleted')
+                    })
+                    .catch(e => {
+                        console.log(e);
+                        handleOpenSnackbar('error', 'Something Went Wrong!! Please try again.')
+                    });
+        }
     };
 
     return (
@@ -114,7 +154,7 @@ export default function ProjectLogMenu(props) {
                 open={open}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleClose} disableRipple>
+                <MenuItem onClick={handlePreview} disableRipple>
                     <PreviewIcon />
                     Preview
                 </MenuItem>
@@ -159,6 +199,13 @@ export default function ProjectLogMenu(props) {
                 setOpenDelete={setOpenDelete}
                 message={deleteMessage}
                 deleteAction={deleteProject}
+            />
+            <ProjectPreviewDialog
+                project={project}
+                open={openPreview}
+                setOpen={setOpenPreview}
+                projectType={projectType}
+                
             />
         </div>
     );

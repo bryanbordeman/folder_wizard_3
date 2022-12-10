@@ -94,6 +94,10 @@ class ProjectDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/hse/${id}`);
     };
+    createHSE(data, token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.post(`${SERVER}/api/create/hse/`, data);
+    };
     updateHSE(id, data, token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.put(`${SERVER}/api/hse/${id}`, data);

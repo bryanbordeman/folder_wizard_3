@@ -310,22 +310,61 @@ export default function ProjectForm(props) {
     };
 
     const createProject = () => {
-        ProjectDataService.createProject(values, token)
-        .then(response => {
-            setConfirmation((prevState) => ({
-                ...prevState,
-                database: true,
-            }));
-            getProjects();
-        })
-        .catch( e => {
-            console.log(e);
-            setConfirmation((prevState) => ({
-                ...prevState,
-                database: false,
-            }));
-            setOpenConfirmation(true);
-        })
+        switch(projectType) {
+            case 2:
+                ProjectDataService.createService(values, token)
+                .then(response => {
+                    setConfirmation((prevState) => ({
+                        ...prevState,
+                        database: true,
+                    }));
+                    getProjects();
+                })
+                .catch( e => {
+                    console.log(e);
+                    setConfirmation((prevState) => ({
+                        ...prevState,
+                        database: false,
+                    }));
+                    setOpenConfirmation(true);
+                })
+                break;
+            case 3:
+                ProjectDataService.createHSE(values, token)
+                .then(response => {
+                    setConfirmation((prevState) => ({
+                        ...prevState,
+                        database: true,
+                    }));
+                    getProjects();
+                })
+                .catch( e => {
+                    console.log(e);
+                    setConfirmation((prevState) => ({
+                        ...prevState,
+                        database: false,
+                    }));
+                    setOpenConfirmation(true);
+                })
+                break;
+            default:
+                ProjectDataService.createService(values, token)
+                .then(response => {
+                    setConfirmation((prevState) => ({
+                        ...prevState,
+                        database: true,
+                    }));
+                    getProjects();
+                })
+                .catch( e => {
+                    console.log(e);
+                    setConfirmation((prevState) => ({
+                        ...prevState,
+                        database: false,
+                    }));
+                    setOpenConfirmation(true);
+                })
+        }
     };
 
     const updateProject = () => {

@@ -36,6 +36,7 @@ import QuoteLogMenu from './QuoteLogMenu';
 import ProjectLogMenu from './ProjectLogMenu';
 
 //! notes
+// need to refresh on delete
 
 
 function descendingComparator(a, b, orderBy) {

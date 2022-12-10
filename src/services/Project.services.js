@@ -42,11 +42,21 @@ class ProjectDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.delete(`${SERVER}/api/project/${id}`);
     };
-
-
     getAllServices(token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/services/`);
+    };
+    getAllYearServices(year,token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/services/${year}`);
+    };
+    getAllArchiveServices(year,token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/services/archive/${year}`);
+    };
+    toggleArchiveServices(id, token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.put(`${SERVER}/api/service/${id}/togglearchive/`);
     };
     createService(data, token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
@@ -64,10 +74,21 @@ class ProjectDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.delete(`${SERVER}/api/service/${id}`);
     };
-
     getAllHSEs(token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/hses/`);
+    };
+    getAllYearHSEs(year,token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/hses/${year}`);
+    };
+    getAllArchiveHSEs(year,token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/hses/archive/${year}`);
+    };
+    toggleArchiveHSEs(id, token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.put(`${SERVER}/api/hse/${id}/togglearchive/`);
     };
     getHSE(id, token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;

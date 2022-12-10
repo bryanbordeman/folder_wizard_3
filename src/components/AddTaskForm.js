@@ -19,7 +19,7 @@ import TaskDataService from '../services/Task.services'
 export default function AddTaskForm(props) {
     const { user, token, handleUpdateTaskList } = props;
     const { handleOpenSnackbar } = props;
-    const { quote, project } = props
+    const { quote, project, projectType } = props
     const { open, setOpen } = props;
     const { editing, task, setEditing } = props;
     const [ isValid, setIsValid ] = React.useState(true);
@@ -35,6 +35,8 @@ export default function AddTaskForm(props) {
         due: new Date(),
         subtasks:[],
         project:'',
+        service:'',
+        hse:'',
         quote:'',
         created: new Date(),
         is_complete: false,
@@ -70,16 +72,32 @@ export default function AddTaskForm(props) {
     // },[open]);
 
     React.useLayoutEffect(() => {
+        if(open)
         if(quote){
             setValues((prevState) => ({
                 ...prevState,
                 quote: quote.id,
             }));
         }else if(project){
-            setValues((prevState) => ({
-                ...prevState,
-                project: project.id,
-            }));
+            switch(projectType) {
+                case 2:
+                    setValues((prevState) => ({
+                        ...prevState,
+                        service: project.id,
+                    }));
+                    break;
+                case 3:
+                    setValues((prevState) => ({
+                        ...prevState,
+                        hse: project.id,
+                    }));
+                    break;
+                default:
+                    setValues((prevState) => ({
+                        ...prevState,
+                        project: project.id,
+                    }));
+            }
         }else{
             if(task){
             const editFormValues = {
@@ -92,6 +110,8 @@ export default function AddTaskForm(props) {
                 due: editing && task.due !== undefined? task.due : new Date(),
                 subtasks:task.subtasks,
                 project:task.project? task.project : '',
+                service:task.service? task.service : '',
+                hse:task.hse? task.hse : '',
                 quote:task.quote? task.quote : '',
                 created: new Date(),
                 is_complete: task.is_complete,
@@ -214,6 +234,7 @@ export default function AddTaskForm(props) {
         if(!quote && !project){
             setEditing(false);
         }
+        setValues(initialFormValues)
     };
 
     return (

@@ -168,7 +168,19 @@ function EnhancedTableHead(props) {
 
 function EnhancedTableToolbar(props) {
     const { numSelected } = props;
-    const { archive, setArchive, toggleArchive } = props
+    const { archive, setArchive, toggleArchive, projectType } = props
+
+    let title = ''
+        switch(projectType) {
+            case 2:
+                title = `${archive? 'Archived' : 'Active'} Service`
+                break;
+            case 3:
+                title = `${archive? 'Archived' : 'Active'} HSE`
+                break;
+            default:
+                title = `${archive? 'Archived' : 'Active'} Project`
+        }
 
     return (
         <Toolbar
@@ -197,7 +209,7 @@ function EnhancedTableToolbar(props) {
                 id="tableTitle"
                 component="div"
                 >
-                {archive? 'Archived' : 'Active'} Projects
+                {title}
             </Typography>
         )}
         {numSelected > 0 ? (
@@ -287,7 +299,7 @@ export default function ProjectLogTable(props) {
         } else {
             didMount.current = true;
         };
-    },[year, archive, openEdit])
+    },[year, archive, openEdit, projectType])
 
     React.useEffect(() => {
         if (didMount.current) {
@@ -301,54 +313,158 @@ export default function ProjectLogTable(props) {
     },[projects]);
 
     const retrieveProjects = () => {
-        ProjectDataService.getAll(token)
-        .then(response => {
-            setProjects(response.data);
-        })
-        .catch( e => {
-            console.log(e);
-        })
+        switch(projectType) {
+            case 2:
+                ProjectDataService.getAllServices(token)
+                    .then(response => {
+                        setProjects(response.data);
+                    })
+                    .catch( e => {
+                        console.log(e);
+                    })
+                break;
+            case 3:
+                ProjectDataService.getAllHSEs(token)
+                    .then(response => {
+                        setProjects(response.data);
+                    })
+                    .catch( e => {
+                        console.log(e);
+                    })
+                break;
+            default:
+                ProjectDataService.getAll(token)
+                    .then(response => {
+                        setProjects(response.data);
+                    })
+                    .catch( e => {
+                        console.log(e);
+                    })
+            }
+        
     };
 
     const retrieveArchiveProjects = (year) => {
-        ProjectDataService.getAllArchive(year, token)
-        .then(response => {
-            setProjects(response.data);
-        })
-        .catch( e => {
-            console.log(e);
-        })
+        switch(projectType) {
+            case 2:
+                ProjectDataService.getAllArchiveServices(year, token)
+                    .then(response => {
+                        setProjects(response.data);
+                    })
+                    .catch( e => {
+                        console.log(e);
+                    })
+                break;
+            case 3:
+                ProjectDataService.getAllArchiveHSEs(year, token)
+                    .then(response => {
+                        setProjects(response.data);
+                    })
+                    .catch( e => {
+                        console.log(e);
+                    })
+                break;
+            default:
+                ProjectDataService.getAllArchive(year, token)
+                    .then(response => {
+                        setProjects(response.data);
+                    })
+                    .catch( e => {
+                        console.log(e);
+                    })
+        }
     };
 
     const toggleArchive = () => {
-        toggled.map((t) => {
-            ProjectDataService.toggleArchive(t, token)
-                .then(response => {
-                    if (archive){
-                        setRows([]);
-                        retrieveArchiveProjects(year.getFullYear());
-                    }else{
-                        setRows([]);
-                        retrieveProjects();
-                    }
+
+        switch(projectType) {
+            case 2:
+                toggled.map((t) => {
+                    ProjectDataService.toggleArchiveServices(t, token)
+                        .then(response => {
+                            if (archive){
+                                setRows([]);
+                                retrieveArchiveProjects(year.getFullYear());
+                            }else{
+                                setRows([]);
+                                retrieveProjects();
+                            }
+                        })
+                        .catch( e => {
+                            console.log(e);
+                        })
                 })
-                .catch( e => {
-                    console.log(e);
+                break;
+            case 3:
+                toggled.map((t) => {
+                    ProjectDataService.toggleArchiveHSEs(t, token)
+                        .then(response => {
+                            if (archive){
+                                setRows([]);
+                                retrieveArchiveProjects(year.getFullYear());
+                            }else{
+                                setRows([]);
+                                retrieveProjects();
+                            }
+                        })
+                        .catch( e => {
+                            console.log(e);
+                        })
                 })
-            })
+                break;
+            default:
+                toggled.map((t) => {
+                    ProjectDataService.toggleArchive(t, token)
+                        .then(response => {
+                            if (archive){
+                                setRows([]);
+                                retrieveArchiveProjects(year.getFullYear());
+                            }else{
+                                setRows([]);
+                                retrieveProjects();
+                            }
+                        })
+                        .catch( e => {
+                            console.log(e);
+                        })
+                })
+        }
         setToggled([]);
         setSelected([]);
     };
 
     const archiveProject = (id) => {
-        ProjectDataService.toggleArchive(id, token)
-            .then(response => {
-                setRows([]);
-                retrieveProjects()
-            })
-            .catch( e => {
-                console.log(e);
-            })
+        switch(projectType) {
+            case 2:
+                ProjectDataService.toggleArchiveServices(id, token)
+                    .then(response => {
+                        setRows([]);
+                        retrieveProjects()
+                    })
+                    .catch( e => {
+                        console.log(e);
+                    })
+                break;
+            case 3:
+                ProjectDataService.toggleArchiveHSEs(id, token)
+                    .then(response => {
+                        setRows([]);
+                        retrieveProjects()
+                    })
+                    .catch( e => {
+                        console.log(e);
+                    })
+                break;
+            default:
+                ProjectDataService.toggleArchive(id, token)
+                    .then(response => {
+                        setRows([]);
+                        retrieveProjects()
+                    })
+                    .catch( e => {
+                        console.log(e);
+                    })
+        }
     };
 
     const handleRequestSort = (event, property) => {
@@ -471,6 +587,7 @@ export default function ProjectLogTable(props) {
                     archive={archive}
                     setArchive={setArchive} 
                     toggleArchive={toggleArchive}
+                    projectType={projectType}
                 />
                 <TableContainer>
                 <Table
@@ -573,6 +690,7 @@ export default function ProjectLogTable(props) {
                 archiveProject={archiveProject}
                 openEdit={openEdit}
                 setOpenEdit={setOpenEdit}
+                projectType={projectType}
             />
         </Box>
     );

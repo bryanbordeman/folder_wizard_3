@@ -55,7 +55,7 @@ const StyledMenu = styled((props) => (
 
 export default function ProjectLogMenu(props) {
     const {anchorEl}= props
-    const {open , project } = props
+    const {open , project, projectType } = props
     const { token, user, handleOpenSnackbar } = props
     const {handleClick, handleClose, archiveProject } = props
     const { mouseX, mouseY} = props
@@ -65,9 +65,9 @@ export default function ProjectLogMenu(props) {
     const [ deleteMessage, setDeleteMessage ] = React.useState({title: '', content:''});
 
     const handleEdit = () => {
-        // setOpenEdit(!openEdit);
+        setOpenEdit(!openEdit);
         handleClose();
-    }
+    };
 
     const handleTask = () => {
         setOpenTask(!openTask);
@@ -152,6 +152,7 @@ export default function ProjectLogMenu(props) {
                 token={token}
                 handleOpenSnackbar={handleOpenSnackbar}
                 project={project}
+                projectType={projectType}
             />
             <DeleteConfirmationModal
                 openDelete={openDelete}

@@ -110,22 +110,22 @@ function Home(props) {
                             startIcon={<BallotTwoToneIcon />}
                             variant='outlined' 
                             color='warning' 
-                            // component={Link} 
-                            // to='/opportunity/edit'
+                            component={Link} 
+                            to='/projectlog'
                         >Project Log
                         </Button>
                         </Stack>
                     </Stack>
                 </Card>
             </Stack>
-            {/* <Card sx={{ width: '100%', textAlign: 'center', border: 1, borderRadius:2, borderColor: "#1BA2F6 !important" }} elevation={0}>
+            <Card sx={{ width: '100%', textAlign: 'center', border: 1, borderRadius:2, borderColor: "#1BA2F6 !important" }} elevation={0}>
                 <CardContent>
                     2022 Quotes to Project Conversion Rate 
                 </CardContent>
                 <CardContent>
                     Leader Board 
                 </CardContent>
-            </Card> */}
+            </Card>
         </Stack>
         <div style={{ position:'absolute', top:10, left:10}}>
             <IconButton 

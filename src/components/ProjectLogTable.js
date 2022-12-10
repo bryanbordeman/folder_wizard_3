@@ -18,11 +18,12 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import { visuallyHidden } from '@mui/utils';
 import QuoteDataService from '../services/Quote.services';
+import ProjectDataService from '../services/Project.services';
+import ProjectButtons from './ProjectButtons';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -32,6 +33,10 @@ import ArchiveSwitch from './ArchiveSwitch';
 import moment from 'moment';
 import { Stack } from '@mui/system';
 import QuoteLogMenu from './QuoteLogMenu';
+import ProjectLogMenu from './ProjectLogMenu';
+
+//! notes
+
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -78,10 +83,16 @@ function stableSort(array, comparator) {
             label: 'Name',
         },
         {
-            id: 'due',
+            id: 'order_type',
+            numeric: false,
+            disablePadding: false,
+            label: 'Order Type',
+        },
+        {
+            id: 'created',
             numeric: true,
             disablePadding: false,
-            label: 'Due Date',
+            label: 'Created',
         },
         {
             id: 'project_category',
@@ -94,12 +105,6 @@ function stableSort(array, comparator) {
             numeric: false,
             disablePadding: false,
             label: 'Type',
-        },
-        {
-            id: 'manager',
-            numeric: false,
-            disablePadding: false,
-            label: 'Manager',
         },
     ];
 
@@ -192,7 +197,7 @@ function EnhancedTableToolbar(props) {
                 id="tableTitle"
                 component="div"
                 >
-                {archive? 'Archived' : 'Active'} Quotes
+                {archive? 'Archived' : 'Active'} Projects
             </Typography>
         )}
         {numSelected > 0 ? (
@@ -246,14 +251,14 @@ function EnhancedTableToolbar(props) {
     numSelected: PropTypes.number.isRequired,
     };
 
-export default function QuoteLogTable(props) {
-    const { token, user, handleOpenSnackbar } = props;
-    const [ quotes, setQuotes ] = React.useState([]); 
+export default function ProjectLogTable(props) {
+    const { token, user, handleOpenSnackbar, darkState } = props;
+    const [ projects, setProjects ] = React.useState([]); 
     const [ rows, setRows ] = React.useState([]);
     const [ year, setYear ] = React.useState(new Date())
     const [ archive, setArchive ] = React.useState(false);
     const [ toggled, setToggled ] = React.useState([]);
-    const [ editQuote, setEditQuote ] = React.useState('');
+    const [ editProject, setEditProject ] = React.useState('');
     const [ openEdit, setOpenEdit ] = React.useState(false);
     const [ order, setOrder ] = React.useState('asc');
     const [ orderBy, setOrderBy ] = React.useState('calories');
@@ -267,15 +272,17 @@ export default function QuoteLogTable(props) {
     const openMenu = Boolean(anchorEl);
     const [mouseX, setMouseX] = React.useState(0);
     const [mouseY, setMouseY] = React.useState(0);
+
+    const [ projectType, setProjectType ] = React.useState(1); // project type
     
     React.useEffect(() => {
         if (didMount.current) {
             if (archive){
                 setRows([]);
-                retrieveArchiveQuotes(year.getFullYear())
+                retrieveArchiveProjects(year.getFullYear())
             }else{
                 setRows([]);
-                retrieveQuotes(year.getFullYear())
+                retrieveProjects();
             }
         } else {
             didMount.current = true;
@@ -284,29 +291,29 @@ export default function QuoteLogTable(props) {
 
     React.useEffect(() => {
         if (didMount.current) {
-            quotes.map((q) => {
-                let temp ={id: q.id, number: q.number, name: q.name, due: q.due, project_category: q.project_category.name, project_type: q.project_type.name, manager: `${q.manager.first_name} ${q.manager.last_name}`};
+            projects.map((p) => {
+                let temp ={id: p.id, number: p.number, name: p.name, order_type: p.order_type.name, created: p.created, project_category: p.project_category.name, project_type: p.project_type.name};
                 setRows(oldArray => [...oldArray, temp]);
             })
         } else {
             didMount.current = true;
         };
-    },[quotes]);
+    },[projects]);
 
-    const retrieveQuotes = (year) => {
-        QuoteDataService.getAllYear(year, token)
+    const retrieveProjects = () => {
+        ProjectDataService.getAll(token)
         .then(response => {
-            setQuotes(response.data);
+            setProjects(response.data);
         })
         .catch( e => {
             console.log(e);
         })
     };
 
-    const retrieveArchiveQuotes = (year) => {
-        QuoteDataService.getAllArchive(year, token)
+    const retrieveArchiveProjects = (year) => {
+        ProjectDataService.getAllArchive(year, token)
         .then(response => {
-            setQuotes(response.data);
+            setProjects(response.data);
         })
         .catch( e => {
             console.log(e);
@@ -315,14 +322,14 @@ export default function QuoteLogTable(props) {
 
     const toggleArchive = () => {
         toggled.map((t) => {
-            QuoteDataService.toggleArchive(t, token)
+            ProjectDataService.toggleArchive(t, token)
                 .then(response => {
                     if (archive){
                         setRows([]);
-                        retrieveArchiveQuotes(year.getFullYear())
+                        retrieveArchiveProjects(year.getFullYear());
                     }else{
                         setRows([]);
-                        retrieveQuotes(year.getFullYear())
+                        retrieveProjects();
                     }
                 })
                 .catch( e => {
@@ -333,11 +340,11 @@ export default function QuoteLogTable(props) {
         setSelected([]);
     };
 
-    const archiveQuote = (id) => {
-        QuoteDataService.toggleArchive(id, token)
+    const archiveProject = (id) => {
+        ProjectDataService.toggleArchive(id, token)
             .then(response => {
                 setRows([]);
-                retrieveQuotes(year.getFullYear())
+                retrieveProjects()
             })
             .catch( e => {
                 console.log(e);
@@ -398,6 +405,16 @@ export default function QuoteLogTable(props) {
         setDense(event.target.checked);
     };
 
+    const handleChangeProjectType = (id) => {
+        /*
+        set project type 
+        {id: 1, name: 'project'},
+        {id: 2, name: 'service'},
+        {id: 3, name: 'HSE project'}
+        */
+        setProjectType(id);
+    };
+
     const isSelected = (name) => selected.indexOf(name) !== -1;
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -405,7 +422,7 @@ export default function QuoteLogTable(props) {
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const handleClickMenu = (event, id) => {
-        setEditQuote(quotes.find((q) => q.id === id))
+        setEditProject(projects.find((p) => p.id === id))
         
         if (event.target.type === 'checkbox') {
             // prevent menu from popping up if checkbox is selected
@@ -425,18 +442,28 @@ export default function QuoteLogTable(props) {
     return (
         <Box sx={{ width: '100%', m:4, maxWidth: '92%'}}>
             <Box sx={{marginBottom: 4}}>
-                <LocalizationProvider dateAdapter={AdapterDateFns} >
-                    <DatePicker
-                        label="Year"
-                        id="year"
-                        name="year"
-                        views={['year']}
-                        value={year}
-                        onChange={(date) => {setYear(date)}}
-                        renderInput={(params) => < TextField {...params} variant="filled"/>}
-                        fullWidth
+                <Stack spacing={2}>
+                    {archive?
+                    <div style={{width: '33%'}}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                            label="Year"
+                            id="year"
+                            name="year"
+                            views={['year']}
+                            value={year}
+                            onChange={(date) => {setYear(date)}}
+                            renderInput={(params) => < TextField {...params} variant="filled"/>}
+                        />
+                    </LocalizationProvider> 
+                    </div>
+                    : '' }
+                    <ProjectButtons
+                        darkState={darkState}
+                        projectType={projectType}
+                        handleChangeProjectType={handleChangeProjectType}
                     />
-                </LocalizationProvider>
+                </Stack>
             </Box>
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <EnhancedTableToolbar 
@@ -499,10 +526,10 @@ export default function QuoteLogTable(props) {
                                     {row.number}
                                 </TableCell>
                                 <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{row.name}</TableCell>
-                                <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{moment(row.due).format("MMM Do YY")}</TableCell>
+                                <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{row.order_type}</TableCell>
+                                <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{moment(row.created).format("MMM Do YY")}</TableCell>
                                 <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{row.project_category}</TableCell>
                                 <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{row.project_type}</TableCell>
-                                <TableCell sx={{whiteSpace: 'nowrap'}} align="left">{row.manager}</TableCell>
                             </TableRow>
                         );
                         })}
@@ -532,7 +559,7 @@ export default function QuoteLogTable(props) {
                 control={<Switch checked={dense} onChange={handleChangeDense} />}
                 label="Dense padding"
             />
-            <QuoteLogMenu
+            <ProjectLogMenu
                 anchorEl={anchorEl}
                 open={openMenu} 
                 handleClick={handleClickMenu}
@@ -542,8 +569,8 @@ export default function QuoteLogTable(props) {
                 token={token}
                 user={user}
                 handleOpenSnackbar={handleOpenSnackbar}
-                quote={editQuote}
-                archiveQuote={archiveQuote}
+                project={editProject}
+                archiveProject={archiveProject}
                 openEdit={openEdit}
                 setOpenEdit={setOpenEdit}
             />

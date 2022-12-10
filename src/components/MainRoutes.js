@@ -9,6 +9,7 @@ import OpportunityEdit from '../pages/OpportunityEdit';
 import Project from '../pages/Project';
 import ProjectEdit from '../pages/ProjectEdit';
 import QuoteLog from '../pages/QuoteLog';
+import ProjectLog from '../pages/ProjectLog';
 
 function MainRoutes(props) {
     const { user, token, login, logout, signup, loginErrors, darkState, handleOpenSnackbar } = props
@@ -95,6 +96,20 @@ function MainRoutes(props) {
                             user={user}
                             token={token}
                             handleOpenSnackbar={handleOpenSnackbar}
+                        />
+                }/>
+                <Route 
+                    exact 
+                    path='/projectlog' 
+                    element={
+                        !user.username  ? 
+                        <Navigate to="/login" />
+                        :
+                        <ProjectLog
+                            user={user}
+                            token={token}
+                            handleOpenSnackbar={handleOpenSnackbar}
+                            darkState={darkState}
                         />
                 }/>
                 <Route 

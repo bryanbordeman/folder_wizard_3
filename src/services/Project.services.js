@@ -6,6 +6,18 @@ class ProjectDataService {
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/projects/`);
     };
+    getAllYear(year,token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/projects/${year}`);
+    };
+    getAllArchive(year,token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.get(`${SERVER}/api/projects/archive/${year}`);
+    };
+    toggleArchive(id, token){
+        axios.defaults.headers.common["Authorization"] = "Token " + token;
+        return axios.put(`${SERVER}/api/project/${id}/togglearchive/`);
+    };
     getNextProjectNumber(token){
         axios.defaults.headers.common["Authorization"] = "Token " + token;
         return axios.get(`${SERVER}/api/next/project/`);

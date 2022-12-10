@@ -19,7 +19,7 @@ import TaskDataService from '../services/Task.services'
 export default function AddTaskForm(props) {
     const { user, token, handleUpdateTaskList } = props;
     const { handleOpenSnackbar } = props;
-    const { quote } = props
+    const { quote, project } = props
     const { open, setOpen } = props;
     const { editing, task, setEditing } = props;
     const [ isValid, setIsValid ] = React.useState(true);
@@ -75,6 +75,11 @@ export default function AddTaskForm(props) {
                 ...prevState,
                 quote: quote.id,
             }));
+        }else if(project){
+            setValues((prevState) => ({
+                ...prevState,
+                project: project.id,
+            }));
         }else{
             if(task){
             const editFormValues = {
@@ -95,7 +100,7 @@ export default function AddTaskForm(props) {
                 completed: new Date(),
                 updated: new Date()
             };
-            setValues(editing && !quote ? editFormValues : initialFormValues);
+            setValues(editing && !quote && !project? editFormValues : initialFormValues);
         }
         }
     },[open]);
@@ -197,7 +202,7 @@ export default function AddTaskForm(props) {
         setTimeout(() => {
             setIsValid(true);
         }, 3000);
-    if(quote){
+    if(quote || project){
         return formIsValid ? createTask(values) : null
     }else{
         return formIsValid ? handleUpdateTaskList(values) : null
@@ -206,7 +211,7 @@ export default function AddTaskForm(props) {
 
     const handleClose = () => {
         setOpen(!open);
-        if(!quote){
+        if(!quote && !project){
             setEditing(false);
         }
     };
@@ -229,6 +234,11 @@ export default function AddTaskForm(props) {
                             {quote?
                             <Typography variant="subtitle1">
                                 {`${quote.number} ${quote.name}`}
+                            </Typography>
+                            :''}
+                            {project?
+                            <Typography variant="subtitle1">
+                                {`${project.number} ${project.name}`}
                             </Typography>
                             :''}
                         </Stack>

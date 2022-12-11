@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import ContactServices from '../services/Contact.services';
 import ProjectDataService from '../services/Project.services';
 import ProjectCategoryService from '../services/ProjectCategory.services';
@@ -32,6 +32,7 @@ import { useNavigate } from 'react-router-dom';
 export default function ProjectForm(props) {
     const { user, token, handleOpenSnackbar, darkState} = props;
     const { editing } = props;
+    const { log, projectTypeLog, projectLog, setOpenLog } = props;
     const [ projectType, setProjectType ] = useState(1); // project type
     const [ clear, setClear ] = useState(false);
     const [ contacts, setContacts ] = useState('');
@@ -53,8 +54,17 @@ export default function ProjectForm(props) {
     const didMount = useRef(false);
     let navigate = useNavigate();
 
+    useLayoutEffect(() => {
+        if(projectLog){
+            setTimeout(() => {
+                handleChangeProject(projectLog)
+                setProjectType(projectTypeLog)
+            }, 300);
+        }
+    },[projectLog])
+
     useEffect(() => {
-        if(project && editing){
+        if(project && editing || projectLog && editing){
             setIsDisabled(false);
         }
         else if (!editing){
@@ -375,7 +385,7 @@ export default function ProjectForm(props) {
                         handleOpenSnackbar('info', 'Service was updated');
                         setProject('');
                         handleClearInputs();
-                        navigate('/');
+                        if(projectLog){setOpenLog(false)}else{navigate('/');}
 
                     })
                     .catch( e => {
@@ -389,8 +399,7 @@ export default function ProjectForm(props) {
                         handleOpenSnackbar('info', 'HSE was updated');
                         setProject('');
                         handleClearInputs();
-                        navigate('/');
-
+                        if(projectLog){setOpenLog(false)}else{navigate('/');}
                     })
                     .catch( e => {
                         console.log(e);
@@ -403,8 +412,7 @@ export default function ProjectForm(props) {
                         handleOpenSnackbar('info', 'Project Database was updated');
                         setProject('');
                         handleClearInputs();
-                        navigate('/');
-
+                        if(projectLog){setOpenLog(false)}else{navigate('/');}
                     })
                     .catch( e => {
                         console.log(e);
@@ -617,7 +625,13 @@ export default function ProjectForm(props) {
         setTimeout(() => {
             setIsValid(true);
         }, 3000);
-        return formIsValid ? setOpenVerification(!openVerification) : null
+
+        if(editing){
+            return formIsValid? updateProject() : null
+        }else{
+            return formIsValid ? setOpenVerification(!openVerification) : null
+        }
+        
     };
 
     const handleSubmit = () => {
@@ -629,6 +643,8 @@ export default function ProjectForm(props) {
     return ( 
         <Box sx={{mr:3, ml:3}}>
             <Stack spacing={2}>
+            {log? '': 
+            <div>
             {editing? 
                 <ProjectPicker
                 token={token}
@@ -647,11 +663,15 @@ export default function ProjectForm(props) {
                     setClear={setClear}
                 />
             }
+            </div>
+            }
+            {log? '' :
             <ProjectButtons
                 darkState={darkState}
                 projectType={projectType}
                 handleChangeProjectType={handleChangeProjectType}
             />
+            }
             <Divider/>
             <TextField
                 autoFocus={false}
@@ -888,7 +908,7 @@ export default function ProjectForm(props) {
                         size='large'
                     >Clear</Button>
                     <Button 
-                        onClick={editing? updateProject : handleValidation}
+                        onClick={handleValidation}
                         // onClick={handleSubmit}
                         // onClick={() => setOpenVerification(!openVerification)}
                         // onClick={() => setOpenConfirmation(!openConfirmation)}

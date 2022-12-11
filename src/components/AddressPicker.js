@@ -36,7 +36,7 @@ export default function AddressPicker(props) {
             }else{
                 setAddress('')
             };
-        }, 1000);
+        }, 500);
     },[quote])
 
     useEffect(() => {
@@ -50,7 +50,7 @@ export default function AddressPicker(props) {
             }else{
                 setAddress('')
             };
-        }, 1000);
+        }, 500);
     },[project])
 
     useEffect(() => {

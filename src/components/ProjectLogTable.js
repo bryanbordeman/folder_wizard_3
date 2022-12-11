@@ -692,6 +692,7 @@ export default function ProjectLogTable(props) {
                 openEdit={openEdit}
                 setOpenEdit={setOpenEdit}
                 projectType={projectType}
+                darkState={darkState}
             />
         </Box>
     );

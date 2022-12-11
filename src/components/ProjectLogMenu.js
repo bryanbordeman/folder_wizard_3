@@ -12,6 +12,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import AddTaskForm from './AddTaskForm';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import ProjectPreviewDialog from './ProjectPreviewDialog';
+import ProjectDialog from './ProjectDialog';
 
 const StyledMenu = styled((props) => (
     <Menu
@@ -56,7 +57,7 @@ const StyledMenu = styled((props) => (
 
 export default function ProjectLogMenu(props) {
     const {anchorEl}= props
-    const {open , project, projectType } = props
+    const {open , project, projectType, darkState } = props
     const { token, user, handleOpenSnackbar } = props
     const {handleClick, handleClose, archiveProject } = props
     const { mouseX, mouseY} = props
@@ -176,14 +177,16 @@ export default function ProjectLogMenu(props) {
                     Delete
                 </MenuItem>
             </StyledMenu>
-            {/* <OpportunityDialog
+            <ProjectDialog
                 open={openEdit}
                 setOpen={setOpenEdit}
                 token={token}
                 user={user}
                 handleOpenSnackbar={handleOpenSnackbar}
-                quote={quote}
-            /> */}
+                project={project}
+                projectType={projectType}
+                darkState={darkState}
+            />
             <AddTaskForm
                 open={openTask}
                 editing={false}

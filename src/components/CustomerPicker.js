@@ -87,7 +87,10 @@ export default function CustomerPicker(props) {
 
         // not really quote. This is a project
         if(quote && quote.customer && project){
-            setCustomers([quote.customer]);
+            setTimeout(() => {
+                setCustomers([quote.customer]);
+            }, 50);
+            
         };
     },[quote])
 

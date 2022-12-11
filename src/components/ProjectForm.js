@@ -61,7 +61,7 @@ export default function ProjectForm(props) {
                 setProjectType(projectTypeLog)
             }, 300);
         }
-    },[projectLog])
+    },[projectLog, projectTypeLog])
 
     useEffect(() => {
         if(project && editing || projectLog && editing){

@@ -18,6 +18,7 @@ export default function ProjectDialog(props) {
     return (
         <Box>
             <Dialog 
+                keepMounted
                 TransitionComponent={Transition}
                 fullScreen
                 open={open} 

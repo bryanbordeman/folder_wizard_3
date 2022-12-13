@@ -59,7 +59,7 @@ export default function ProjectForm(props) {
             setTimeout(() => {
                 handleChangeProject(projectLog)
                 setProjectType(projectTypeLog)
-            }, 300);
+            }, 500);
         }
     },[projectLog, projectTypeLog])
 
@@ -181,7 +181,7 @@ export default function ProjectForm(props) {
     useEffect(() => {
         // add and remove contacts here for edit
         if (didMount.current) {
-            if(quote){
+            if(project){
                 setDifference(checked
                     .filter(x => !editContacts.includes(x))
                     .concat(editContacts.filter(x => !checked.includes(x)))
@@ -809,6 +809,7 @@ export default function ProjectForm(props) {
                     isDisabled={isDisabled}
                     difference={difference}
                     setEditContacts={setEditContacts}
+                    projectType={projectType}
                 />
                 <Stack 
                     direction="row"

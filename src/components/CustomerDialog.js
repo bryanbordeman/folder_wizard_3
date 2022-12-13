@@ -22,7 +22,7 @@ import Chip from '@mui/material/Chip';
 
 export default function CustomerDialog(props) {
     const { customerData , setCustomerData, open, setOpen, token, handleOpenSnackbar, setCustomers, customers, quote, project } = props;
-    const { updateContact, checked, setChecked, setEditContacts, difference } = props;
+    const { updateContact, checked, setChecked, setEditContacts, difference, projectType } = props;
     const { contacts, setContacts } = props;
     const [ customer, setCustomer ] = useState({});
     const [ openDelete, setOpenDelete ] = useState(false);
@@ -97,12 +97,29 @@ export default function CustomerDialog(props) {
                 })
             }
             if(project){
+                //! add service and hses here
                 const editContacts = response.data
                 editContacts.map((c) => {
-                    if(c.projects.includes(quote.id)){
-                        setChecked(oldArray => [...oldArray, c]);
-                        setEditContacts(oldArray => [...oldArray, c]);
+                    switch(projectType) {
+                        case 2:
+                            if(c.services.includes(quote.id)){
+                                setChecked(oldArray => [...oldArray, c]);
+                                setEditContacts(oldArray => [...oldArray, c]);
+                            }
+                            break;
+                        case 3:
+                            if(c.hses.includes(quote.id)){
+                                setChecked(oldArray => [...oldArray, c]);
+                                setEditContacts(oldArray => [...oldArray, c]);
+                            }
+                            break;
+                        default:
+                            if(c.projects.includes(quote.id)){
+                                setChecked(oldArray => [...oldArray, c]);
+                                setEditContacts(oldArray => [...oldArray, c]);
+                            }
                     }
+                    
                 })
             }
             // handleOpenSnackbar('info', 'Company was updated')
@@ -115,7 +132,7 @@ export default function CustomerDialog(props) {
 
     const handleUpdate= () => {
         // if contact is checked update contact
-        if(difference){
+        if(difference && !project){
             difference.map((c) => {
                 if(c.quotes.includes(quote.id)){
                     let index = c.quotes.indexOf(quote.id)
@@ -130,7 +147,63 @@ export default function CustomerDialog(props) {
                 };
             });
             handleClose();
-        }
+        };
+        //! need to add services and hses here
+        if(difference && project){
+            switch(projectType) {
+                case 2:
+                    // service
+                    difference.map((c) => {
+                        if(c.services.includes(quote.id)){
+                            let index = c.quotes.indexOf(quote.id)
+                            if (index > -1) { // only splice array when item is found
+                                c.quotes.splice(index, 1); // remove quote id from array
+                            };
+                            updateContact(c.id, c);
+                        }else{
+                            let updatedContact = c 
+                            updatedContact.services.push(quote.id);
+                            updateContact(c.id, updatedContact);
+                        };
+                    });
+                    handleClose();
+                    break;
+                case 3:
+                    //hse
+                    difference.map((c) => {
+                        if(c.hses.includes(quote.id)){
+                            let index = c.quotes.indexOf(quote.id)
+                            if (index > -1) { // only splice array when item is found
+                                c.quotes.splice(index, 1); // remove quote id from array
+                            };
+                            updateContact(c.id, c);
+                        }else{
+                            let updatedContact = c 
+                            updatedContact.hses.push(quote.id);
+                            updateContact(c.id, updatedContact);
+                        };
+                    });
+                    handleClose();
+                    break;
+                default:
+                    //project
+                    difference.map((c) => {
+                        if(c.projects.includes(quote.id)){
+                            let index = c.quotes.indexOf(quote.id)
+                            if (index > -1) { // only splice array when item is found
+                                c.quotes.splice(index, 1); // remove quote id from array
+                            };
+                            updateContact(c.id, c);
+                        }else{
+                            let updatedContact = c 
+                            updatedContact.projects.push(quote.id);
+                            updateContact(c.id, updatedContact);
+                        };
+                    });
+                    handleClose();
+            }
+        };
+        
         // if customer was edited update
         if(customer !== customerData){
             updateCompany(customerData.id, customer);

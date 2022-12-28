@@ -14,6 +14,7 @@ export default function CategoryTypePickers(props) {
     const [ types, setTypes ] = useState([]);
     const [ type, setType ] = useState('');
     const [ category, setCategory ] = useState('');
+    const [ isLoading, setIsLoading ] = React.useState(false);
 
     useEffect(() => {
         // set from OpportunityPicker
@@ -52,6 +53,7 @@ export default function CategoryTypePickers(props) {
     },[category])
 
     const retrieveCategories = () => {
+        setIsLoading(true);
         ProjectCategoryServices.getCategories(token)
         .then(response => {
             setCategories(response.data);
@@ -60,18 +62,28 @@ export default function CategoryTypePickers(props) {
         .catch( e => {
             console.log(e);
         })
+        .finally(() => {
+            setIsLoading(false);
+        })
     }
 
     const retrieveTypes= () => {
+        setIsLoading(true);
         ProjectTypeServices.getTypes(token)
         .then(response => {
             if (category){
                 const allTypes = response.data
-                setTypes(allTypes.filter(type => type.project_category === category))
+                setTypes(
+                    allTypes.filter(type => type.project_category.find(
+                        element => element === category))
+                )
             }
         })
         .catch( e => {
             console.log(e);
+        })
+        .finally(() => {
+            setIsLoading(false);
         })
     }
 

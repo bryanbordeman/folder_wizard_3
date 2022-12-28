@@ -248,6 +248,7 @@ function EnhancedTableToolbar(props) {
 
 export default function QuoteLogTable(props) {
     const { token, user, handleOpenSnackbar } = props;
+    const { setIsLoading } = props
     const [ quotes, setQuotes ] = React.useState([]); 
     const [ rows, setRows ] = React.useState([]);
     const [ year, setYear ] = React.useState(new Date())
@@ -294,6 +295,7 @@ export default function QuoteLogTable(props) {
     },[quotes]);
 
     const retrieveQuotes = (year) => {
+        setIsLoading(true);
         QuoteDataService.getAllYear(year, token)
         .then(response => {
             setQuotes(response.data);
@@ -301,9 +303,13 @@ export default function QuoteLogTable(props) {
         .catch( e => {
             console.log(e);
         })
+        .finally(() => {
+            setIsLoading(false);
+        })
     };
 
     const retrieveArchiveQuotes = (year) => {
+        setIsLoading(true);
         QuoteDataService.getAllArchive(year, token)
         .then(response => {
             setQuotes(response.data);
@@ -311,10 +317,14 @@ export default function QuoteLogTable(props) {
         .catch( e => {
             console.log(e);
         })
+        .finally(() => {
+            setIsLoading(false);
+        })
     };
 
     const toggleArchive = () => {
         toggled.map((t) => {
+            setIsLoading(true);
             QuoteDataService.toggleArchive(t, token)
                 .then(response => {
                     if (archive){
@@ -328,12 +338,16 @@ export default function QuoteLogTable(props) {
                 .catch( e => {
                     console.log(e);
                 })
+                .finally(() => {
+                    setIsLoading(false);
+                })
             })
         setToggled([]);
         setSelected([]);
     };
 
     const archiveQuote = (id) => {
+        setIsLoading(true);
         QuoteDataService.toggleArchive(id, token)
             .then(response => {
                 setRows([]);
@@ -341,6 +355,9 @@ export default function QuoteLogTable(props) {
             })
             .catch( e => {
                 console.log(e);
+            })
+            .finally(() => {
+                setIsLoading(false);
             })
     };
 

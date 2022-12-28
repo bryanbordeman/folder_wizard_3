@@ -266,6 +266,7 @@ function EnhancedTableToolbar(props) {
 
 export default function ProjectLogTable(props) {
     const { token, user, handleOpenSnackbar, darkState } = props;
+    const { setIsLoading } = props;
     const [ projects, setProjects ] = React.useState([]); 
     const [ rows, setRows ] = React.useState([]);
     const [ year, setYear ] = React.useState(new Date())
@@ -316,6 +317,7 @@ export default function ProjectLogTable(props) {
     const retrieveProjects = () => {
         switch(projectType) {
             case 2:
+                setIsLoading(true);
                 ProjectDataService.getAllServices(token)
                     .then(response => {
                         setProjects(response.data);
@@ -323,8 +325,12 @@ export default function ProjectLogTable(props) {
                     .catch( e => {
                         console.log(e);
                     })
+                    .finally(() => {
+                        setIsLoading(false);
+                    })
                 break;
             case 3:
+                setIsLoading(true);
                 ProjectDataService.getAllHSEs(token)
                     .then(response => {
                         setProjects(response.data);
@@ -332,14 +338,21 @@ export default function ProjectLogTable(props) {
                     .catch( e => {
                         console.log(e);
                     })
+                    .finally(() => {
+                        setIsLoading(false);
+                    })
                 break;
             default:
+                setIsLoading(true);
                 ProjectDataService.getAll(token)
                     .then(response => {
                         setProjects(response.data);
                     })
                     .catch( e => {
                         console.log(e);
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
                     })
             }
         
@@ -348,6 +361,7 @@ export default function ProjectLogTable(props) {
     const retrieveArchiveProjects = (year) => {
         switch(projectType) {
             case 2:
+                setIsLoading(true);
                 ProjectDataService.getAllArchiveServices(year, token)
                     .then(response => {
                         setProjects(response.data);
@@ -355,8 +369,12 @@ export default function ProjectLogTable(props) {
                     .catch( e => {
                         console.log(e);
                     })
+                    .finally(() => {
+                        setIsLoading(false);
+                    })
                 break;
             case 3:
+                setIsLoading(true);
                 ProjectDataService.getAllArchiveHSEs(year, token)
                     .then(response => {
                         setProjects(response.data);
@@ -364,8 +382,12 @@ export default function ProjectLogTable(props) {
                     .catch( e => {
                         console.log(e);
                     })
+                    .finally(() => {
+                        setIsLoading(false);
+                    })
                 break;
             default:
+                setIsLoading(true);
                 ProjectDataService.getAllArchive(year, token)
                     .then(response => {
                         setProjects(response.data);
@@ -373,14 +395,17 @@ export default function ProjectLogTable(props) {
                     .catch( e => {
                         console.log(e);
                     })
+                    .finally(() => {
+                        setIsLoading(false);
+                    })
         }
     };
 
     const toggleArchive = () => {
-
         switch(projectType) {
             case 2:
                 toggled.map((t) => {
+                    setIsLoading(true);
                     ProjectDataService.toggleArchiveServices(t, token)
                         .then(response => {
                             if (archive){
@@ -394,10 +419,14 @@ export default function ProjectLogTable(props) {
                         .catch( e => {
                             console.log(e);
                         })
+                        .finally(() => {
+                            setIsLoading(false);
+                        })
                 })
                 break;
             case 3:
                 toggled.map((t) => {
+                    setIsLoading(true);
                     ProjectDataService.toggleArchiveHSEs(t, token)
                         .then(response => {
                             if (archive){
@@ -411,10 +440,14 @@ export default function ProjectLogTable(props) {
                         .catch( e => {
                             console.log(e);
                         })
+                        .finally(() => {
+                            setIsLoading(false);
+                        })
                 })
                 break;
             default:
                 toggled.map((t) => {
+                    setIsLoading(true);
                     ProjectDataService.toggleArchive(t, token)
                         .then(response => {
                             if (archive){
@@ -428,6 +461,9 @@ export default function ProjectLogTable(props) {
                         .catch( e => {
                             console.log(e);
                         })
+                        .finally(() => {
+                            setIsLoading(false);
+                        })
                 })
         }
         setToggled([]);
@@ -437,6 +473,7 @@ export default function ProjectLogTable(props) {
     const archiveProject = (id) => {
         switch(projectType) {
             case 2:
+                setIsLoading(true);
                 ProjectDataService.toggleArchiveServices(id, token)
                     .then(response => {
                         setRows([]);
@@ -445,8 +482,12 @@ export default function ProjectLogTable(props) {
                     .catch( e => {
                         console.log(e);
                     })
+                    .finally(() => {
+                        setIsLoading(false);
+                    })
                 break;
             case 3:
+                setIsLoading(true);
                 ProjectDataService.toggleArchiveHSEs(id, token)
                     .then(response => {
                         setRows([]);
@@ -455,8 +496,12 @@ export default function ProjectLogTable(props) {
                     .catch( e => {
                         console.log(e);
                     })
+                    .finally(() => {
+                        setIsLoading(false);
+                    })
                 break;
             default:
+                setIsLoading(true);
                 ProjectDataService.toggleArchive(id, token)
                     .then(response => {
                         setRows([]);
@@ -464,6 +509,9 @@ export default function ProjectLogTable(props) {
                     })
                     .catch( e => {
                         console.log(e);
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
                     })
         }
     };

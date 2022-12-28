@@ -1,14 +1,15 @@
 import React from 'react';
-import ProjectForm from '../components/ProjectForm';
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
 import QuoteLogTable from '../components/QuoteLogTable';
+import Loading from '../components/Loading';
 
 export default function QuoteLog(props) {
     const { token, user, handleOpenSnackbar, darkState } = props
+    const [ isLoading, setIsLoading ] = React.useState(false);
 
     return (  
         <div style={{marginTop: '5rem'}}>
@@ -23,6 +24,7 @@ export default function QuoteLog(props) {
                 user={user}
                 handleOpenSnackbar={handleOpenSnackbar}
                 darkState={darkState}
+                setIsLoading={setIsLoading}
             />
             <div style={{ position:'absolute', top:10, left:10}}>
                 <IconButton 
@@ -35,6 +37,9 @@ export default function QuoteLog(props) {
                     <ArrowBackIcon />
                 </IconButton>
             </div>
+            <Loading
+                open={isLoading}
+            />
         </div>
     );
 };

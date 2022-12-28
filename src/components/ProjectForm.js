@@ -15,6 +15,7 @@ import ProjectButtons from './ProjectButtons';
 import CategoryTypePickers from './CategoryTypePickers';
 import BillingOrderTypePickers from './BillingOrderTypePickers';
 import AddressPicker from './AddressPicker';
+import AddressPickerRef from './AddressPickerRef';
 import CustomerPicker from './CustomerPicker';
 import ConfirmationDialogProject from './ConfirmationDialogProject';
 import VerificationDialogProject from './VerificationDialogProject';
@@ -791,6 +792,10 @@ export default function ProjectForm(props) {
                     setClear={setClear}
                     isDisabled={isDisabled}
                 />
+                {/* <AddressPickerRef
+                    token={token} 
+                    handleOpenSnackbar={handleOpenSnackbar}
+                /> */}
                 <CustomerPicker
                     checked={checked}
                     setChecked={setChecked}

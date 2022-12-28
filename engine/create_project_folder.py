@@ -66,6 +66,7 @@ def create_project_folder(inputs):
     createFolder(f"{directory}/RFIs")
     createFolder(f"{directory}/Purchasing")
     createFolder(f"{directory}/Purchasing/vendor_quotes")
+    createFolder(f"{directory}/Purchasing/invoices")
     createFolder(f"{directory}/Material_Specs")
     createFolder(f"{directory}/quotes")
     createFolder(f"{directory}/contracts")
